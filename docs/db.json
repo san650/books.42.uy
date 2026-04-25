@@ -1,1023 +1,1018 @@
-[
-  {
-    "id": 1,
-    "title": "Anochecer",
-    "subtitle": "",
-    "original_title": "Nightfall",
-    "first_publishing_date": "1990",
-    "publish_dates": [
+{
+  "authors": [
+    {
+      "id": 1,
+      "name": "Anthony Burgess",
+      "aliases": [
 
-    ],
-    "authors": [
-      {
-        "name": "Isaac Asimov",
-        "aliases": [
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Antonio Polito",
+      "aliases": [
 
-        ]
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Arthur C. Clarke",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Carlos Rehermann",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Ernest Cline",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Ernest Hemingway",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Frank Patrick Herbert",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Gustavo Espinosa",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Isaac Asimov",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Jin Yong",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Joseph Roth",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Larry Niven",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Leo Tolstoi",
+      "aliases": [
+        "Lev Tolstói",
+        "León Tolstoi",
+        "Lev Tolstoi",
+        "Leo Tolstoy"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Manda Scott",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Mario Benedetti",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Paulo Coelho",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Philip K. Dick",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Robert Graves",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 19,
+      "name": "Robert Silverberg",
+      "aliases": [
+
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Terry Pratchett",
+      "aliases": [
+
+      ]
+    }
+  ],
+  "books": [
+    {
+      "id": 1,
+      "title": "Anochecer",
+      "subtitle": "",
+      "original_title": "Nightfall",
+      "first_publishing_date": "1990",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-987-556-529-3"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "DeBolsillo",
+      "score": 5,
+      "review": "",
+      "saga": null,
+      "author_ids": [
+        9,
+        19
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Cuentos",
+      "subtitle": "",
+      "original_title": "The First Forty-Nine Stories",
+      "first_publishing_date": "1939",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-8346-743-5"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/8-cuentos.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "DeBolsillo",
+      "saga": null,
+      "score": 6,
+      "review": "",
+      "author_ids": [
+        6
+      ]
+    },
+    {
+      "id": 3,
+      "title": "El nacimiento de un héroe",
+      "subtitle": "",
+      "original_title": "Shediao Yingxiong Zhuan 1",
+      "first_publishing_date": "1959",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-18107-83-2"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/3-el-nacimiento-de-un-h-roe.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Salamandra",
+      "saga": {
+        "name": "La leyenda de los héroes cóndor",
+        "order": 1
       },
-      {
-        "name": "Robert Silverberg",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-987-556-529-3"
-      }
-    ],
-    "covers": [
-
-    ],
-    "publisher": "DeBolsillo",
-    "score": 5,
-    "review": "",
-    "saga": null
-  },
-  {
-    "id": 2,
-    "title": "Cuentos",
-    "subtitle": "",
-    "original_title": "The First Forty-Nine Stories",
-    "first_publishing_date": "1939",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Ernest Hemingway",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-8346-743-5"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/8-cuentos.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "DeBolsillo",
-    "saga": null,
-    "score": 6,
-    "review": ""
-  },
-  {
-    "id": 3,
-    "title": "El nacimiento de un héroe",
-    "subtitle": "",
-    "original_title": "Shediao Yingxiong Zhuan 1",
-    "first_publishing_date": "1959",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Jin Yong",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-18107-83-2"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/3-el-nacimiento-de-un-h-roe.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Salamandra",
-    "saga": {
-      "name": "La leyenda de los héroes cóndor",
-      "order": 1
+      "score": 8,
+      "review": "",
+      "author_ids": [
+        10
+      ]
     },
-    "score": 8,
-    "review": ""
-  },
-  {
-    "id": 4,
-    "title": "Mundo anillo",
-    "subtitle": "",
-    "original_title": "Ringworld",
-    "first_publishing_date": "1970",
-    "publish_dates": [
+    {
+      "id": 4,
+      "title": "Mundo anillo",
+      "subtitle": "",
+      "original_title": "Ringworld",
+      "first_publishing_date": "1970",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Larry Niven",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-9018-261-1"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/4-mundo-anillo.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "La Factoría De Ideas",
-    "saga": {
-      "name": "Ringworld series",
-      "order": 1
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-9018-261-1"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/4-mundo-anillo.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "La Factoría De Ideas",
+      "saga": {
+        "name": "Ringworld series",
+        "order": 1
+      },
+      "score": 6,
+      "review": "Típica novela de ciencia ficción de la década de los 70. Entretenida pero no envejeción bien. El final es abrupto ya que es parte de una saga.",
+      "author_ids": [
+        12
+      ]
     },
-    "score": 6,
-    "review": "Típica novela de ciencia ficción de la década de los 70. Entretenida pero no envejeción bien. El final es abrupto ya que es parte de una saga."
-  },
-  {
-    "id": 5,
-    "title": "Lotería solar",
-    "subtitle": "",
-    "original_title": "Solar Lottery",
-    "first_publishing_date": "1955",
-    "publish_dates": [
+    {
+      "id": 5,
+      "title": "Lotería solar",
+      "subtitle": "",
+      "original_title": "Solar Lottery",
+      "first_publishing_date": "1955",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Philip K. Dick",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-450-7630-9"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/5-loter-a-solar.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Minotauro",
-    "saga": null,
-    "score": 7,
-    "review": ""
-  },
-  {
-    "id": 6,
-    "title": "El sueño del águila",
-    "subtitle": "Boudica, Reina Guerrera de los Celtas",
-    "original_title": "Dreaming the Eagle",
-    "first_publishing_date": "2003",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Manda Scott",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-9876280037"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/6-el-sue-o-del-guila.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Edhasa",
-    "saga": {
-      "name": "Boudica, Reina Guerrera de los Celtas",
-      "order": 1
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-450-7630-9"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/5-loter-a-solar.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Minotauro",
+      "saga": null,
+      "score": 7,
+      "review": "",
+      "author_ids": [
+        17
+      ]
     },
-    "score": 8,
-    "review": ""
-  },
-  {
-    "id": 7,
-    "title": "El sueño del toro rojo",
-    "subtitle": "Boudica, Reina Guerrera de los Celtas",
-    "original_title": "Dreaming the Bull",
-    "first_publishing_date": "2004",
-    "publish_dates": [
+    {
+      "id": 6,
+      "title": "El sueño del águila",
+      "subtitle": "Boudica, Reina Guerrera de los Celtas",
+      "original_title": "Dreaming the Eagle",
+      "first_publishing_date": "2003",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Manda Scott",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-
-    ],
-    "covers": [
-      {
-        "file": "covers/7-el-sue-o-del-toro-rojo.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Edhasa",
-    "saga": {
-      "name": "Boudica, Reina Guerrera de los Celtas",
-      "order": 2
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-9876280037"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/6-el-sue-o-del-guila.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Edhasa",
+      "saga": {
+        "name": "Boudica, Reina Guerrera de los Celtas",
+        "order": 1
+      },
+      "score": 8,
+      "review": "",
+      "author_ids": [
+        14
+      ]
     },
-    "score": 8,
-    "review": ""
-  },
-  {
-    "id": 8,
-    "title": "El sueño del sabueso",
-    "subtitle": "Boudica, la reina guerrera de los celtas",
-    "original_title": "Dreaming the Hound",
-    "first_publishing_date": "2005",
-    "publish_dates": [
+    {
+      "id": 7,
+      "title": "El sueño del toro rojo",
+      "subtitle": "Boudica, Reina Guerrera de los Celtas",
+      "original_title": "Dreaming the Bull",
+      "first_publishing_date": "2004",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Manda Scott",
-        "aliases": [
+      ],
+      "identifiers": [
 
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-674-6793-2"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/8-el-sue-o-del-sabueso.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Edhasa",
-    "saga": {
-      "name": "Boudica, Reina Guerrera de los Celtas",
-      "order": 3
+      ],
+      "covers": [
+        {
+          "file": "covers/7-el-sue-o-del-toro-rojo.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Edhasa",
+      "saga": {
+        "name": "Boudica, Reina Guerrera de los Celtas",
+        "order": 2
+      },
+      "score": 8,
+      "review": "",
+      "author_ids": [
+        14
+      ]
     },
-    "score": 8,
-    "review": ""
-  },
-  {
-    "id": 9,
-    "title": "El sueño de la serpiente",
-    "subtitle": "Boudica, la reina guerrera de los celtas",
-    "original_title": "Dreaming the Serpent Spear",
-    "first_publishing_date": "2006",
-    "publish_dates": [
+    {
+      "id": 8,
+      "title": "El sueño del sabueso",
+      "subtitle": "Boudica, la reina guerrera de los celtas",
+      "original_title": "Dreaming the Hound",
+      "first_publishing_date": "2005",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Manda Scott",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-350-6090-5"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/9-el-sue-o-de-la-serpiente.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Edhasa",
-    "saga": {
-      "name": "Boudica, Reina Guerrera de los Celtas",
-      "order": 4
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-674-6793-2"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/8-el-sue-o-del-sabueso.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Edhasa",
+      "saga": {
+        "name": "Boudica, Reina Guerrera de los Celtas",
+        "order": 3
+      },
+      "score": 8,
+      "review": "",
+      "author_ids": [
+        14
+      ]
     },
-    "score": 8,
-    "review": ""
-  },
-  {
-    "id": 10,
-    "title": "Entrevista sobre el siglo XXI",
-    "subtitle": "Al cuidado de Antonio Polito",
-    "original_title": "Intervista sul nuovo secolo",
-    "first_publishing_date": "1999",
-    "publish_dates": [
+    {
+      "id": 9,
+      "title": "El sueño de la serpiente",
+      "subtitle": "Boudica, la reina guerrera de los celtas",
+      "original_title": "Dreaming the Serpent Spear",
+      "first_publishing_date": "2006",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Antonio Polito",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-8432-517-8"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/10-entrevista-sobre-el-siglo-xxi.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "DeBolsillo",
-    "saga": null,
-    "score": 5,
-    "review": ""
-  },
-  {
-    "id": 11,
-    "title": "La leyenda del Santo Bebedor",
-    "subtitle": "",
-    "original_title": "Die Legende vom heiligen Trinker",
-    "first_publishing_date": "1939",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Joseph Roth",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-339-0233-7"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/11-la-leyenda-del-santo-bebedor.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Anagrama",
-    "saga": null,
-    "score": 6,
-    "review": ""
-  },
-  {
-    "id": 12,
-    "title": "La naranja mecánica",
-    "subtitle": "",
-    "original_title": "A Clockwork Orange",
-    "first_publishing_date": "1962",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Anthony Burgess",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "9789505470877"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/12-la-naranja-mec-nica.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Minotauro",
-    "saga": null,
-    "score": 8,
-    "review": ""
-  },
-  {
-    "id": 13,
-    "title": "Todo termina aquí",
-    "subtitle": "",
-    "original_title": "Todo termina aquí",
-    "first_publishing_date": "2016",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Gustavo Espinosa",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "9789974720381"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/13-todo-termina-aqu.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "HUM",
-    "saga": null,
-    "score": 7,
-    "review": ""
-  },
-  {
-    "id": 14,
-    "title": "El alquimista",
-    "subtitle": "Una fábula para seguir tus sueños",
-    "original_title": "El alquimista",
-    "first_publishing_date": "1988",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Paulo Coelho",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "0-06-251140-8"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/14-el-alquimista.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Rayo",
-    "saga": null,
-    "score": 3,
-    "review": ""
-  },
-  {
-    "id": 15,
-    "title": "La hija de Homero",
-    "subtitle": "",
-    "original_title": "Homer's Daughter",
-    "first_publishing_date": "1955",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Robert Graves",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-350-0503-6"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/15-la-hija-de-homero.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Sudamericana",
-    "saga": null,
-    "score": 8,
-    "review": ""
-  },
-  {
-    "id": 16,
-    "title": "Carlota podrida",
-    "subtitle": "",
-    "original_title": "Carlota podrida",
-    "first_publishing_date": "2009",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Gustavo Espinosa",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "9789974699120"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/16-carlota-podrida.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "HUM",
-    "saga": null,
-    "score": 8,
-    "review": ""
-  },
-  {
-    "id": 17,
-    "title": "La borra del café",
-    "subtitle": "",
-    "original_title": "La borra del café",
-    "first_publishing_date": "2000",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Mario Benedetti",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-950-071-820-2"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/17-la-borra-del-caf.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Sudamericana",
-    "saga": null,
-    "score": 5,
-    "review": ""
-  },
-  {
-    "id": 18,
-    "title": "Ready Player One",
-    "subtitle": "",
-    "original_title": "Ready Player One",
-    "first_publishing_date": "2011",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Ernest Cline",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "9878466649179"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/18-ready-player-one.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Nova",
-    "saga": null,
-    "score": 4,
-    "review": ""
-  },
-  {
-    "id": 19,
-    "title": "Anna Karénina",
-    "subtitle": "",
-    "original_title": "Анна Каренина",
-    "first_publishing_date": "1878",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Leo Tolstoy",
-        "aliases": [
-          "Lev Tolstói"
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-9105-193-0"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/19-anna-kar-nina.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Penguin Random House",
-    "saga": null,
-    "score": 10,
-    "review": ""
-  },
-  {
-    "id": 20,
-    "title": "La muerte de Ivan Ilich ; Hadyi Murad",
-    "subtitle": "",
-    "original_title": "Смерть Ивана Ильича",
-    "first_publishing_date": "1886",
-    "publish_dates": [
-      "1912"
-    ],
-    "authors": [
-      {
-        "name": "Leo Tolstoy",
-        "aliases": [
-          "León Tolstoi",
-          "Lev Tolstoi",
-          "Leo Tolstoy"
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "9878420649344"
-      }
-    ],
-    "covers": [
-
-    ],
-    "publisher": "Alianza",
-    "saga": null,
-    "score": 10,
-    "review": ""
-  },
-  {
-    "id": 21,
-    "title": "Las arañas de Marte",
-    "subtitle": "",
-    "original_title": "Las arañas de Marte",
-    "first_publishing_date": "2011",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Gustavo Espinosa",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "9789974687844"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/21-las-ara-as-de-marte.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "HUM",
-    "saga": null,
-    "score": 7,
-    "review": ""
-  },
-  {
-    "id": 22,
-    "title": "180",
-    "subtitle": "",
-    "original_title": "180",
-    "first_publishing_date": "2008",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Carlos Rehermann",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "9789974687424"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/22-180.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "HUM",
-    "saga": null,
-    "score": 8,
-    "review": ""
-  },
-  {
-    "id": 23,
-    "title": "Dune",
-    "subtitle": "",
-    "original_title": "Dune",
-    "first_publishing_date": "1965",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Frank Patrick Herbert",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-9759-682-4"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/23-dune.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "DeBolsillo",
-    "saga": {
-      "name": "Dune",
-      "order": 1
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-350-6090-5"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/9-el-sue-o-de-la-serpiente.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Edhasa",
+      "saga": {
+        "name": "Boudica, Reina Guerrera de los Celtas",
+        "order": 4
+      },
+      "score": 8,
+      "review": "",
+      "author_ids": [
+        14
+      ]
     },
-    "score": 7,
-    "review": ""
-  },
-  {
-    "id": 24,
-    "title": "El mesías de Dune",
-    "subtitle": "Las crónicas de Dune 2",
-    "original_title": "Dune Messiah",
-    "first_publishing_date": "1969",
-    "publish_dates": [
+    {
+      "id": 10,
+      "title": "Entrevista sobre el siglo XXI",
+      "subtitle": "Al cuidado de Antonio Polito",
+      "original_title": "Intervista sul nuovo secolo",
+      "first_publishing_date": "1999",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Frank Patrick Herbert",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-987-725-439-6"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/24-el-mes-as-de-dune.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "DeBolsillo",
-    "saga": {
-      "name": "Dune",
-      "order": 2
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-8432-517-8"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/10-entrevista-sobre-el-siglo-xxi.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "DeBolsillo",
+      "saga": null,
+      "score": 5,
+      "review": "",
+      "author_ids": [
+        2
+      ]
     },
-    "score": 6,
-    "review": ""
-  },
-  {
-    "id": 25,
-    "title": "Cita con Rama",
-    "subtitle": "",
-    "original_title": "Rendezvous with Rama",
-    "first_publishing_date": "1973",
-    "publish_dates": [
+    {
+      "id": 11,
+      "title": "La leyenda del Santo Bebedor",
+      "subtitle": "",
+      "original_title": "Die Legende vom heiligen Trinker",
+      "first_publishing_date": "1939",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Arthur C. Clarke",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "9500404974"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/25-cita-con-rama.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "Emecé",
-    "saga": null,
-    "score": 7,
-    "review": ""
-  },
-  {
-    "id": 26,
-    "title": "El color de la magia",
-    "subtitle": "Una novela del Mundodisco",
-    "original_title": "The Colour of Magic",
-    "first_publishing_date": "1983",
-    "publish_dates": [
-
-    ],
-    "authors": [
-      {
-        "name": "Terry Pratchett",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-9759-679-4"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/26-el-color-de-la-magia.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "DeBolsillo",
-    "saga": {
-      "name": "Mundodisco",
-      "order": 1
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-339-0233-7"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/11-la-leyenda-del-santo-bebedor.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Anagrama",
+      "saga": null,
+      "score": 6,
+      "review": "",
+      "author_ids": [
+        11
+      ]
     },
-    "score": 6,
-    "review": ""
-  },
-  {
-    "id": 27,
-    "title": "Rechicero",
-    "subtitle": "Una novela del Mundodisco",
-    "original_title": "Sourcery",
-    "first_publishing_date": "1988",
-    "publish_dates": [
+    {
+      "id": 12,
+      "title": "La naranja mecánica",
+      "subtitle": "",
+      "original_title": "A Clockwork Orange",
+      "first_publishing_date": "1962",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Terry Pratchett",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-84-9793-126-7"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/27-rechicero.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "DeBolsillo",
-    "saga": {
-      "name": "Mundodisco",
-      "order": 5
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "9789505470877"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/12-la-naranja-mec-nica.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Minotauro",
+      "saga": null,
+      "score": 8,
+      "review": "",
+      "author_ids": [
+        1
+      ]
     },
-    "score": 6,
-    "review": ""
-  },
-  {
-    "id": 28,
-    "title": "Hombres de armas",
-    "subtitle": "Una novela de Mundodisco",
-    "original_title": "Men at Arms",
-    "first_publishing_date": "1993",
-    "publish_dates": [
+    {
+      "id": 13,
+      "title": "Todo termina aquí",
+      "subtitle": "",
+      "original_title": "Todo termina aquí",
+      "first_publishing_date": "2016",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Terry Pratchett",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "978-987-566-157-8"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/28-hombres-de-armas.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "DeBolsillo",
-    "saga": {
-      "name": "Mundodisco",
-      "order": 15
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "9789974720381"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/13-todo-termina-aqu.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "HUM",
+      "saga": null,
+      "score": 7,
+      "review": "",
+      "author_ids": [
+        8
+      ]
     },
-    "score": 8,
-    "review": ""
-  },
-  {
-    "id": 29,
-    "title": "Mort",
-    "subtitle": "Una novela de Mundodisco",
-    "original_title": "Mort",
-    "first_publishing_date": "1987",
-    "publish_dates": [
+    {
+      "id": 14,
+      "title": "El alquimista",
+      "subtitle": "Una fábula para seguir tus sueños",
+      "original_title": "El alquimista",
+      "first_publishing_date": "1988",
+      "publish_dates": [
 
-    ],
-    "authors": [
-      {
-        "name": "Terry Pratchett",
-        "aliases": [
-
-        ]
-      }
-    ],
-    "identifiers": [
-      {
-        "type": "ISBN",
-        "value": "9789483463284"
-      }
-    ],
-    "covers": [
-      {
-        "file": "covers/29-mort.jpg",
-        "default": true
-      }
-    ],
-    "publisher": "DeBolsillo",
-    "saga": {
-      "name": "Mundodisco",
-      "order": 4
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "0-06-251140-8"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/14-el-alquimista.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Rayo",
+      "saga": null,
+      "score": 3,
+      "review": "",
+      "author_ids": [
+        16
+      ]
     },
-    "score": 7,
-    "review": ""
-  }
-]
+    {
+      "id": 15,
+      "title": "La hija de Homero",
+      "subtitle": "",
+      "original_title": "Homer's Daughter",
+      "first_publishing_date": "1955",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-350-0503-6"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/15-la-hija-de-homero.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Sudamericana",
+      "saga": null,
+      "score": 8,
+      "review": "",
+      "author_ids": [
+        18
+      ]
+    },
+    {
+      "id": 16,
+      "title": "Carlota podrida",
+      "subtitle": "",
+      "original_title": "Carlota podrida",
+      "first_publishing_date": "2009",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "9789974699120"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/16-carlota-podrida.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "HUM",
+      "saga": null,
+      "score": 8,
+      "review": "",
+      "author_ids": [
+        8
+      ]
+    },
+    {
+      "id": 17,
+      "title": "La borra del café",
+      "subtitle": "",
+      "original_title": "La borra del café",
+      "first_publishing_date": "2000",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-950-071-820-2"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/17-la-borra-del-caf.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Sudamericana",
+      "saga": null,
+      "score": 5,
+      "review": "",
+      "author_ids": [
+        15
+      ]
+    },
+    {
+      "id": 18,
+      "title": "Ready Player One",
+      "subtitle": "",
+      "original_title": "Ready Player One",
+      "first_publishing_date": "2011",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "9878466649179"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/18-ready-player-one.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Nova",
+      "saga": null,
+      "score": 4,
+      "review": "",
+      "author_ids": [
+        5
+      ]
+    },
+    {
+      "id": 19,
+      "title": "Anna Karénina",
+      "subtitle": "",
+      "original_title": "Анна Каренина",
+      "first_publishing_date": "1878",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-9105-193-0"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/19-anna-kar-nina.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Penguin Random House",
+      "saga": null,
+      "score": 10,
+      "review": "",
+      "author_ids": [
+        13
+      ]
+    },
+    {
+      "id": 20,
+      "title": "La muerte de Ivan Ilich ; Hadyi Murad",
+      "subtitle": "",
+      "original_title": "Смерть Ивана Ильича",
+      "first_publishing_date": "1886",
+      "publish_dates": [
+        "1912"
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "9878420649344"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "Alianza",
+      "saga": null,
+      "score": 10,
+      "review": "",
+      "author_ids": [
+        13
+      ]
+    },
+    {
+      "id": 21,
+      "title": "Las arañas de Marte",
+      "subtitle": "",
+      "original_title": "Las arañas de Marte",
+      "first_publishing_date": "2011",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "9789974687844"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/21-las-ara-as-de-marte.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "HUM",
+      "saga": null,
+      "score": 7,
+      "review": "",
+      "author_ids": [
+        8
+      ]
+    },
+    {
+      "id": 22,
+      "title": "180",
+      "subtitle": "",
+      "original_title": "180",
+      "first_publishing_date": "2008",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "9789974687424"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/22-180.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "HUM",
+      "saga": null,
+      "score": 8,
+      "review": "",
+      "author_ids": [
+        4
+      ]
+    },
+    {
+      "id": 23,
+      "title": "Dune",
+      "subtitle": "",
+      "original_title": "Dune",
+      "first_publishing_date": "1965",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-9759-682-4"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/23-dune.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "DeBolsillo",
+      "saga": {
+        "name": "Dune",
+        "order": 1
+      },
+      "score": 7,
+      "review": "",
+      "author_ids": [
+        7
+      ]
+    },
+    {
+      "id": 24,
+      "title": "El mesías de Dune",
+      "subtitle": "Las crónicas de Dune 2",
+      "original_title": "Dune Messiah",
+      "first_publishing_date": "1969",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-987-725-439-6"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/24-el-mes-as-de-dune.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "DeBolsillo",
+      "saga": {
+        "name": "Dune",
+        "order": 2
+      },
+      "score": 6,
+      "review": "",
+      "author_ids": [
+        7
+      ]
+    },
+    {
+      "id": 25,
+      "title": "Cita con Rama",
+      "subtitle": "",
+      "original_title": "Rendezvous with Rama",
+      "first_publishing_date": "1973",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "9500404974"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/25-cita-con-rama.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Emecé",
+      "saga": null,
+      "score": 7,
+      "review": "",
+      "author_ids": [
+        3
+      ]
+    },
+    {
+      "id": 26,
+      "title": "El color de la magia",
+      "subtitle": "Una novela del Mundodisco",
+      "original_title": "The Colour of Magic",
+      "first_publishing_date": "1983",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-9759-679-4"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/26-el-color-de-la-magia.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "DeBolsillo",
+      "saga": {
+        "name": "Mundodisco",
+        "order": 1
+      },
+      "score": 6,
+      "review": "",
+      "author_ids": [
+        20
+      ]
+    },
+    {
+      "id": 27,
+      "title": "Rechicero",
+      "subtitle": "Una novela del Mundodisco",
+      "original_title": "Sourcery",
+      "first_publishing_date": "1988",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-9793-126-7"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/27-rechicero.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "DeBolsillo",
+      "saga": {
+        "name": "Mundodisco",
+        "order": 5
+      },
+      "score": 6,
+      "review": "",
+      "author_ids": [
+        20
+      ]
+    },
+    {
+      "id": 28,
+      "title": "Hombres de armas",
+      "subtitle": "Una novela de Mundodisco",
+      "original_title": "Men at Arms",
+      "first_publishing_date": "1993",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-987-566-157-8"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/28-hombres-de-armas.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "DeBolsillo",
+      "saga": {
+        "name": "Mundodisco",
+        "order": 15
+      },
+      "score": 8,
+      "review": "",
+      "author_ids": [
+        20
+      ]
+    },
+    {
+      "id": 29,
+      "title": "Mort",
+      "subtitle": "Una novela de Mundodisco",
+      "original_title": "Mort",
+      "first_publishing_date": "1987",
+      "publish_dates": [
+
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "9789483463284"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/29-mort.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "DeBolsillo",
+      "saga": {
+        "name": "Mundodisco",
+        "order": 4
+      },
+      "score": 7,
+      "review": "",
+      "author_ids": [
+        20
+      ]
+    }
+  ]
+}

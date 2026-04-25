@@ -32,16 +32,17 @@ end
 
 # --- Main ---
 
-books = load_db
+db = load_db
+books = db["books"]
 
 if books.empty?
   puts "No books found. Run add_book.rb first."
   exit 0
 end
 
-display_book_list(books)
+display_book_list(books, db)
 
-index = prompt_selection(books)
+index = prompt_book_selection(books, db)
 book = books[index]
 
 puts ""
@@ -60,7 +61,7 @@ end
 
 book["review"] = new_review
 
-save_db(books)
+save_db(db)
 
 if new_review.empty?
   puts "Review cleared for \"#{book["title"]}\"."
@@ -73,4 +74,4 @@ if new_score
 end
 
 # Auto-commit
-git_auto_commit("Review", book)
+git_auto_commit("Review", book, db)

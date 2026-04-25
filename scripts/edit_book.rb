@@ -44,18 +44,21 @@ def prompt_field(field_name, current, fetched)
   end
 end
 
-def prompt_field_authors(current_authors, fetched_authors)
-  return current_authors if fetched_authors.nil? || fetched_authors.empty?
+def prompt_field_authors(db, book, fetched_authors)
+  current_ids = book["author_ids"] || []
+  current_names = resolve_author_names(db, book)
 
-  current_names = (current_authors || []).map { |a| a["name"] }.join(", ")
-  fetched_names = fetched_authors.join(", ")
+  return current_ids if fetched_authors.nil? || fetched_authors.empty?
 
-  return current_authors if fetched_names == current_names
+  fetched_names_str = fetched_authors.join(", ")
+  current_names_str = current_names.join(", ")
+
+  return current_ids if fetched_names_str == current_names_str
 
   puts ""
   puts "Authors:"
-  puts "  Current: #{current_names.empty? ? "(empty)" : "\"#{current_names}\""}"
-  puts "  Fetched: \"#{fetched_names}\""
+  puts "  Current: #{current_names_str.empty? ? "(empty)" : "\"#{current_names_str}\""}"
+  puts "  Fetched: \"#{fetched_names_str}\""
 
   choice = Readline.readline("  [K]eep current / [U]se fetched / [C]ustom value? [K]: ", false)
   abort "\nCancelled." unless choice
@@ -63,17 +66,15 @@ def prompt_field_authors(current_authors, fetched_authors)
 
   case choice
   when "u"
-    fetched_authors.map { |name| { "name" => name, "aliases" => [] } }
+    fetched_authors.map { |name| find_or_create_author(db, name)["id"] }
   when "c"
     custom = Readline.readline("  Enter authors (comma-separated): ", false)
     abort "\nCancelled." unless custom
     custom.strip.split(",").map(&:strip).reject(&:empty?).map do |name|
-      # Preserve existing aliases if the author name matches
-      existing = (current_authors || []).find { |a| a["name"] == name }
-      existing || { "name" => name, "aliases" => [] }
+      find_or_create_author(db, name)["id"]
     end
   else
-    current_authors
+    current_ids
   end
 end
 
@@ -90,7 +91,7 @@ def prompt_field_identifiers(current_ids, fetched_isbn)
   puts "  Current: #{current_isbn_val.empty? ? "(empty)" : "\"#{current_isbn_val}\""}"
   puts "  Fetched: \"#{fetched_isbn}\""
 
-  choice = Readline.readline("  [K]eep current / [U]se fetched / [C]ustom value? [K]: ", false)
+  choice = Readline.readline("  [K]eep current / [U]se fetched / [C]ustom / [D]elete? [K]: ", false)
   abort "\nCancelled." unless choice
   choice = choice.strip.downcase
 
@@ -101,6 +102,8 @@ def prompt_field_identifiers(current_ids, fetched_isbn)
                custom = Readline.readline("  Enter ISBN: ", false)
                abort "\nCancelled." unless custom
                custom.strip
+             when "d"
+               ""
              else
                current_isbn_val
              end
@@ -212,7 +215,8 @@ def main
   puts "  Lev — Edit Book Metadata"
   puts "=" * 50
 
-  books = load_db
+  db = load_db
+  books = db["books"]
 
   if books.empty?
     puts "No books found. Run add_book.rb first."
@@ -220,8 +224,8 @@ def main
   end
 
   # Step 1: Display and select book
-  display_book_list(books)
-  index = prompt_selection(books)
+  display_book_list(books, db)
+  index = prompt_book_selection(books, db)
   book = books[index]
 
   puts ""
@@ -232,7 +236,8 @@ def main
   begin
     # Determine search strategy
     isbn = (book["identifiers"] || []).find { |id| id["type"] == "ISBN" }&.dig("value")
-    first_author = book.dig("authors", 0, "name")
+    author_names = resolve_author_names(db, book)
+    first_author = author_names.first
 
     search_query = if isbn && !isbn.empty?
                      isbn
@@ -245,14 +250,14 @@ def main
     results = goodreads_search(search_query)
 
     if results.any?
-      display_goodreads_results(results)
-      puts "\n  0. Skip refetch / edit manually"
-      input = Readline.readline("\nSelect a result (1-#{results.size}, or 0 to skip): ", false)
-      abort "\nCancelled." unless input
-      choice = input.strip.to_i
+      items = results.map { |r| "#{r[:title]} — #{r[:author]}" }
+      items << "Skip refetch / edit manually"
 
-      if choice >= 1 && choice <= results.size
-        fetched = scrape_goodreads_detail(results[choice - 1][:url])
+      puts ""
+      idx = interactive_select(items, prompt_label: "Select a result")
+
+      if idx && idx < results.size
+        fetched = scrape_goodreads_detail(results[idx][:url])
       else
         puts "Skipping refetch. You can edit fields manually."
       end
@@ -277,7 +282,7 @@ def main
   book["first_publishing_date"] = prompt_field("First publishing date", book["first_publishing_date"], fetched[:first_publishing_date])
   book["publisher"] = select_publisher(default: fetched[:publisher] || book["publisher"])
   book["identifiers"] = prompt_field_identifiers(book["identifiers"], fetched[:isbn])
-  book["authors"] = prompt_field_authors(book["authors"], fetched[:authors])
+  book["author_ids"] = prompt_field_authors(db, book, fetched[:authors])
   book["saga"] = prompt_field_saga(book["saga"], fetched[:saga_name], fetched[:saga_order])
 
   # Step 4: Cover
@@ -289,13 +294,13 @@ def main
   book["score"] = new_score if new_score
 
   # Step 6: Save
-  save_db(books)
+  save_db(db)
 
   puts ""
   puts "Book updated: \"#{book["title"]}\""
 
   # Step 7: Git auto-commit
-  git_auto_commit("Edit", book, include_covers: true)
+  git_auto_commit("Edit", book, db, include_covers: true)
 end
 
 # ---------------------------------------------------------------------------

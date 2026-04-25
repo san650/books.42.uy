@@ -579,7 +579,10 @@
 
   // --- Data ---
   const response = await fetch('db.json');
-  const allBooks = await response.json();
+  const db = await response.json();
+  const allBooks = db.books;
+  const authorById = new Map(db.authors.map(a => [a.id, a]));
+  const bookAuthorNames = (book) => (book.author_ids ?? []).map(id => authorById.get(id)?.name).filter(Boolean);
 
   // --- DOM refs ---
   const bookList = document.getElementById('book-list');
@@ -626,7 +629,7 @@
     book.subtitle ?? '',
     book.original_title ?? '',
     book.saga?.name ?? '',
-    ...(book.authors?.map(a => a.name) ?? [])
+    ...bookAuthorNames(book)
   ];
 
   const bookMatchesQuery = (book, query) => {
@@ -778,7 +781,7 @@
 
     // Author
     const authorEl = slot(frag, 'author');
-    const authors = book.authors?.map(a => a.name).join(', ');
+    const authors = bookAuthorNames(book).join(', ');
     if (authors) {
       authorEl.textContent = authors;
     } else {
@@ -884,7 +887,7 @@
       detailSaga.hidden = true;
     }
 
-    detailAuthor.textContent = book.authors?.map(a => a.name).join(', ') ?? '';
+    detailAuthor.textContent = bookAuthorNames(book).join(', ');
     detailCoverWrap.replaceChildren(createCoverEl(book, 'lg'));
 
     // Meta rows using <template>

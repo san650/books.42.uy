@@ -24,18 +24,6 @@ def search_openlibrary(query)
   data["docs"]
 end
 
-def display_openlibrary_results(docs)
-  return if docs.empty?
-
-  puts "\nResults:"
-  docs.each_with_index do |doc, i|
-    authors = (doc["author_name"] || []).join(", ")
-    year = doc["first_publish_year"]
-    title = doc["title"]
-    puts "  #{i + 1}. #{title} — #{authors} (#{year || '?'})"
-  end
-end
-
 def fetch_work_details(work_key)
   return nil unless work_key
 
@@ -83,7 +71,7 @@ def metadata_from_openlibrary(doc, title_query)
     original_title: "",
     first_publishing_date: doc["first_publish_year"].to_s,
     publish_dates: [],
-    authors: (doc["author_name"] || []).map { |name| { "name" => name, "aliases" => [] } },
+    author_names: doc["author_name"] || [],
     isbn: "",
     publisher: "",
     saga: nil,
@@ -183,12 +171,41 @@ end
 # Main flow
 # ---------------------------------------------------------------------------
 
+def select_search_result(results, label_block)
+  items = results.each_with_index.map { |r, i| label_block.call(r, i) }
+  items << "None of these — enter manually"
+
+  puts ""
+  idx = interactive_select(items, prompt_label: "Select a result")
+  return nil unless idx && idx < results.size
+
+  idx
+end
+
+# Match scraped author names against existing db authors.
+# Returns array of author_ids, creating new authors as needed.
+def resolve_author_ids(db, author_names, aliases_map: {})
+  author_names.map do |name|
+    existing = find_author_by_name(db, name)
+    if existing
+      puts "  [MATCH] #{name} -> existing author ##{existing["id"]}"
+      existing
+    else
+      aliases = aliases_map[name] || []
+      author = find_or_create_author(db, name, aliases: aliases)
+      puts "  [NEW]   #{name} -> author ##{author["id"]}"
+      author
+    end
+  end.map { |a| a["id"] }
+end
+
 def main
   puts "=" * 50
   puts "  Lev — Add a Book"
   puts "=" * 50
 
-  books = load_db
+  db = load_db
+  books = db["books"]
 
   # Step 1: Prompt for search query (or take from ARGV)
   search_query = ARGV.join(" ").strip
@@ -203,13 +220,10 @@ def main
   gr_results = goodreads_search(search_query)
 
   if gr_results.any?
-    display_goodreads_results(gr_results)
-    puts "\n  0. None of these — enter manually"
-    choice = prompt("Select a result (1-#{gr_results.size}, or 0)")
-    num = choice.to_i
+    idx = select_search_result(gr_results, ->(r, i) { "#{r[:title]} — #{r[:author]}" })
 
-    if num >= 1 && num <= gr_results.size
-      selected = gr_results[num - 1]
+    if idx
+      selected = gr_results[idx]
       detail = scrape_goodreads_detail(selected[:url])
 
       if detail
@@ -219,7 +233,7 @@ def main
           original_title: detail[:original_title] || "",
           first_publishing_date: detail[:first_publishing_date] || "",
           publish_dates: [],
-          authors: (detail[:authors] || [selected[:author]]).map { |name| { "name" => name, "aliases" => [] } },
+          author_names: detail[:authors] || [selected[:author]],
           contributors: detail[:contributors],
           isbn: detail[:isbn] || "",
           publisher: detail[:publisher] || "",
@@ -243,13 +257,14 @@ def main
     docs = search_openlibrary(search_query)
 
     if docs.any?
-      display_openlibrary_results(docs)
-      puts "\n  0. None of these — enter manually"
-      choice = prompt("Select a result (1-#{docs.size}, or 0)")
-      num = choice.to_i
+      idx = select_search_result(docs, ->(doc, i) {
+        authors = (doc["author_name"] || []).join(", ")
+        year = doc["first_publish_year"]
+        "#{doc["title"]} — #{authors} (#{year || "?"})"
+      })
 
-      if num >= 1 && num <= docs.size
-        metadata = metadata_from_openlibrary(docs[num - 1], search_query)
+      if idx
+        metadata = metadata_from_openlibrary(docs[idx], search_query)
       end
     else
       puts "\nNo results found on either service. You'll enter details manually."
@@ -263,7 +278,7 @@ def main
     original_title: "",
     first_publishing_date: "",
     publish_dates: [],
-    authors: [],
+    author_names: [],
     isbn: "",
     publisher: "",
     saga: nil,
@@ -273,7 +288,7 @@ def main
   # Step 4.5: Augment with Spanish Wikipedia if original title or ISBN is missing
   if metadata[:original_title].to_s.empty? || metadata[:isbn].to_s.empty?
     author_name = metadata[:contributors]&.find { |c| c[:role] == "Author" }&.dig(:name)
-    author_name ||= metadata[:authors].first&.dig("name")
+    author_name ||= metadata[:author_names].first
     wiki = search_wikipedia_es(metadata[:title], author_name)
     if wiki
       if metadata[:original_title].to_s.empty? && wiki[:original_title]
@@ -297,7 +312,8 @@ def main
   # Check for duplicate
   existing = books.find { |b| b["title"].downcase == metadata[:title].downcase }
   if existing
-    author_name = existing["authors"]&.first&.dig("name") || "Unknown"
+    names = resolve_author_names(db, existing)
+    author_name = names.first || "Unknown"
     puts "\n  Book already exists: \"#{existing["title"]}\" by #{author_name} (ID: #{existing["id"]})"
     puts "  To edit it, run:"
     puts "    ruby edit_book.rb"
@@ -313,7 +329,7 @@ def main
   pd_input = prompt("Publish dates (comma-separated)", default: pd_default)
   metadata[:publish_dates] = pd_input.to_s.split(",").map(&:strip).reject(&:empty?)
 
-  # Authors — select which contributors to keep
+  # Authors — select which contributors to keep, then resolve to author_ids
   if metadata[:contributors]&.any?
     puts "\nContributors found:"
     metadata[:contributors].each_with_index do |c, i|
@@ -328,35 +344,35 @@ def main
     input = prompt("Select authors to keep (e.g. 1,2)", default: default_selection)
     selected_nums = input.to_s.split(",").map { |s| s.strip.to_i }
       .select { |n| n >= 1 && n <= metadata[:contributors].size }
-    metadata[:authors] = selected_nums.map do |n|
-      { "name" => metadata[:contributors][n - 1][:name], "aliases" => [] }
-    end
-  elsif metadata[:authors].any?
+    metadata[:author_names] = selected_nums.map { |n| metadata[:contributors][n - 1][:name] }
+  elsif metadata[:author_names].any?
     puts "\nAuthors:"
-    metadata[:authors].each_with_index do |a, i|
-      puts "  #{i + 1}. #{a["name"]}"
+    metadata[:author_names].each_with_index do |name, i|
+      puts "  #{i + 1}. #{name}"
     end
-    input = prompt("Select authors to keep (e.g. 1,2)", default: (1..metadata[:authors].size).to_a.join(","))
+    input = prompt("Select authors to keep (e.g. 1,2)", default: (1..metadata[:author_names].size).to_a.join(","))
     selected_nums = input.to_s.split(",").map { |s| s.strip.to_i }
-      .select { |n| n >= 1 && n <= metadata[:authors].size }
-    metadata[:authors] = selected_nums.map { |n| metadata[:authors][n - 1] }
+      .select { |n| n >= 1 && n <= metadata[:author_names].size }
+    metadata[:author_names] = selected_nums.map { |n| metadata[:author_names][n - 1] }
   end
 
-  if metadata[:authors].empty?
+  if metadata[:author_names].empty?
     loop do
       name = prompt("Author name (blank to finish)", required: false)
       break if name.empty?
 
-      aliases_input = prompt("  Aliases for #{name} (comma-separated, blank for none)")
-      aliases = aliases_input.split(",").map(&:strip).reject(&:empty?)
-      metadata[:authors] << { "name" => name, "aliases" => aliases }
+      metadata[:author_names] << name
     end
   end
 
-  puts "  Warning: no authors entered." if metadata[:authors].empty?
+  puts "  Warning: no authors entered." if metadata[:author_names].empty?
 
-  # ISBN
-  metadata[:isbn] = prompt("ISBN", default: metadata[:isbn])
+  # Resolve author names to IDs (match existing or create new)
+  puts "\nMatching authors:"
+  author_ids = resolve_author_ids(db, metadata[:author_names])
+
+  # ISBN (clearable)
+  metadata[:isbn] = prompt("ISBN", default: metadata[:isbn], clearable: true)
 
   # Publisher
   metadata[:publisher] = select_publisher(default: metadata[:publisher])
@@ -415,7 +431,7 @@ def main
     "original_title" => metadata[:original_title].to_s,
     "first_publishing_date" => metadata[:first_publishing_date].to_s,
     "publish_dates" => metadata[:publish_dates],
-    "authors" => metadata[:authors],
+    "author_ids" => author_ids,
     "identifiers" => [],
     "covers" => covers,
     "publisher" => metadata[:publisher],
@@ -435,7 +451,7 @@ def main
   puts "  Title:       #{book["title"]}"
   puts "  Subtitle:    #{book["subtitle"]}" unless book["subtitle"].empty?
   puts "  Original:    #{book["original_title"]}" unless book["original_title"].empty?
-  puts "  Authors:     #{book["authors"].map { |a| a["name"] }.join(", ")}"
+  puts "  Authors:     #{resolve_author_names(db, book).join(", ")}"
   puts "  Published:   #{book["first_publishing_date"]}"
   puts "  ISBN:        #{metadata[:isbn]}" unless metadata[:isbn].to_s.empty?
   puts "  Publisher:   #{book["publisher"]}"
@@ -452,11 +468,11 @@ def main
 
   # Step 10: Save
   books << book
-  save_db(books)
+  save_db(db)
   puts "\nBook saved to db.json! (ID: #{book_id})"
 
   # Step 11: Git auto-commit
-  git_auto_commit("Add", book, include_covers: true)
+  git_auto_commit("Add", book, db, include_covers: true)
 end
 
 # ---------------------------------------------------------------------------

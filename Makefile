@@ -1,4 +1,4 @@
-.PHONY: server add edit review format
+.PHONY: server add edit review author format
 
 server:
 	python3 -m http.server 8000 -d docs
@@ -11,6 +11,9 @@ edit:
 
 review:
 	ruby scripts/add_review.rb
+
+author:
+	ruby scripts/edit_author.rb
 
 format:
 	ruby scripts/precommit.rb

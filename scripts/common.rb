@@ -8,6 +8,7 @@ require "uri"
 require "tempfile"
 require "fileutils"
 require "readline"
+require "io/console"
 
 ROOT_DIR = File.expand_path("..", __dir__)
 DB_PATH = File.join(ROOT_DIR, "docs", "db.json")
@@ -36,32 +37,31 @@ end
 def select_publisher(default: nil)
   publishers = load_publishers
 
-  puts "\nPublisher:"
-  publishers.each_with_index do |pub, i|
+  items = publishers.map do |pub|
     marker = (default && pub.downcase == default.to_s.downcase) ? " *" : ""
-    puts "  #{i + 1}. #{pub}#{marker}"
+    "#{pub}#{marker}"
   end
-  puts "  #{publishers.size + 1}. Other (enter custom)"
+  items << "Other (enter custom)"
 
-  label = default && !default.empty? ? "Select [#{default}]" : "Select"
-  input = Readline.readline("#{label}: ", false)
-  abort "\nCancelled." unless input
-  input = input.strip
+  puts "\nPublisher:"
+  # Pre-select the default publisher or "Other" at the end
+  default_idx = if default && !default.to_s.empty?
+                  publishers.index { |p| p.downcase == default.to_s.downcase } || items.size - 1
+                else
+                  0
+                end
 
-  return default if input.empty? && default && !default.empty?
-  return "" if input.empty? && (default.nil? || default.to_s.empty?)
+  idx = interactive_select(items, prompt_label: "Publisher", default: default_idx)
+  return "" unless idx
 
-  num = input.to_i
-  selected = if num >= 1 && num <= publishers.size
-               publishers[num - 1]
-             elsif num == publishers.size + 1
-               name = prompt("  Enter publisher name")
-               return "" if name.to_s.empty?
-               add_publisher(name)
-               name
-             else
-               input
-             end
+  if idx < publishers.size
+    selected = publishers[idx]
+  else
+    name = prompt("  Enter publisher name")
+    return "" if name.to_s.empty?
+    add_publisher(name)
+    return name
+  end
 
   add_publisher(selected) if selected && !selected.empty?
   selected
@@ -101,23 +101,32 @@ end
 # ---------------------------------------------------------------------------
 
 def load_db
-  return [] unless File.exist?(DB_PATH)
+  empty = { "authors" => [], "books" => [] }
+  return empty unless File.exist?(DB_PATH)
 
   data = File.read(DB_PATH, encoding: "UTF-8")
-  return [] if data.strip.empty?
+  return empty if data.strip.empty?
 
-  books = JSON.parse(data)
-  return [] unless books.is_a?(Array)
+  parsed = JSON.parse(data)
 
-  books
+  if parsed.is_a?(Hash) && parsed.key?("authors") && parsed.key?("books")
+    parsed
+  elsif parsed.is_a?(Array)
+    # Legacy flat-array format — wrap for compatibility
+    { "authors" => [], "books" => parsed }
+  else
+    empty
+  end
 rescue JSON::ParserError => e
   warn "Warning: could not parse db.json (#{e.message})."
-  []
+  empty
 end
 
-def save_db(books)
-  sorted = books.sort_by { |b| (b["title"] || "").unicode_normalize(:nfkd).downcase }
-  json = JSON.pretty_generate(sorted, indent: "  ")
+def save_db(db)
+  db["authors"].sort_by! { |a| (a["name"] || "").unicode_normalize(:nfkd).downcase }
+  db["books"].sort_by! { |b| (b["title"] || "").unicode_normalize(:nfkd).downcase }
+
+  json = JSON.pretty_generate(db, indent: "  ")
 
   FileUtils.mkdir_p(File.dirname(DB_PATH))
   tmp = Tempfile.new(["db", ".json"], File.dirname(DB_PATH))
@@ -148,15 +157,146 @@ def sanitize_title(title)
 end
 
 # ---------------------------------------------------------------------------
+# Author helpers
+# ---------------------------------------------------------------------------
+
+def find_author_by_name(db, name)
+  db["authors"].find { |a| a["name"].downcase == name.downcase }
+end
+
+def find_or_create_author(db, name, aliases: [])
+  existing = find_author_by_name(db, name)
+  return existing if existing
+
+  author = {
+    "id" => next_id(db["authors"]),
+    "name" => name,
+    "aliases" => aliases
+  }
+  db["authors"] << author
+  author
+end
+
+def resolve_author_names(db, book)
+  (book["author_ids"] || []).filter_map do |aid|
+    db["authors"].find { |a| a["id"] == aid }&.dig("name")
+  end
+end
+
+def author_book_count(db, author)
+  db["books"].count { |b| (b["author_ids"] || []).include?(author["id"]) }
+end
+
+# ---------------------------------------------------------------------------
+# Interactive list selector (arrow key navigation)
+# ---------------------------------------------------------------------------
+
+def interactive_select(items, prompt_label: "Select", default: 0)
+  return nil if items.empty?
+
+  selected = default.clamp(0, items.size - 1)
+  max_visible = [items.size, 20].min
+  offset = 0
+  rendered_lines = 0
+
+  render = lambda {
+    # Clear previously rendered lines
+    if rendered_lines > 0
+      print "\e[#{rendered_lines}A"
+      rendered_lines.times { print "\e[2K\n" }
+      print "\e[#{rendered_lines}A"
+    end
+
+    lines = 0
+
+    # Show scroll indicator if needed
+    if items.size > max_visible
+      pos = "#{selected + 1}/#{items.size}"
+      puts "\e[2K  \e[90m#{prompt_label} (#{pos})\e[0m"
+      lines += 1
+    end
+
+    max_visible.times do |i|
+      idx = offset + i
+      if idx < items.size
+        if idx == selected
+          puts "\e[2K  \e[33m>\e[0m \e[1m#{items[idx]}\e[0m"
+        else
+          puts "\e[2K    #{items[idx]}"
+        end
+      else
+        puts "\e[2K"
+      end
+      lines += 1
+    end
+
+    rendered_lines = lines
+  }
+
+  render.call
+
+  loop do
+    key = read_key
+    case key
+    when :up
+      if selected > 0
+        selected -= 1
+        offset = selected if selected < offset
+      end
+    when :down
+      if selected < items.size - 1
+        selected += 1
+        offset = selected - max_visible + 1 if selected >= offset + max_visible
+      end
+    when :enter
+      return selected
+    when :ctrl_c
+      puts ""
+      exit 130
+    else
+      next
+    end
+    render.call
+  end
+end
+
+def read_key
+  $stdin.raw do |io|
+    input = io.getc
+    if input == "\e"
+      # Stay in raw mode to read the rest of the escape sequence
+      if IO.select([io], nil, nil, 0.1)
+        input << (io.read_nonblock(2) rescue "")
+      end
+    end
+
+    case input
+    when "\e[A" then :up
+    when "\e[B" then :down
+    when "\e[C" then :right
+    when "\e[D" then :left
+    when "\r", "\n" then :enter
+    when "\u0003" then :ctrl_c
+    else :unknown
+    end
+  end
+end
+
+# ---------------------------------------------------------------------------
 # Prompt helpers
 # ---------------------------------------------------------------------------
 
-def prompt(label, default: nil, required: false)
+def prompt(label, default: nil, required: false, clearable: false)
   loop do
     suffix = default && !default.to_s.empty? ? " [#{default}]" : ""
-    input = Readline.readline("#{label}#{suffix}: ", false)
+    hint = clearable && default && !default.to_s.empty? ? " (- to clear)" : ""
+    input = Readline.readline("#{label}#{suffix}#{hint}: ", false)
     abort "\nCancelled." unless input
     input = input.strip
+
+    # Clearable: typing "-" explicitly clears the value
+    return "" if clearable && input == "-"
+
     input = default.to_s if input.empty? && default && !default.to_s.empty?
     return input unless input.to_s.empty? && required
 
@@ -173,42 +313,37 @@ end
 # Display helpers
 # ---------------------------------------------------------------------------
 
-def display_book_list(books)
+def format_book_line(book, index, db)
+  marker = book["review"].to_s.strip.empty? ? " " : "*"
+  names = resolve_author_names(db, book)
+  author = names.first || "Unknown"
+  score  = book["score"] || "?"
+
+  parts = [book["title"]]
+  subtitle = book["subtitle"].to_s
+  parts << subtitle unless subtitle.empty?
+  parts << author
+  label = parts.join(" — ")
+
+  saga = book["saga"]
+  saga_tag = saga ? " [#{saga["name"]} ##{saga["order"]}]" : ""
+
+  format("[%s] %2d. %s (%s/10)%s", marker, index + 1, label, score, saga_tag)
+end
+
+def display_book_list(books, db)
   puts ""
   books.each_with_index do |book, i|
-    marker = book["review"].to_s.strip.empty? ? " " : "*"
-    author = book.dig("authors", 0, "name") || "Unknown"
-    score  = book["score"] || "?"
-
-    parts = [book["title"]]
-    subtitle = book["subtitle"].to_s
-    parts << subtitle unless subtitle.empty?
-    parts << author
-    label = parts.join(" — ")
-
-    saga = book["saga"]
-    saga_tag = saga ? " [#{saga["name"]} ##{saga["order"]}]" : ""
-
-    printf "  [%s] %2d. %s (%s/10)%s\n", marker, i + 1, label, score, saga_tag
+    puts "  #{format_book_line(book, i, db)}"
   end
   puts ""
 end
 
-def prompt_selection(books)
-  loop do
-    input = Readline.readline("Select a book (1-#{books.length}): ", false)
-    if input.nil?
-      puts ""
-      exit 130
-    end
-    input = input.strip
-    next if input.empty?
-
-    num = input.to_i
-    return num - 1 if num >= 1 && num <= books.length
-
-    puts "Invalid selection. Please enter a number between 1 and #{books.length}."
-  end
+def prompt_book_selection(books, db)
+  items = books.each_with_index.map { |book, i| format_book_line(book, i, db) }
+  idx = interactive_select(items, prompt_label: "Select a book")
+  abort "\nCancelled." unless idx
+  idx
 end
 
 def prompt_score(current_score)
@@ -356,15 +491,6 @@ def goodreads_search(query)
 rescue StandardError => e
   puts "  Goodreads search failed: #{e.message}"
   []
-end
-
-def display_goodreads_results(results)
-  return if results.empty?
-
-  puts "\nResults:"
-  results.each_with_index do |r, i|
-    puts "  #{i + 1}. #{r[:title]} — #{r[:author]}"
-  end
 end
 
 # ---------------------------------------------------------------------------
@@ -752,8 +878,9 @@ end
 # Git auto-commit
 # ---------------------------------------------------------------------------
 
-def git_auto_commit(action, book, include_covers: false)
-  author = book["authors"]&.first&.dig("name") || "Unknown"
+def git_auto_commit(action, book, db, include_covers: false)
+  names = resolve_author_names(db, book)
+  author = names.first || "Unknown"
   system("git", "add", DB_PATH)
   system("git", "add", "#{COVERS_DIR}/") if include_covers
   system("git", "commit", "-m", "#{action} #{book["title"]} - #{author} book")

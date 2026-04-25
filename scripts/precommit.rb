@@ -182,17 +182,35 @@ def main
   end
 
   raw = File.read(DB_PATH, encoding: "UTF-8")
-  books = JSON.parse(raw)
+  data = JSON.parse(raw)
 
-  unless books.is_a?(Array)
-    warn "db.json is not an array, skipping format."
+  unless data.is_a?(Hash) && data.key?("authors") && data.key?("books")
+    warn "db.json is not in expected format (expected { authors, books })."
     exit 1
   end
 
-  # Sort by ID
-  books.sort_by! { |b| b["id"].to_i }
+  authors = data["authors"]
+  books = data["books"]
 
-  # Reassign sequential IDs if there are gaps or duplicates
+  # Sort authors by ID, reassign sequential IDs
+  authors.sort_by! { |a| a["id"].to_i }
+  id_remap = {}
+  authors.each_with_index do |author, i|
+    old_id = author["id"]
+    new_id = i + 1
+    id_remap[old_id] = new_id if old_id != new_id
+    author["id"] = new_id
+  end
+
+  # Update author_ids in books if any IDs were remapped
+  unless id_remap.empty?
+    books.each do |book|
+      book["author_ids"] = (book["author_ids"] || []).map { |aid| id_remap[aid] || aid }
+    end
+  end
+
+  # Sort books by ID, reassign sequential IDs
+  books.sort_by! { |b| b["id"].to_i }
   books.each_with_index do |book, i|
     book["id"] = i + 1
   end
@@ -201,7 +219,7 @@ def main
   format_isbns!(books)
 
   # Pretty-print with 2-space indent
-  formatted = JSON.pretty_generate(books)
+  formatted = JSON.pretty_generate(data)
 
   # Validate the output is valid JSON
   JSON.parse(formatted)
@@ -216,7 +234,7 @@ def main
   # Re-stage db.json so the formatted version is what gets committed
   system("git", "add", DB_PATH)
 
-  puts "precommit.rb: db.json formatted (#{books.size} books, sorted by ID)"
+  puts "precommit.rb: db.json formatted (#{authors.size} authors, #{books.size} books)"
 rescue JSON::ParserError => e
   warn "precommit.rb: db.json is not valid JSON — #{e.message}"
   exit 1

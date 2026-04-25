@@ -11,9 +11,10 @@ make server   # python3 -m http.server 8000 -d docs
 make add      # ruby scripts/add_book.rb — search Goodreads, scrape metadata, download cover
 make edit     # ruby scripts/edit_book.rb — refetch metadata from Goodreads, field-by-field update
 make review   # ruby scripts/add_review.rb — select book, edit review via $EDITOR
+make author   # ruby scripts/edit_author.rb — manage authors: edit name, aliases, merge, delete
 ```
 
-All three scripts auto-commit to git after changes: "Add/Edit/Review &lt;title&gt; - &lt;author&gt; book".
+All scripts auto-commit to git after changes: "Add/Edit/Review &lt;title&gt; - &lt;author&gt; book".
 
 ## Design System
 
@@ -106,13 +107,21 @@ Global `keydown` listener with `selectedIndex` tracking. All keybindings are sup
 ## File Conventions
 
 - `docs/` contains all files served by GitHub Pages: `index.html`, `404.html`, `CNAME`, `assets/`, `covers/`, `db.json`.
-- `docs/db.json`: pretty-printed, books sorted alphabetically by `title`. Saga books sort by saga name then order within the group.
+- `docs/db.json`: pretty-printed object with `authors` (sorted by name) and `books` (sorted by title). Saga books sort by saga name then order within the group.
 - Cover files: `docs/covers/<id>-<sanitized-title>.<ext>` (lowercase, hyphens, no spaces).
 - Ruby scripts live in `scripts/` and share common functionality via `common.rb` (loaded with `require_relative`).
 
 ## Data Schema
 
-Each book in `db.json` has: `id`, `title`, `subtitle` (optional), `original_title`, `first_publishing_date`, `publish_dates[]`, `authors[]` (with `name` and `aliases`), `identifiers[]` (with `type` and `value`), `covers[]` (with `file` and `default`), `publisher`, `score` (1-10, optional — null shows as "–"), `review`, `saga` (optional — `{ "name": "...", "order": 1 }` or null).
+`db.json` is an object with two top-level collections:
+
+```json
+{ "authors": [...], "books": [...] }
+```
+
+**Authors** have: `id`, `name`, `aliases[]`. Sorted alphabetically by name.
+
+**Books** have: `id`, `title`, `subtitle` (optional), `original_title`, `first_publishing_date`, `publish_dates[]`, `author_ids[]` (references to author IDs), `identifiers[]` (with `type` and `value`), `covers[]` (with `file` and `default`), `publisher`, `score` (1-10, optional — null shows as "–"), `review`, `saga` (optional — `{ "name": "...", "order": 1 }` or null). Sorted alphabetically by title.
 
 ### Saga Grouping (Option A — Group Header)
 
