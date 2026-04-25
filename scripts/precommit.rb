@@ -11,7 +11,7 @@ require "json"
 require "tempfile"
 require "fileutils"
 
-DB_PATH = File.join(File.expand_path("..", __dir__), "public", "db.json")
+DB_PATH = File.join(File.expand_path("..", __dir__), "docs", "db.json")
 
 def main
   unless File.exist?(DB_PATH)

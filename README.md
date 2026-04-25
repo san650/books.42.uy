@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/assets/logo.svg" alt="Lev" width="80" height="80">
+  <img src="docs/assets/logo.svg" alt="Lev" width="80" height="80">
 </p>
 
 <h1 align="center">Lev</h1>
@@ -15,34 +15,11 @@
 
 ---
 
-Lev is a fast, opinionated, single-page book tracker. No React. No Next.js. No npm. Just vanilla HTML, CSS, and JavaScript — served as a static site, backed by a single JSON file.
-
-Track your reading with scores, reviews, saga grouping, cover art, and fuzzy search. Manage your library from the command line with Ruby scripts that scrape metadata from Goodreads and auto-commit every change.
+Lev is a fast, opinionated, single-page book tracker. Track your reading with scores, reviews, saga grouping, cover art, and fuzzy search. Manage your library from the command line with Ruby scripts and auto-commit every change.
 
 ## Screenshots
 
-<table>
-  <tr>
-    <td>
-      <img src="docs/screenshot-list.png" alt="Book list with covers, scores, and saga grouping" width="500">
-      <br><em>Full library view with saga groups and scores</em>
-    </td>
-    <td>
-      <img src="docs/screenshot-detail.png" alt="Book detail modal showing cover, metadata, score, and review" width="500">
-      <br><em>Book detail with cover, metadata, and review</em>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <img src="docs/screenshot-search.png" alt="Fuzzy search filtering books by author" width="500">
-      <br><em>Fuzzy search across titles, authors, and sagas</em>
-    </td>
-    <td>
-      <img src="docs/screenshot-mobile.png" alt="Mobile view of the book list" width="250">
-      <br><em>Mobile-first responsive layout</em>
-    </td>
-  </tr>
-</table>
+<img src="resources/screenshot-list.png" alt="Book list with covers, scores, and saga grouping" width="500">
 
 ## Features
 
@@ -88,7 +65,7 @@ Open [http://localhost:8000](http://localhost:8000) in your browser.
 ### Project structure
 
 ```
-public/             # Static site served by GitHub Pages
+docs/               # Static site served by GitHub Pages
   index.html        # Single-page app (HTML + CSS + JS, all inline)
   db.json           # Book database (pretty-printed JSON)
   covers/           # Locally hosted cover images
@@ -100,7 +77,7 @@ scripts/            # Ruby CLI tools
   edit_book.rb      # Edit book metadata
   add_review.rb     # Add or edit a review
   common.rb         # Shared utilities
-docs/               # Screenshots and documentation assets
+resources/          # Screenshots and documentation assets
 ```
 
 ## Deployment
@@ -113,9 +90,9 @@ Lev is deployed as a static site on **GitHub Pages**. No CI/CD pipeline needed �
 
 2. **Go to Settings > Pages** in your GitHub repo.
 
-3. **Set the source** to deploy from the `main` branch, and set the directory to `/public`.
+3. **Set the source** to deploy from the `main` branch, and set the directory to `/docs`.
 
-4. **Custom domain** (optional): add a `CNAME` file inside `public/` with your domain name, then configure your DNS:
+4. **Custom domain** (optional): add a `CNAME` file inside `docs/` with your domain name, then configure your DNS:
    ```
    # For apex domain (example.com)
    A     @    185.199.108.153
@@ -143,7 +120,7 @@ Contributions are welcome! Here's how to get started:
    ```
 
 3. **Make your changes.** A few things to keep in mind:
-   - The entire app lives in `public/index.html` — HTML, CSS, and JS are all inline.
+   - The entire app lives in `docs/index.html` — HTML, CSS, and JS are all inline.
    - CSS uses a three-layer architecture: `reset`, `utility`, `component`. Prefer utility classes.
    - Stick to the five-color palette and four-font system defined in `:root`.
    - No external libraries. No npm. No build tools.
