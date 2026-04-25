@@ -8,8 +8,9 @@ require "uri"
 require "tempfile"
 require "fileutils"
 
-DB_PATH = File.join(__dir__, "public", "db.json")
-COVERS_DIR = File.join(__dir__, "public", "covers")
+ROOT_DIR = File.expand_path("..", __dir__)
+DB_PATH = File.join(ROOT_DIR, "public", "db.json")
+COVERS_DIR = File.join(ROOT_DIR, "public", "covers")
 HTTP_TIMEOUT = 10 # seconds
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " \

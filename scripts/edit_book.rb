@@ -230,7 +230,7 @@ def prompt_cover_update(book, fetched_cover_url)
     # Remove old covers for this book (different filenames)
     old_covers = (book["covers"] || []).map { |c| c["file"] }
     old_covers.each do |old_file|
-      old_path = File.join(__dir__, old_file)
+      old_path = File.join(ROOT_DIR, old_file)
       if File.exist?(old_path) && old_path != dest
         File.delete(old_path)
         puts "  Removed old cover: #{old_file}"

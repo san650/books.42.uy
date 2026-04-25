@@ -8,9 +8,9 @@ Single-page book tracking app at books.42.uy. No frameworks — vanilla HTML/CSS
 
 ```bash
 make server   # python3 -m http.server 8000 -d public
-make add      # ruby add_book.rb — search Goodreads, scrape metadata, download cover
-make edit     # ruby edit_book.rb — refetch metadata from Goodreads, field-by-field update
-make review   # ruby add_review.rb — select book, edit review via $EDITOR
+make add      # ruby scripts/add_book.rb — search Goodreads, scrape metadata, download cover
+make edit     # ruby scripts/edit_book.rb — refetch metadata from Goodreads, field-by-field update
+make review   # ruby scripts/add_review.rb — select book, edit review via $EDITOR
 ```
 
 All three scripts auto-commit to git after changes: "Add/Edit/Review &lt;title&gt; - &lt;author&gt; book".
@@ -108,7 +108,7 @@ Global `keydown` listener with `selectedIndex` tracking. All keybindings are sup
 - `public/` contains all files served by GitHub Pages: `index.html`, `404.html`, `CNAME`, `assets/`, `covers/`, `db.json`.
 - `public/db.json`: pretty-printed, books sorted alphabetically by `title`. Saga books sort by saga name then order within the group.
 - Cover files: `public/covers/<id>-<sanitized-title>.<ext>` (lowercase, hyphens, no spaces).
-- Ruby scripts share common functionality via `common.rb` (loaded with `require_relative`).
+- Ruby scripts live in `scripts/` and share common functionality via `common.rb` (loaded with `require_relative`).
 
 ## Data Schema
 
