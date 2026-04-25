@@ -695,5 +695,39 @@
     "saga": null,
     "score": 10,
     "review": ""
+  },
+  {
+    "id": 21,
+    "title": "Las arañas de Marte",
+    "subtitle": "",
+    "original_title": "Las arañas de Marte",
+    "first_publishing_date": "2011",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Gustavo Espinosa",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "9789974687844"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/21-las-ara-as-de-marte.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "HUM",
+    "saga": null,
+    "score": 7,
+    "review": ""
   }
 ]
