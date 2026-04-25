@@ -177,13 +177,8 @@ def select_publisher(default: nil)
   end
   puts "  #{PUBLISHERS.size + 1}. Other (enter custom)"
 
-  if default && !default.empty?
-    print "Select [#{default}]: "
-  else
-    print "Select: "
-  end
-
-  input = $stdin.gets
+  label = default && !default.empty? ? "Select [#{default}]" : "Select"
+  input = Readline.readline("#{label}: ", false)
   abort "\nCancelled." unless input
   input = input.strip
 

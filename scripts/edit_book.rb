@@ -27,25 +27,17 @@ def prompt_field(field_name, current, fetched)
   puts "#{field_name}:"
   puts "  Current: #{current_str.empty? ? "(empty)" : "\"#{current_str}\""}"
   puts "  Fetched: \"#{fetched_str}\""
-  print "  [K]eep current / [U]se fetched / [C]ustom value? [K]: "
 
-  input = $stdin.gets
-  if input.nil?
-    puts ""
-    exit 130
-  end
-  choice = input.strip.downcase
+  choice = Readline.readline("  [K]eep current / [U]se fetched / [C]ustom value? [K]: ", false)
+  abort "\nCancelled." unless choice
+  choice = choice.strip.downcase
 
   case choice
   when "u"
     fetched_str
   when "c"
-    print "  Enter value: "
-    custom = $stdin.gets
-    if custom.nil?
-      puts ""
-      exit 130
-    end
+    custom = Readline.readline("  Enter value: ", false)
+    abort "\nCancelled." unless custom
     custom.strip
   else
     current_str
@@ -64,25 +56,17 @@ def prompt_field_authors(current_authors, fetched_authors)
   puts "Authors:"
   puts "  Current: #{current_names.empty? ? "(empty)" : "\"#{current_names}\""}"
   puts "  Fetched: \"#{fetched_names}\""
-  print "  [K]eep current / [U]se fetched / [C]ustom value? [K]: "
 
-  input = $stdin.gets
-  if input.nil?
-    puts ""
-    exit 130
-  end
-  choice = input.strip.downcase
+  choice = Readline.readline("  [K]eep current / [U]se fetched / [C]ustom value? [K]: ", false)
+  abort "\nCancelled." unless choice
+  choice = choice.strip.downcase
 
   case choice
   when "u"
     fetched_authors.map { |name| { "name" => name, "aliases" => [] } }
   when "c"
-    print "  Enter authors (comma-separated): "
-    custom = $stdin.gets
-    if custom.nil?
-      puts ""
-      exit 130
-    end
+    custom = Readline.readline("  Enter authors (comma-separated): ", false)
+    abort "\nCancelled." unless custom
     custom.strip.split(",").map(&:strip).reject(&:empty?).map do |name|
       # Preserve existing aliases if the author name matches
       existing = (current_authors || []).find { |a| a["name"] == name }
@@ -105,25 +89,17 @@ def prompt_field_identifiers(current_ids, fetched_isbn)
   puts "ISBN:"
   puts "  Current: #{current_isbn_val.empty? ? "(empty)" : "\"#{current_isbn_val}\""}"
   puts "  Fetched: \"#{fetched_isbn}\""
-  print "  [K]eep current / [U]se fetched / [C]ustom value? [K]: "
 
-  input = $stdin.gets
-  if input.nil?
-    puts ""
-    exit 130
-  end
-  choice = input.strip.downcase
+  choice = Readline.readline("  [K]eep current / [U]se fetched / [C]ustom value? [K]: ", false)
+  abort "\nCancelled." unless choice
+  choice = choice.strip.downcase
 
   new_isbn = case choice
              when "u"
                fetched_isbn
              when "c"
-               print "  Enter ISBN: "
-               custom = $stdin.gets
-               if custom.nil?
-                 puts ""
-                 exit 130
-               end
+               custom = Readline.readline("  Enter ISBN: ", false)
+               abort "\nCancelled." unless custom
                custom.strip
              else
                current_isbn_val
@@ -160,14 +136,10 @@ def prompt_field_saga(current_saga, fetched_saga_name, fetched_saga_order)
   puts "Saga:"
   puts "  Current: #{current_display}"
   puts "  Fetched: #{fetched_display}"
-  print "  [K]eep current / [U]se fetched / [C]ustom value? [K]: "
 
-  input = $stdin.gets
-  if input.nil?
-    puts ""
-    exit 130
-  end
-  choice = input.strip.downcase
+  choice = Readline.readline("  [K]eep current / [U]se fetched / [C]ustom value? [K]: ", false)
+  abort "\nCancelled." unless choice
+  choice = choice.strip.downcase
 
   case choice
   when "u"
@@ -179,21 +151,13 @@ def prompt_field_saga(current_saga, fetched_saga_name, fetched_saga_order)
       { "name" => fetched_name, "order" => order }
     end
   when "c"
-    print "  Saga name (blank to remove): "
-    name_input = $stdin.gets
-    if name_input.nil?
-      puts ""
-      exit 130
-    end
+    name_input = Readline.readline("  Saga name (blank to remove): ", false)
+    abort "\nCancelled." unless name_input
     name_input = name_input.strip
     return nil if name_input.empty?
 
-    print "  Order in saga: "
-    order_input = $stdin.gets
-    if order_input.nil?
-      puts ""
-      exit 130
-    end
+    order_input = Readline.readline("  Order in saga: ", false)
+    abort "\nCancelled." unless order_input
     order = order_input.strip.to_i
     order = 1 if order < 1
     { "name" => name_input, "order" => order }
@@ -210,13 +174,8 @@ def prompt_cover_update(book, fetched_cover_url)
   return unless fetched_cover_url && !fetched_cover_url.empty?
 
   puts ""
-  print "Cover: Download new cover from Goodreads? [y/N]: "
-  input = $stdin.gets
-  if input.nil?
-    puts ""
-    exit 130
-  end
-  return unless input.strip.downcase == "y"
+  input = Readline.readline("Cover: Download new cover from Goodreads? [y/N]: ", false)
+  return unless input&.strip&.downcase == "y"
 
   FileUtils.mkdir_p(COVERS_DIR)
   book_id = book["id"]
@@ -288,12 +247,8 @@ def main
     if results.any?
       display_goodreads_results(results)
       puts "\n  0. Skip refetch / edit manually"
-      print "\nSelect a result (1-#{results.size}, or 0 to skip): "
-      input = $stdin.gets
-      if input.nil?
-        puts ""
-        exit 130
-      end
+      input = Readline.readline("\nSelect a result (1-#{results.size}, or 0 to skip): ", false)
+      abort "\nCancelled." unless input
       choice = input.strip.to_i
 
       if choice >= 1 && choice <= results.size

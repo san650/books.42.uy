@@ -7,6 +7,7 @@ require "net/http"
 require "uri"
 require "tempfile"
 require "fileutils"
+require "readline"
 
 ROOT_DIR = File.expand_path("..", __dir__)
 DB_PATH = File.join(ROOT_DIR, "docs", "db.json")
@@ -116,8 +117,7 @@ end
 def prompt(label, default: nil, required: false)
   loop do
     suffix = default && !default.to_s.empty? ? " [#{default}]" : ""
-    print "#{label}#{suffix}: "
-    input = $stdin.gets
+    input = Readline.readline("#{label}#{suffix}: ", false)
     abort "\nCancelled." unless input
     input = input.strip
     input = default.to_s if input.empty? && default && !default.to_s.empty?
@@ -159,8 +159,7 @@ end
 
 def prompt_selection(books)
   loop do
-    print "Select a book (1-#{books.length}): "
-    input = $stdin.gets
+    input = Readline.readline("Select a book (1-#{books.length}): ", false)
     if input.nil?
       puts ""
       exit 130
@@ -176,8 +175,7 @@ def prompt_selection(books)
 end
 
 def prompt_score(current_score)
-  print "Update score? (current: #{current_score || "none"}) [enter to skip]: "
-  input = $stdin.gets
+  input = Readline.readline("Update score? (current: #{current_score || "none"}) [enter to skip]: ", false)
   if input.nil?
     puts ""
     exit 130
