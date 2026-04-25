@@ -143,5 +143,39 @@
     },
     "score": 6,
     "review": "Típica novela de ciencia ficción de la década de los 70. Entretenida pero no envejeción bien. El final es abrupto ya que es parte de una saga."
+  },
+  {
+    "id": 5,
+    "title": "Lotería solar",
+    "subtitle": "",
+    "original_title": "Solar Lottery",
+    "first_publishing_date": "1955",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Philip K. Dick",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-450-7630-9"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/5-loter-a-solar.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Minotauro",
+    "saga": null,
+    "score": 7,
+    "review": ""
   }
 ]
