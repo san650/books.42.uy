@@ -594,5 +594,39 @@
     "saga": null,
     "score": 5,
     "review": ""
+  },
+  {
+    "id": 18,
+    "title": "Ready Player One",
+    "subtitle": "",
+    "original_title": "Ready Player One",
+    "first_publishing_date": "2011",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Ernest Cline",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "9878466649179"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/18-ready-player-one.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Nova",
+    "saga": null,
+    "score": 4,
+    "review": ""
   }
 ]
