@@ -394,7 +394,16 @@
     align-items: center;
     justify-content: center;
   }
-  .book-score-high { background: var(--c-orange); color: var(--c-white); }
+  .book-score-1  { background: hsl(40, 15%, 88%); color: var(--c-deep); }
+  .book-score-2  { background: hsl(40, 25%, 85%); color: var(--c-deep); }
+  .book-score-3  { background: hsl(40, 35%, 82%); color: var(--c-deep); }
+  .book-score-4  { background: hsl(40, 45%, 78%); color: var(--c-deep); }
+  .book-score-5  { background: hsl(40, 55%, 75%); color: var(--c-deep); }
+  .book-score-6  { background: hsl(40, 65%, 72%); color: var(--c-deep); }
+  .book-score-7  { background: hsl(40, 75%, 68%); color: var(--c-deep); }
+  .book-score-8  { background: hsl(40, 85%, 64%); color: var(--c-deep); }
+  .book-score-9  { background: hsl(40, 92%, 60%); color: var(--c-deep); }
+  .book-score-10 { background: hsl(40, 100%, 58%); color: var(--c-deep); }
 
   .cover-ph { display: flex; align-items: center; justify-content: center; }
   .cover-initials { font-family: var(--f-brand); font-weight: 700; color: rgba(255,255,255,0.85); font-size: 14px; letter-spacing: 0.05em; }
@@ -781,7 +790,7 @@
     const hasScore = book.score != null;
     scoreEl.textContent = hasScore ? book.score : '\u2013';
     if (hasScore) scoreEl.value = book.score;
-    if (hasScore && book.score >= 9) scoreEl.classList.add('book-score-high');
+    if (hasScore) scoreEl.classList.add(`book-score-${book.score}`);
 
     return frag;
   };
