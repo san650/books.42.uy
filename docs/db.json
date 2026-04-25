@@ -526,5 +526,39 @@
     "saga": null,
     "score": 8,
     "review": ""
+  },
+  {
+    "id": 16,
+    "title": "Carlota podrida",
+    "subtitle": "",
+    "original_title": "Carlota podrida",
+    "first_publishing_date": "2009",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Gustavo Espinosa",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "9789974699120"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/16-carlota-podrida.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "HUM",
+    "saga": null,
+    "score": 8,
+    "review": ""
   }
 ]
