@@ -492,5 +492,39 @@
     "saga": null,
     "score": 3,
     "review": ""
+  },
+  {
+    "id": 15,
+    "title": "La hija de Homero",
+    "subtitle": "",
+    "original_title": "Homer's Daughter",
+    "first_publishing_date": "1955",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Robert Graves",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-350-0503-6"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/15-la-hija-de-homero.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Sudamericana",
+    "saga": null,
+    "score": 8,
+    "review": ""
   }
 ]
