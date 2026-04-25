@@ -628,5 +628,39 @@
     "saga": null,
     "score": 4,
     "review": ""
+  },
+  {
+    "id": 19,
+    "title": "Anna Karénina",
+    "subtitle": "",
+    "original_title": "Анна Каренина",
+    "first_publishing_date": "1878",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Leo Tolstoy",
+        "aliases": [
+          "Lev Tolstói"
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-9105-193-0"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/19-anna-kar-nina.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Penguin Random House",
+    "saga": null,
+    "score": 10,
+    "review": ""
   }
 ]
