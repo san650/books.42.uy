@@ -908,5 +908,42 @@
     },
     "score": 6,
     "review": ""
+  },
+  {
+    "id": 27,
+    "title": "Rechicero",
+    "subtitle": "Una novela del Mundodisco",
+    "original_title": "Sourcery",
+    "first_publishing_date": "1988",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Terry Pratchett",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-9793-126-7"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/27-rechicero.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "DeBolsillo",
+    "saga": {
+      "name": "Mundodisco",
+      "order": 5
+    },
+    "score": 6,
+    "review": ""
   }
 ]
