@@ -38,7 +38,9 @@
   <header id="detail-header" class="bg-deep px-5 py-5 flex items-start justify-between">
     <div>
       <h2 id="detail-title" class="font-title text-xl color-white leading-tight"></h2>
-      <p id="detail-original" class="font-body text-sm color-white-50 italic mt-1"></p>
+      <p id="detail-subtitle" class="font-body text-sm color-white-65 italic mt-1" hidden></p>
+      <p id="detail-original" class="font-body text-sm color-white-50 mt-1" hidden></p>
+      <p id="detail-saga" class="detail-saga-badge font-mono text-xs fw-700 color-yellow bg-purple uppercase tracking-sm" hidden></p>
     </div>
     <button id="detail-close" class="bg-purple color-white font-mono text-sm fw-700 py-1 px-3 uppercase tracking-wide close-btn">Esc</button>
   </header>
@@ -67,16 +69,28 @@
   <article class="book-row">
     <div class="book-cover-col" data-slot="cover"></div>
     <div class="flex-1 flex flex-col justify-center px-4 py-3 min-w-0">
-      <h3 class="font-title text-lg leading-tight color-deep" data-slot="title">
+      <h3 class="row-title font-title text-lg leading-tight color-deep" data-slot="title">
         <time class="font-mono text-xs fw-700 color-mid" data-slot="year"></time>
       </h3>
-      <p class="font-body text-xs color-mid" style="opacity:0.6;margin-top:1px" data-slot="original" hidden></p>
-      <p class="font-body text-sm color-mid mt-1" data-slot="author"></p>
+      <p class="row-subtitle font-body text-xs color-mid italic" data-slot="subtitle" hidden></p>
+      <p class="row-original font-body text-xs color-mid" data-slot="original" hidden></p>
+      <p class="row-author font-body text-sm color-mid mt-1" data-slot="author"></p>
     </div>
     <div class="score-col-w shrink-0 flex items-center justify-center">
       <data class="book-score" data-slot="score"></data>
     </div>
   </article>
+</template>
+
+<template id="tpl-saga-header">
+  <div class="saga-header bg-purple px-5 py-2 flex items-center gap-2">
+    <span class="font-brand text-xs fw-700 color-yellow uppercase tracking-wide" data-slot="saga-name"></span>
+    <span class="font-mono text-xs fw-700 color-white-50" data-slot="saga-count"></span>
+  </div>
+</template>
+
+<template id="tpl-saga-end">
+  <div class="saga-end"></div>
 </template>
 
 <template id="tpl-meta-row">
@@ -231,6 +245,7 @@
   .color-white { color: var(--c-white); }
   .color-mid { color: var(--c-purple); }
   .color-white-50 { color: rgba(255,255,255,0.5); }
+  .color-white-65 { color: rgba(255,255,255,0.65); }
 
   .font-brand { font-family: var(--f-brand); }
   .font-title { font-family: var(--f-title); }
@@ -376,6 +391,60 @@
   .ph-3 { background: linear-gradient(160deg, var(--c-yellow), var(--c-orange)); }
   .ph-4 { background: linear-gradient(160deg, var(--c-purple), var(--c-orange)); }
 
+  /* Text overflow — fixed row height */
+  .row-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .row-subtitle {
+    opacity: 0.7;
+    margin-top: 1px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .row-original {
+    opacity: 0.5;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .row-author {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Saga group header */
+  .saga-header {
+    /* styled via utility classes in template */
+  }
+
+  /* Saga end separator */
+  .saga-end {
+    height: 3px;
+    background: var(--c-yellow);
+  }
+
+  /* Saga group — cover col tint */
+  .saga-group .book-row .book-cover-col {
+    background: rgba(69,46,90,0.1);
+  }
+  .saga-group .book-row:nth-child(even) .book-cover-col {
+    background: rgba(69,46,90,0.14);
+  }
+
+  /* Detail saga badge */
+  .detail-saga-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    margin-top: 0.5rem;
+  }
+
   .detail-grid { display: grid; grid-template-columns: 120px 1fr; }
   .detail-score-number { width: 120px; flex-shrink: 0; padding: var(--sp-3) 0; }
 
@@ -446,9 +515,7 @@
 
   // --- Data ---
   const response = await fetch('db.json');
-  const allBooks = (await response.json()).sort((a, b) =>
-    a.title.localeCompare(b.title, 'es')
-  );
+  const allBooks = await response.json();
 
   // --- DOM refs ---
   const bookList = document.getElementById('book-list');
@@ -457,7 +524,9 @@
   const detailDialog = document.getElementById('book-detail');
   const helpDialog = document.getElementById('help');
   const detailTitle = document.getElementById('detail-title');
+  const detailSubtitle = document.getElementById('detail-subtitle');
   const detailOriginal = document.getElementById('detail-original');
+  const detailSaga = document.getElementById('detail-saga');
   const detailAuthor = document.getElementById('detail-author');
   const detailCoverWrap = document.getElementById('detail-cover-wrap');
   const detailMetaRows = document.getElementById('detail-meta-rows');
@@ -466,7 +535,7 @@
   const detailReview = document.getElementById('detail-review');
 
   // --- State ---
-  let displayedBooks = [...allBooks];
+  let displayedBooks = [];
   let selectedIndex = -1;
 
   // --- Fuzzy search (trigram) ---
@@ -489,14 +558,54 @@
   const bookMatchesQuery = (book, query) => {
     const fields = [
       book.title,
+      book.subtitle ?? '',
       book.original_title ?? '',
+      book.saga?.name ?? '',
       ...(book.authors?.map(a => a.name) ?? [])
     ];
     return fields.some(f => trigramScore(query, f) >= 0.3);
   };
 
+  // --- Sorting: saga groups + alphabetical ---
+  // Books with a saga group together. Groups sort by saga name among standalone books.
+  // Within a group, books sort by saga.order. Standalone books sort by title.
+  const sortBooks = (books) => {
+    // Separate saga books and standalone books
+    const sagas = new Map(); // saga name -> [books]
+    const standalone = [];
+
+    for (const book of books) {
+      if (book.saga?.name) {
+        const key = book.saga.name;
+        if (!sagas.has(key)) sagas.set(key, []);
+        sagas.get(key).push(book);
+      } else {
+        standalone.push(book);
+      }
+    }
+
+    // Sort standalone alphabetically
+    standalone.sort((a, b) => a.title.localeCompare(b.title, 'es'));
+
+    // Sort each saga group by order
+    for (const group of sagas.values()) {
+      group.sort((a, b) => (a.saga.order ?? 0) - (b.saga.order ?? 0));
+    }
+
+    // Merge: saga groups sort by their name among standalone titles
+    // Build a unified list of { type: 'standalone', book } | { type: 'saga', name, books }
+    const entries = [];
+    for (const book of standalone) entries.push({ type: 'standalone', sortKey: book.title, book });
+    for (const [name, books] of sagas) entries.push({ type: 'saga', sortKey: name, name, books });
+    entries.sort((a, b) => a.sortKey.localeCompare(b.sortKey, 'es'));
+
+    return entries;
+  };
+
   // --- Templates ---
   const bookRowTpl = document.getElementById('tpl-book-row');
+  const sagaHeaderTpl = document.getElementById('tpl-saga-header');
+  const sagaEndTpl = document.getElementById('tpl-saga-end');
   const metaRowTpl = document.getElementById('tpl-meta-row');
 
   const slot = (root, name) => root.querySelector(`[data-slot="${name}"]`);
@@ -526,83 +635,143 @@
     return ph;
   };
 
-  // --- Render book list using <template> ---
+  // --- Build a single book row from template ---
+  const buildBookRow = (book, flatIndex) => {
+    const frag = bookRowTpl.content.cloneNode(true);
+    const article = frag.querySelector('article');
+    article.dataset.index = flatIndex;
+
+    slot(frag, 'cover').appendChild(createCoverEl(book));
+
+    const titleEl = slot(frag, 'title');
+    titleEl.prepend(book.title + ' ');
+    const yearEl = slot(frag, 'year');
+    if (book.first_publishing_date) {
+      yearEl.textContent = book.first_publishing_date;
+    } else {
+      yearEl.remove();
+    }
+
+    // Subtitle
+    const subtitleEl = slot(frag, 'subtitle');
+    if (book.subtitle) {
+      subtitleEl.textContent = book.subtitle;
+      subtitleEl.hidden = false;
+    } else {
+      subtitleEl.remove();
+    }
+
+    // Original title
+    const origEl = slot(frag, 'original');
+    if (book.original_title && book.original_title !== book.title) {
+      origEl.textContent = book.original_title;
+      origEl.hidden = false;
+    } else {
+      origEl.remove();
+    }
+
+    // Author
+    const authorEl = slot(frag, 'author');
+    const authors = book.authors?.map(a => a.name).join(', ');
+    if (authors) {
+      authorEl.textContent = authors;
+    } else {
+      authorEl.remove();
+    }
+
+    // Score
+    const scoreEl = slot(frag, 'score');
+    const hasScore = book.score != null;
+    scoreEl.textContent = hasScore ? book.score : '\u2013';
+    if (hasScore) scoreEl.value = book.score;
+    if (hasScore && book.score >= 9) scoreEl.classList.add('book-score-high');
+
+    return frag;
+  };
+
+  // --- Render book list with saga grouping ---
   const renderBooks = (books) => {
-    displayedBooks = books;
     selectedIndex = -1;
     bookList.replaceChildren();
 
-    if (books.length === 0) {
+    const entries = sortBooks(books);
+
+    // Build flat list for keyboard nav and dialog lookup
+    const flat = [];
+    for (const entry of entries) {
+      if (entry.type === 'standalone') flat.push(entry.book);
+      else for (const b of entry.books) flat.push(b);
+    }
+    displayedBooks = flat;
+
+    if (flat.length === 0) {
       const p = document.createElement('p');
       p.className = 'font-body text-sm color-mid p-5';
       p.textContent = 'No books found.';
       bookList.appendChild(p);
     } else {
-      for (const [i, book] of books.entries()) {
-        const frag = bookRowTpl.content.cloneNode(true);
-        const article = frag.querySelector('article');
-        article.dataset.index = i;
-
-        // Cover
-        slot(frag, 'cover').appendChild(createCoverEl(book));
-
-        // Title + year
-        const titleEl = slot(frag, 'title');
-        titleEl.prepend(book.title + ' ');
-        const yearEl = slot(frag, 'year');
-        if (book.first_publishing_date) {
-          yearEl.textContent = book.first_publishing_date;
+      let flatIndex = 0;
+      for (const entry of entries) {
+        if (entry.type === 'standalone') {
+          bookList.appendChild(buildBookRow(entry.book, flatIndex));
+          flatIndex++;
         } else {
-          yearEl.remove();
+          // Saga header
+          const headerFrag = sagaHeaderTpl.content.cloneNode(true);
+          slot(headerFrag, 'saga-name').textContent = entry.name;
+          slot(headerFrag, 'saga-count').textContent = `${entry.books.length} ${entry.books.length === 1 ? 'libro' : 'libros'}`;
+          bookList.appendChild(headerFrag);
+
+          // Saga group wrapper
+          const group = document.createElement('div');
+          group.className = 'saga-group';
+          for (const book of entry.books) {
+            group.appendChild(buildBookRow(book, flatIndex));
+            flatIndex++;
+          }
+          bookList.appendChild(group);
+
+          // Saga end separator
+          bookList.appendChild(sagaEndTpl.content.cloneNode(true));
         }
-
-        // Original title
-        const origEl = slot(frag, 'original');
-        if (book.original_title && book.original_title !== book.title) {
-          origEl.textContent = book.original_title;
-          origEl.hidden = false;
-        } else {
-          origEl.remove();
-        }
-
-        // Author
-        const authorEl = slot(frag, 'author');
-        const authors = book.authors?.map(a => a.name).join(', ');
-        if (authors) {
-          authorEl.textContent = authors;
-        } else {
-          authorEl.remove();
-        }
-
-        // Score
-        const scoreEl = slot(frag, 'score');
-        const hasScore = book.score != null;
-        scoreEl.textContent = hasScore ? book.score : '\u2013';
-        if (hasScore) scoreEl.value = book.score;
-        if (hasScore && book.score >= 9) scoreEl.classList.add('book-score-high');
-
-        bookList.appendChild(frag);
       }
     }
 
-    bookCount.textContent = `${books.length} ${books.length === 1 ? 'libro' : 'libros'}`;
+    bookCount.textContent = `${flat.length} ${flat.length === 1 ? 'libro' : 'libros'}`;
   };
 
   // --- Search ---
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim();
-    renderBooks(query ? allBooks.filter(b => bookMatchesQuery(b, query)) : [...allBooks]);
+    renderBooks(query ? allBooks.filter(b => bookMatchesQuery(b, query)) : allBooks);
   });
 
   // --- Dialog: populate and show ---
   const openBookDetail = (book) => {
     detailTitle.textContent = book.title;
 
+    // Subtitle
+    if (book.subtitle) {
+      detailSubtitle.textContent = book.subtitle;
+      detailSubtitle.hidden = false;
+    } else {
+      detailSubtitle.hidden = true;
+    }
+
+    // Original title
     if (book.original_title && book.original_title !== book.title) {
       detailOriginal.textContent = book.original_title;
-      detailOriginal.classList.remove('hidden');
+      detailOriginal.hidden = false;
     } else {
-      detailOriginal.classList.add('hidden');
+      detailOriginal.hidden = true;
+    }
+
+    // Saga badge
+    if (book.saga?.name) {
+      detailSaga.textContent = `${book.saga.name} #${book.saga.order}`;
+      detailSaga.hidden = false;
+    } else {
+      detailSaga.hidden = true;
     }
 
     detailAuthor.textContent = book.authors?.map(a => a.name).join(', ') ?? '';
@@ -615,6 +784,7 @@
     if (book.publisher) rows.push({ label: 'Publisher', value: book.publisher, mono: false });
     for (const id of (book.identifiers ?? [])) rows.push({ label: id.type, value: id.value, mono: true });
     if (book.publish_dates?.length > 1) rows.push({ label: 'Editions', value: book.publish_dates.join(', '), mono: false });
+    if (book.saga?.name) rows.push({ label: 'Saga', value: `${book.saga.name} #${book.saga.order}`, mono: true });
 
     for (const r of rows) {
       const frag = metaRowTpl.content.cloneNode(true);
@@ -721,7 +891,7 @@
   });
 
   // --- Init ---
-  renderBooks([...allBooks]);
+  renderBooks(allBooks);
 </script>
 </body>
 </html>

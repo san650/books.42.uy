@@ -107,13 +107,21 @@ Global `keydown` listener with `selectedIndex` tracking. All keybindings are sup
 
 ## File Conventions
 
-- `db.json`: pretty-printed, books sorted alphabetically by `title`.
+- `db.json`: pretty-printed, books sorted alphabetically by `title`. Saga books sort by saga name then order within the group.
 - Cover files: `covers/<id>-<sanitized-title>.<ext>` (lowercase, hyphens, no spaces).
 - Ruby scripts are self-contained single files with no gem dependencies beyond stdlib.
 
 ## Data Schema
 
-Each book in `db.json` has: `id`, `title`, `original_title`, `first_publishing_date`, `publish_dates[]`, `authors[]` (with `name` and `aliases`), `identifiers[]` (with `type` and `value`), `covers[]` (with `file` and `default`), `publisher`, `score` (1-10, optional — null shows as "–"), `review`.
+Each book in `db.json` has: `id`, `title`, `subtitle` (optional), `original_title`, `first_publishing_date`, `publish_dates[]`, `authors[]` (with `name` and `aliases`), `identifiers[]` (with `type` and `value`), `covers[]` (with `file` and `default`), `publisher`, `score` (1-10, optional — null shows as "–"), `review`, `saga` (optional — `{ "name": "...", "order": 1 }` or null).
+
+### Saga Grouping (Option A — Group Header)
+
+Books in a saga are grouped together under a colored header row (purple bg, brand font, yellow text). Within a group, books sort by `saga.order`. A yellow 3px separator marks the end of each saga group. Standalone books (no saga) sort alphabetically by title around the saga groups. Saga groups sort by saga name among the standalone books.
+
+### Text Overflow
+
+Book rows have fixed height. Title and subtitle each allow max 2 lines with ellipsis (`-webkit-line-clamp: 2`). Original title and author are single-line with `text-overflow: ellipsis`.
 
 ## Deployment
 

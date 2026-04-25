@@ -38,7 +38,17 @@ def display_book_list(books)
     marker = book["review"].to_s.strip.empty? ? " " : "*"
     author = book.dig("authors", 0, "name") || "Unknown"
     score  = book["score"] || "?"
-    printf "  [%s] %2d. %s — %s (%s/10)\n", marker, i + 1, book["title"], author, score
+
+    parts = [book["title"]]
+    subtitle = book["subtitle"].to_s
+    parts << subtitle unless subtitle.empty?
+    parts << author
+    label = parts.join(" — ")
+
+    saga = book["saga"]
+    saga_tag = saga ? " [#{saga["name"]} ##{saga["order"]}]" : ""
+
+    printf "  [%s] %2d. %s (%s/10)%s\n", marker, i + 1, label, score, saga_tag
   end
   puts ""
 end

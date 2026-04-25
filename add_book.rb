@@ -451,6 +451,7 @@ def main
   puts "-" * 50
 
   metadata[:title] = prompt("Title", default: metadata[:title], required: true)
+  metadata[:subtitle] = prompt("Subtitle (press enter to skip)")
   metadata[:original_title] = prompt("Original title", default: metadata[:original_title])
   metadata[:first_publishing_date] = prompt("First publishing date", default: metadata[:first_publishing_date])
 
@@ -491,6 +492,21 @@ def main
   # Publisher
   metadata[:publisher] = select_publisher(default: metadata[:publisher])
 
+  # Saga
+  saga_name = prompt("Book saga/series name (press enter to skip)")
+  metadata[:saga] = nil
+  unless saga_name.empty?
+    loop do
+      order_input = prompt("Order in saga (number)", required: true)
+      order = order_input.to_i
+      if order >= 1
+        metadata[:saga] = { "name" => saga_name, "order" => order }
+        break
+      end
+      puts "  Please enter a positive number."
+    end
+  end
+
   # Score
   score = prompt_score
 
@@ -508,6 +524,7 @@ def main
   book = {
     "id" => book_id,
     "title" => metadata[:title],
+    "subtitle" => metadata[:subtitle],
     "original_title" => metadata[:original_title],
     "first_publishing_date" => metadata[:first_publishing_date],
     "publish_dates" => metadata[:publish_dates],
@@ -515,6 +532,7 @@ def main
     "identifiers" => [],
     "covers" => covers,
     "publisher" => metadata[:publisher],
+    "saga" => metadata[:saga],
     "score" => score,
     "review" => ""
   }
@@ -528,12 +546,14 @@ def main
   puts "  Book Summary"
   puts "=" * 50
   puts "  Title:       #{book["title"]}"
+  puts "  Subtitle:    #{book["subtitle"]}" unless book["subtitle"].empty?
   puts "  Original:    #{book["original_title"]}" unless book["original_title"].empty?
   puts "  Authors:     #{book["authors"].map { |a| a["name"] }.join(", ")}"
   puts "  Published:   #{book["first_publishing_date"]}"
   puts "  ISBN:        #{metadata[:isbn]}" unless metadata[:isbn].empty?
   puts "  Publisher:   #{book["publisher"]}"
   puts "  Score:       #{book["score"]}/10"
+  puts "  Saga:        #{metadata[:saga]["name"]} ##{metadata[:saga]["order"]}" if metadata[:saga]
   puts "  Cover:       #{cover_path || "none"}"
   puts "  ID:          #{book_id}"
   puts ""
