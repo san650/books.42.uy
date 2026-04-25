@@ -560,5 +560,39 @@
     "saga": null,
     "score": 8,
     "review": ""
+  },
+  {
+    "id": 17,
+    "title": "La borra del café",
+    "subtitle": "",
+    "original_title": "La borra del café",
+    "first_publishing_date": "2000",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Mario Benedetti",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-950-071-820-2"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/17-la-borra-del-caf.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Sudamericana",
+    "saga": null,
+    "score": 5,
+    "review": ""
   }
 ]
