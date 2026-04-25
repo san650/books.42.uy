@@ -729,5 +729,39 @@
     "saga": null,
     "score": 7,
     "review": ""
+  },
+  {
+    "id": 22,
+    "title": "180",
+    "subtitle": "",
+    "original_title": "180",
+    "first_publishing_date": "2008",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Carlos Rehermann",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "9789974687424"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/22-180.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "HUM",
+    "saga": null,
+    "score": 8,
+    "review": ""
   }
 ]
