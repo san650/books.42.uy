@@ -837,5 +837,39 @@
     },
     "score": 6,
     "review": ""
+  },
+  {
+    "id": 25,
+    "title": "Cita con Rama",
+    "subtitle": "",
+    "original_title": "Rendezvous with Rama",
+    "first_publishing_date": "1973",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Arthur C. Clarke",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "9500404974"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/25-cita-con-rama.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Emecé",
+    "saga": null,
+    "score": 7,
+    "review": ""
   }
 ]
