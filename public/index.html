@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -748,7 +748,7 @@
           // Saga header
           const headerFrag = sagaHeaderTpl.content.cloneNode(true);
           slot(headerFrag, 'saga-name').textContent = entry.name;
-          slot(headerFrag, 'saga-count').textContent = `${entry.books.length} ${entry.books.length === 1 ? 'libro' : 'libros'}`;
+          slot(headerFrag, 'saga-count').textContent = `${entry.books.length} ${entry.books.length === 1 ? 'book' : 'books'}`;
           bookList.appendChild(headerFrag);
 
           // Saga group wrapper
@@ -766,7 +766,7 @@
       }
     }
 
-    bookCount.textContent = `${flat.length} ${flat.length === 1 ? 'libro' : 'libros'}`;
+    bookCount.textContent = `${flat.length} ${flat.length === 1 ? 'book' : 'books'}`;
   };
 
   // --- Search ---
