@@ -177,5 +177,42 @@
     "saga": null,
     "score": 7,
     "review": ""
+  },
+  {
+    "id": 6,
+    "title": "El Sueño del Águila",
+    "subtitle": "Boudica, Reina Guerrera de los Celtas",
+    "original_title": "Dreaming the Eagle",
+    "first_publishing_date": "2003",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Manda Scott",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-9876280037"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/6-el-sue-o-del-guila.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Edhasa",
+    "saga": {
+      "name": "Boudica, La Reina Guerrera",
+      "order": 1
+    },
+    "score": 8,
+    "review": ""
   }
 ]
