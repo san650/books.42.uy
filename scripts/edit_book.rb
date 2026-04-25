@@ -275,7 +275,7 @@ def main
   book["subtitle"] = prompt_field("Subtitle", book["subtitle"], fetched[:subtitle])
   book["original_title"] = prompt_field("Original title", book["original_title"], fetched[:original_title])
   book["first_publishing_date"] = prompt_field("First publishing date", book["first_publishing_date"], fetched[:first_publishing_date])
-  book["publisher"] = prompt_field("Publisher", book["publisher"], fetched[:publisher])
+  book["publisher"] = select_publisher(default: fetched[:publisher] || book["publisher"])
   book["identifiers"] = prompt_field_identifiers(book["identifiers"], fetched[:isbn])
   book["authors"] = prompt_field_authors(book["authors"], fetched[:authors])
   book["saga"] = prompt_field_saga(book["saga"], fetched[:saga_name], fetched[:saga_order])

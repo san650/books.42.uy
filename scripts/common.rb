@@ -17,18 +17,55 @@ HTTP_TIMEOUT = 10 # seconds
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " \
              "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
 
-PUBLISHERS = [
-  "Planeta",
-  "Alfaguara",
-  "Sudamericana",
-  "Anagrama",
-  "Tusquets",
-  "Seix Barral",
-  "Salamandra",
-  "DeBolsillo",
-  "Penguin Random House",
-  "Galaxia Gutenberg"
-].freeze
+PUBLISHERS_PATH = File.join(ROOT_DIR, "publishers.txt")
+
+def load_publishers
+  return [] unless File.exist?(PUBLISHERS_PATH)
+
+  File.readlines(PUBLISHERS_PATH, chomp: true).reject(&:empty?).sort
+end
+
+def add_publisher(name)
+  publishers = load_publishers
+  return if publishers.any? { |p| p.downcase == name.downcase }
+
+  publishers << name
+  File.write(PUBLISHERS_PATH, publishers.sort.join("\n") + "\n")
+end
+
+def select_publisher(default: nil)
+  publishers = load_publishers
+
+  puts "\nPublisher:"
+  publishers.each_with_index do |pub, i|
+    marker = (default && pub.downcase == default.to_s.downcase) ? " *" : ""
+    puts "  #{i + 1}. #{pub}#{marker}"
+  end
+  puts "  #{publishers.size + 1}. Other (enter custom)"
+
+  label = default && !default.empty? ? "Select [#{default}]" : "Select"
+  input = Readline.readline("#{label}: ", false)
+  abort "\nCancelled." unless input
+  input = input.strip
+
+  return default if input.empty? && default && !default.empty?
+
+  num = input.to_i
+  selected = if num >= 1 && num <= publishers.size
+               publishers[num - 1]
+             elsif num == publishers.size + 1
+               name = prompt("  Enter publisher name", required: true)
+               add_publisher(name)
+               name
+             elsif input.empty?
+               default && !default.empty? ? default : prompt("  Enter publisher name", required: true)
+             else
+               input
+             end
+
+  add_publisher(selected) if selected && !selected.empty?
+  selected
+end
 
 # ---------------------------------------------------------------------------
 # Text helpers

@@ -166,37 +166,6 @@ def download_cover(cover_url, isbn, book_id, title)
 end
 
 # ---------------------------------------------------------------------------
-# Publisher selection
-# ---------------------------------------------------------------------------
-
-def select_publisher(default: nil)
-  puts "\nPublisher:"
-  PUBLISHERS.each_with_index do |pub, i|
-    marker = (default && pub.downcase == default.to_s.downcase) ? " *" : ""
-    puts "  #{i + 1}. #{pub}#{marker}"
-  end
-  puts "  #{PUBLISHERS.size + 1}. Other (enter custom)"
-
-  label = default && !default.empty? ? "Select [#{default}]" : "Select"
-  input = Readline.readline("#{label}: ", false)
-  abort "\nCancelled." unless input
-  input = input.strip
-
-  return default if input.empty? && default && !default.empty?
-
-  num = input.to_i
-  if num >= 1 && num <= PUBLISHERS.size
-    PUBLISHERS[num - 1]
-  elsif num == PUBLISHERS.size + 1
-    prompt("  Enter publisher name", required: true)
-  elsif input.empty?
-    default && !default.empty? ? default : prompt("  Enter publisher name", required: true)
-  else
-    input
-  end
-end
-
-# ---------------------------------------------------------------------------
 # Score prompt (required — loops until valid)
 # ---------------------------------------------------------------------------
 
