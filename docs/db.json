@@ -390,5 +390,39 @@
     "saga": null,
     "score": 6,
     "review": ""
+  },
+  {
+    "id": 12,
+    "title": "La naranja mecánica",
+    "subtitle": "",
+    "original_title": "A Clockwork Orange",
+    "first_publishing_date": "1962",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Anthony Burgess",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "9789505470877"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/12-la-naranja-mec-nica.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Minotauro",
+    "saga": null,
+    "score": 8,
+    "review": ""
   }
 ]
