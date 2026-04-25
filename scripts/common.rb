@@ -49,16 +49,16 @@ def select_publisher(default: nil)
   input = input.strip
 
   return default if input.empty? && default && !default.empty?
+  return "" if input.empty? && (default.nil? || default.to_s.empty?)
 
   num = input.to_i
   selected = if num >= 1 && num <= publishers.size
                publishers[num - 1]
              elsif num == publishers.size + 1
-               name = prompt("  Enter publisher name", required: true)
+               name = prompt("  Enter publisher name")
+               return "" if name.to_s.empty?
                add_publisher(name)
                name
-             elsif input.empty?
-               default && !default.empty? ? default : prompt("  Enter publisher name", required: true)
              else
                input
              end
