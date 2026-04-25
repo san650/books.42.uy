@@ -424,5 +424,39 @@
     "saga": null,
     "score": 8,
     "review": ""
+  },
+  {
+    "id": 13,
+    "title": "Todo termina aquí",
+    "subtitle": "",
+    "original_title": "Todo termina aquí",
+    "first_publishing_date": "2016",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Gustavo Espinosa",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "9789974720381"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/13-todo-termina-aqu.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "HUM",
+    "saga": null,
+    "score": 7,
+    "review": ""
   }
 ]
