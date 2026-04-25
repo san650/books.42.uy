@@ -322,5 +322,39 @@
     },
     "score": 8,
     "review": ""
+  },
+  {
+    "id": 10,
+    "title": "Entrevista sobre el siglo XXI",
+    "subtitle": "Al cuidado de Antonio Polito",
+    "original_title": "Intervista sul nuovo secolo",
+    "first_publishing_date": "1999",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Antonio Polito",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-8432-517-8"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/10-entrevista-sobre-el-siglo-xxi.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "DeBolsillo",
+    "saga": null,
+    "score": 5,
+    "review": ""
   }
 ]
