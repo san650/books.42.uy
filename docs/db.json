@@ -209,8 +209,42 @@
     ],
     "publisher": "Edhasa",
     "saga": {
-      "name": "Boudica, La Reina Guerrera",
+      "name": "Boudica, Reina Guerrera de los Celtas",
       "order": 1
+    },
+    "score": 8,
+    "review": ""
+  },
+  {
+    "id": 7,
+    "title": "El Sueño Del Toro Rojo",
+    "subtitle": "Boudica, Reina Guerrera de los Celtas",
+    "original_title": "Dreaming the Bull",
+    "first_publishing_date": "2004",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Manda Scott",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+
+    ],
+    "covers": [
+      {
+        "file": "covers/7-el-sue-o-del-toro-rojo.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Edhasa",
+    "saga": {
+      "name": "Boudica, Reina Guerrera de los Celtas",
+      "order": 2
     },
     "score": 8,
     "review": ""
