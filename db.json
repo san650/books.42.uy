@@ -69,5 +69,42 @@
     "saga": null,
     "score": 6,
     "review": ""
+  },
+  {
+    "id": 3,
+    "title": "El nacimiento de un héroe",
+    "subtitle": "",
+    "original_title": "Shediao Yingxiong Zhuan 1",
+    "first_publishing_date": "1959",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Jin Yong",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-18107-83-2"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/3-el-nacimiento-de-un-h-roe.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Salamandra",
+    "saga": {
+      "name": "La leyenda de los héroes cóndor",
+      "order": 1
+    },
+    "score": 8,
+    "review": ""
   }
 ]
