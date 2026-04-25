@@ -945,5 +945,42 @@
     },
     "score": 6,
     "review": ""
+  },
+  {
+    "id": 28,
+    "title": "Hombres de armas",
+    "subtitle": "Una novela de Mundodisco",
+    "original_title": "Men at Arms",
+    "first_publishing_date": "1993",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Terry Pratchett",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-987-566-157-8"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/28-hombres-de-armas.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "DeBolsillo",
+    "saga": {
+      "name": "Mundodisco",
+      "order": 15
+    },
+    "score": 8,
+    "review": ""
   }
 ]
