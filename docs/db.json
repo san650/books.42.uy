@@ -871,5 +871,42 @@
     "saga": null,
     "score": 7,
     "review": ""
+  },
+  {
+    "id": 26,
+    "title": "El color de la magia",
+    "subtitle": "Una novela del Mundodisco",
+    "original_title": "The Colour of Magic",
+    "first_publishing_date": "1983",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Terry Pratchett",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-9759-679-4"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/26-el-color-de-la-magia.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "DeBolsillo",
+    "saga": {
+      "name": "Mundodisco",
+      "order": 1
+    },
+    "score": 6,
+    "review": ""
   }
 ]
