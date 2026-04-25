@@ -393,6 +393,8 @@
   .book-score-high { background: var(--c-orange); color: var(--c-white); }
 
   .cover-ph { display: flex; align-items: center; justify-content: center; }
+  .cover-initials { font-family: var(--f-brand); font-weight: 700; color: rgba(255,255,255,0.85); font-size: 14px; letter-spacing: 0.05em; }
+  .cover-initials-lg { font-size: 28px; }
   .ph-0 { background: linear-gradient(160deg, var(--c-orange), var(--c-yellow)); }
   .ph-1 { background: linear-gradient(160deg, var(--c-purple), var(--c-deep)); }
   .ph-2 { background: linear-gradient(160deg, var(--c-deep), var(--c-orange)); }
@@ -642,6 +644,25 @@
   // --- Cover helpers ---
   const gradientClass = (id) => `ph-${id % 5}`;
 
+  const coverInitials = (book) => {
+    const title = book.title ?? '';
+    const letters = title.replace(/[^a-zA-Z\u00C0-\u024F]/g, '');
+    return letters.slice(0, 2).toUpperCase();
+  };
+
+  const buildPlaceholder = (book, cls) => {
+    const ph = document.createElement('div');
+    ph.className = `${cls} cover-ph ${gradientClass(book.id)}`;
+    const initials = coverInitials(book);
+    if (initials) {
+      const span = document.createElement('span');
+      span.className = `cover-initials ${cls === 'cover-lg' ? 'cover-initials-lg' : ''}`;
+      span.textContent = initials;
+      ph.appendChild(span);
+    }
+    return ph;
+  };
+
   const createCoverEl = (book, size = 'sm') => {
     const cls = size === 'sm' ? 'cover-sm' : 'cover-lg';
     const defaultCover = book.covers?.find(c => c.default);
@@ -651,17 +672,11 @@
       img.src = defaultCover.file;
       img.alt = '';
       img.className = `${cls} object-cover`;
-      img.onerror = () => {
-        const ph = document.createElement('div');
-        ph.className = `${cls} cover-ph ${gradientClass(book.id)}`;
-        img.replaceWith(ph);
-      };
+      img.onerror = () => img.replaceWith(buildPlaceholder(book, cls));
       return img;
     }
 
-    const ph = document.createElement('div');
-    ph.className = `${cls} cover-ph ${gradientClass(book.id)}`;
-    return ph;
+    return buildPlaceholder(book, cls);
   };
 
   // --- Build a single book row from template ---
