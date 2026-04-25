@@ -269,23 +269,108 @@ def display_goodreads_results(results)
   end
 end
 
-def scrape_goodreads_detail(url)
-  puts "\nFetching Goodreads book page..."
-  response = http_get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
+def scrape_goodreads_detail_from_next_data(html)
+  next_data_match = html.match(/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/m)
+  return nil unless next_data_match
 
-  unless response&.code == "200"
-    puts "  Could not fetch book page (HTTP #{response&.code})."
-    return nil
-  end
+  next_data = JSON.parse(next_data_match[1])
+  apollo = next_data.dig("props", "pageProps", "apolloState")
+  return nil unless apollo
 
-  html = response.body
+  book_obj = apollo.values.find { |v| v["__typename"] == "Book" }
+  work_obj = apollo.values.find { |v| v["__typename"] == "Work" }
+  return nil unless book_obj
+
   detail = {}
 
   # --- Title ---
-  # Look for the main title in various patterns
+  raw_title = book_obj["titleComplete"] || book_obj["title"] || ""
+  if raw_title.include?(":")
+    parts = raw_title.split(":", 2)
+    detail[:title] = parts[0].strip
+    detail[:subtitle] = parts[1].strip
+  else
+    detail[:title] = raw_title.strip
+  end
+
+  # --- Cover image ---
+  detail[:cover_url] = book_obj["imageUrl"] if book_obj["imageUrl"]
+
+  # --- Authors (only role=Author) ---
+  authors = []
+  primary = book_obj["primaryContributorEdge"]
+  if primary && primary["role"] == "Author"
+    ref = primary.dig("node", "__ref")
+    contributor = apollo[ref] if ref
+    authors << contributor["name"] if contributor&.dig("name")
+  end
+  (book_obj["secondaryContributorEdges"] || []).each do |edge|
+    next unless edge["role"] == "Author"
+    ref = edge.dig("node", "__ref")
+    contributor = apollo[ref] if ref
+    authors << contributor["name"] if contributor&.dig("name")
+  end
+  detail[:authors] = authors unless authors.empty?
+
+  # --- Series/Saga ---
+  series_list = book_obj["bookSeries"] || []
+  series_list.each do |series_entry|
+    # Series entries may be inline or contain refs
+    series_ref = series_entry.dig("series", "__ref")
+    series_obj = series_ref ? apollo[series_ref] : series_entry["series"]
+    if series_obj && series_obj["title"]
+      detail[:saga_name] = series_obj["title"].strip
+      # userPosition is the book's position in the series (e.g. "1", "2")
+      detail[:saga_order] = (series_entry["userPosition"] || "1").to_i
+      detail[:saga_order] = 1 if detail[:saga_order] < 1
+      break
+    end
+  end
+
+  # --- Original title from Work ---
+  if work_obj
+    orig = work_obj.dig("details", "originalTitle")
+    detail[:original_title] = orig.strip if orig && !orig.strip.empty?
+  end
+
+  # --- Publication year from Work timestamp ---
+  if work_obj
+    pub_time = work_obj.dig("details", "publicationTime")
+    if pub_time
+      detail[:first_publishing_date] = Time.at(pub_time / 1000).year.to_s
+    end
+  end
+
+  # Fallback: "First published" text in HTML for the year
+  if detail[:first_publishing_date].nil? || detail[:first_publishing_date].to_s.empty?
+    first_pub_match = html.match(/First published.*?(\d{4})/)
+    detail[:first_publishing_date] = first_pub_match[1] if first_pub_match
+  end
+
+  # --- ISBN from JSON-LD ---
+  begin
+    ld_match = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/m)
+    if ld_match
+      ld_json = JSON.parse(ld_match[1])
+      isbn_val = ld_json["isbn"]
+      detail[:isbn] = isbn_val if isbn_val && !isbn_val.to_s.empty?
+    end
+  rescue JSON::ParserError
+    # ignore malformed JSON-LD
+  end
+
+  detail
+rescue JSON::ParserError => e
+  puts "  __NEXT_DATA__ JSON parse error: #{e.message}"
+  nil
+end
+
+def scrape_goodreads_detail_from_html(html)
+  detail = {}
+
+  # --- Title ---
   if html =~ /<h1[^>]*data-testid="bookTitle"[^>]*>(.*?)<\/h1>/m
     raw_title = decode_html(strip_tags($1)).strip
-    # Split title:subtitle on colon
     if raw_title.include?(":")
       parts = raw_title.split(":", 2)
       detail[:title] = parts[0].strip
@@ -314,7 +399,6 @@ def scrape_goodreads_detail(url)
   end
 
   # --- Series/Saga ---
-  # Look for series info like "(The Lord of the Rings #1)"
   if html =~ /\(([^)]+?)\s*#(\d+(?:\.\d+)?)\)/
     detail[:saga_name] = decode_html($1).strip
     detail[:saga_order] = $2.to_i
@@ -325,41 +409,29 @@ def scrape_goodreads_detail(url)
 
   # --- Author(s) ---
   authors = []
-  # Look for contributor/author names
   html.scan(/<span[^>]*class="[^"]*ContributorLink__name[^"]*"[^>]*>(.*?)<\/span>/m).each do |match|
     name = decode_html(strip_tags(match[0])).strip
     authors << name unless name.empty? || authors.include?(name)
   end
-
-  # Fallback: authorName class
   if authors.empty?
     html.scan(/<a[^>]+class="authorName"[^>]*>.*?<span[^>]*itemprop="name"[^>]*>(.*?)<\/span>/m).each do |match|
       name = decode_html(strip_tags(match[0])).strip
       authors << name unless name.empty? || authors.include?(name)
     end
   end
-
-  # Fallback: schema.org author
   if authors.empty?
     html.scan(/<meta[^>]+property="books:author"[^>]+content="([^"]+)"/m).each do |match|
       name = decode_html(match[0]).strip
       authors << name unless name.empty? || authors.include?(name)
     end
   end
-
   detail[:authors] = authors unless authors.empty?
 
-  # --- Publication date ---
-  # Look for "First published" or publication date
-  if html =~ /First published\s+([^<\n]+)/i
-    detail[:first_publishing_date] = decode_html($1).strip.gsub(/\s+/, " ")
-  elsif html =~ /Published\s+([^<\n]+)/i
-    date_str = decode_html($1).strip.gsub(/\s+/, " ")
-    # Clean up: remove "by Publisher" portion
-    date_str = date_str.split(/\s+by\s+/i).first.to_s.strip
-    detail[:first_publishing_date] = date_str
-  elsif html =~ /publication.*?date.*?>([^<]+)</mi
-    detail[:first_publishing_date] = decode_html($1).strip
+  # --- Publication date (year only) ---
+  if html =~ /First published.*?(\d{4})/i
+    detail[:first_publishing_date] = $1
+  elsif html =~ /Published.*?(\d{4})/i
+    detail[:first_publishing_date] = $1
   end
 
   # --- Original Title ---
@@ -378,8 +450,6 @@ def scrape_goodreads_detail(url)
   elsif html =~ /ISBN.*?(\d{9}[\dXx])/m
     detail[:isbn] = $1
   end
-
-  # Also try meta tags
   if detail[:isbn].nil? || detail[:isbn].to_s.empty?
     if html =~ /<meta[^>]+property="books:isbn"[^>]+content="([^"]+)"/
       detail[:isbn] = $1.strip
@@ -406,6 +476,35 @@ def scrape_goodreads_detail(url)
   end
 
   detail
+end
+
+def scrape_goodreads_detail(url)
+  puts "\nFetching Goodreads book page..."
+  response = http_get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
+
+  unless response&.code == "200"
+    puts "  Could not fetch book page (HTTP #{response&.code})."
+    return nil
+  end
+
+  html = response.body
+
+  # Try structured __NEXT_DATA__ JSON first (more reliable)
+  begin
+    detail = scrape_goodreads_detail_from_next_data(html)
+    if detail && detail[:title] && !detail[:title].empty?
+      puts "  Parsed book data from structured JSON."
+      return detail
+    end
+  rescue StandardError => e
+    puts "  __NEXT_DATA__ extraction failed (#{e.message}), falling back to HTML scraping..."
+  end
+
+  # Fall back to HTML scraping
+  detail = scrape_goodreads_detail_from_html(html)
+  return detail unless detail.empty?
+
+  nil
 rescue StandardError => e
   puts "  Goodreads detail scraping failed: #{e.message}"
   nil

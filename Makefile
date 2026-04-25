@@ -1,4 +1,4 @@
-.PHONY: server add edit review
+.PHONY: server add edit review format
 
 server:
 	python3 -m http.server 8000
@@ -6,11 +6,14 @@ server:
 add:
 	ruby add_book.rb $(filter-out $@,$(MAKECMDGOALS))
 
-%:
-	@:
-
 edit:
 	ruby edit_book.rb
 
 review:
 	ruby add_review.rb
+
+format:
+	ruby precommit.rb
+
+%:
+	@:
