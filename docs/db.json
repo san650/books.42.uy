@@ -106,5 +106,42 @@
     },
     "score": 8,
     "review": ""
+  },
+  {
+    "id": 4,
+    "title": "Mundo anillo",
+    "subtitle": "",
+    "original_title": "Ringworld",
+    "first_publishing_date": "1970",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Larry Niven",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-9018-261-1"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/4-mundo-anillo.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "La Factoría De Ideas",
+    "saga": {
+      "name": "Ringworld series",
+      "order": 1
+    },
+    "score": 6,
+    "review": ""
   }
 ]
