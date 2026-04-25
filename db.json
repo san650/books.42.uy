@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "id": 1,
+    "title": "Anochecer",
+    "original_title": "Nightfall",
+    "first_publishing_date": "1990",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Isaac Asimov",
+        "aliases": [
+
+        ]
+      },
+      {
+        "name": "Robert Silverberg",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-987-556-529-3"
+      }
+    ],
+    "covers": [
+
+    ],
+    "publisher": "DeBolsillo",
+    "score": 5,
+    "review": ""
+  }
+]
