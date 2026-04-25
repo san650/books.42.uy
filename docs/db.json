@@ -982,5 +982,42 @@
     },
     "score": 8,
     "review": ""
+  },
+  {
+    "id": 29,
+    "title": "Mort",
+    "subtitle": "Una novela de Mundodisco",
+    "original_title": "Mort",
+    "first_publishing_date": "1987",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Terry Pratchett",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "9789483463284"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/29-mort.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "DeBolsillo",
+    "saga": {
+      "name": "Mundodisco",
+      "order": 4
+    },
+    "score": 7,
+    "review": ""
   }
 ]
