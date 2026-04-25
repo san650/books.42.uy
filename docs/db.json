@@ -763,5 +763,42 @@
     "saga": null,
     "score": 8,
     "review": ""
+  },
+  {
+    "id": 23,
+    "title": "Dune",
+    "subtitle": "",
+    "original_title": "Dune",
+    "first_publishing_date": "1965",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Frank Patrick Herbert",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-9759-682-4"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/23-dune.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "DeBolsillo",
+    "saga": {
+      "name": "Dune",
+      "order": 1
+    },
+    "score": 7,
+    "review": ""
   }
 ]
