@@ -574,9 +574,11 @@
   let displayedBooks = [];
   let selectedIndex = -1;
 
-  // --- Fuzzy search (trigram) ---
+  // --- Fuzzy search (trigram + accent normalization) ---
+  const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
   const trigrams = (str) => {
-    const s = str.toLowerCase();
+    const s = normalize(str);
     if (s.length < 3) return new Set([s]);
     const set = new Set();
     for (let i = 0; i <= s.length - 3; i++) set.add(s.slice(i, i + 3));
@@ -591,15 +593,23 @@
     return qTri.size === 0 ? 0 : matches / qTri.size;
   };
 
+  const bookFields = (book) => [
+    book.title,
+    book.subtitle ?? '',
+    book.original_title ?? '',
+    book.saga?.name ?? '',
+    ...(book.authors?.map(a => a.name) ?? [])
+  ];
+
   const bookMatchesQuery = (book, query) => {
-    const fields = [
-      book.title,
-      book.subtitle ?? '',
-      book.original_title ?? '',
-      book.saga?.name ?? '',
-      ...(book.authors?.map(a => a.name) ?? [])
-    ];
-    return fields.some(f => trigramScore(query, f) >= 0.3);
+    const nq = normalize(query);
+    // Short queries: fall back to substring match
+    if (nq.length < 3) return bookFields(book).some(f => normalize(f).includes(nq));
+    return bookFields(book).some(f => trigramScore(query, f) >= 0.5);
+  };
+
+  const bookRelevance = (book, query) => {
+    return Math.max(...bookFields(book).map(f => trigramScore(query, f)));
   };
 
   // --- Sorting: saga groups + alphabetical ---
@@ -793,7 +803,10 @@
   // --- Search ---
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim();
-    renderBooks(query ? allBooks.filter(b => bookMatchesQuery(b, query)) : allBooks);
+    if (!query) { renderBooks(allBooks); return; }
+    const matches = allBooks.filter(b => bookMatchesQuery(b, query));
+    matches.sort((a, b) => bookRelevance(b, query) - bookRelevance(a, query));
+    renderBooks(matches);
   });
 
   // --- Dialog: populate and show ---
