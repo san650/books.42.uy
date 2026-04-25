@@ -248,5 +248,42 @@
     },
     "score": 8,
     "review": ""
+  },
+  {
+    "id": 8,
+    "title": "El sueño del sabueso",
+    "subtitle": "Boudica, la reina guerrera de los celtas",
+    "original_title": "Dreaming the Hound",
+    "first_publishing_date": "2005",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Manda Scott",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-674-6793-2"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/8-el-sue-o-del-sabueso.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Edhasa",
+    "saga": {
+      "name": "Boudica, Reina Guerrera de los Celtas",
+      "order": 3
+    },
+    "score": 8,
+    "review": ""
   }
 ]
