@@ -2,12 +2,12 @@
 # frozen_string_literal: true
 
 # add_book.rb — Interactive CLI to add books to db.json
+# Primary source: Goodreads (scraping). Fallback: OpenLibrary API.
 # Self-contained, no gem dependencies beyond stdlib.
 
 require "json"
 require "net/http"
 require "uri"
-require "open-uri"
 require "tempfile"
 require "fileutils"
 
@@ -28,18 +28,21 @@ PUBLISHERS = [
   "Galaxia Gutenberg"
 ].freeze
 
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " \
+             "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
 def prompt(label, default: nil, required: false)
   loop do
-    suffix = default ? " [#{default}]" : ""
+    suffix = default && !default.to_s.empty? ? " [#{default}]" : ""
     print "#{label}#{suffix}: "
     input = $stdin.gets
     abort "\nCancelled." unless input
     input = input.strip
-    input = default if input.empty? && default
+    input = default.to_s if input.empty? && default && !default.to_s.empty?
     return input unless input.to_s.empty? && required
 
     puts "  This field is required."
@@ -95,11 +98,36 @@ def next_id(books)
   books.map { |b| b["id"].to_i }.max + 1
 end
 
+# Decode HTML entities (minimal, stdlib-only)
+def decode_html(str)
+  return "" unless str
+
+  str
+    .gsub("&amp;", "&")
+    .gsub("&lt;", "<")
+    .gsub("&gt;", ">")
+    .gsub("&quot;", '"')
+    .gsub("&#39;", "'")
+    .gsub("&apos;", "'")
+    .gsub("&#x27;", "'")
+    .gsub("&#x2F;", "/")
+    .gsub("&nbsp;", " ")
+    .gsub(/&#(\d+);/) { [$1.to_i].pack("U") }
+    .gsub(/&#x([0-9a-fA-F]+);/) { [$1.to_i(16)].pack("U") }
+end
+
+# Strip HTML tags
+def strip_tags(str)
+  return "" unless str
+
+  str.gsub(/<[^>]+>/, "")
+end
+
 # ---------------------------------------------------------------------------
 # HTTP helpers
 # ---------------------------------------------------------------------------
 
-def http_get(url, headers: {})
+def http_get(url, headers: {}, follow_redirects: true, max_redirects: 5)
   uri = URI(url)
   http = Net::HTTP.new(uri.host, uri.port)
   http.use_ssl = (uri.scheme == "https")
@@ -107,9 +135,21 @@ def http_get(url, headers: {})
   http.read_timeout = HTTP_TIMEOUT
 
   request = Net::HTTP::Get.new(uri)
+  request["User-Agent"] = USER_AGENT
   headers.each { |k, v| request[k] = v }
 
   response = http.request(request)
+  response.body&.force_encoding("UTF-8") if response.body
+
+  # Follow redirects
+  if follow_redirects && %w[301 302 303 307 308].include?(response.code) && max_redirects > 0
+    location = response["location"]
+    if location
+      location = URI.join(uri, location).to_s unless location.start_with?("http")
+      return http_get(location, headers: headers, follow_redirects: true, max_redirects: max_redirects - 1)
+    end
+  end
+
   response
 rescue Net::OpenTimeout, Net::ReadTimeout, Errno::ECONNREFUSED,
        Errno::ECONNRESET, SocketError, OpenSSL::SSL::SSLError => e
@@ -131,11 +171,8 @@ def http_download(url, dest)
   return false unless response&.code == "200"
   return false if response.body.nil? || response.body.empty?
 
-  # Check we actually got image data (not an HTML error page)
   content_type = response["content-type"].to_s
-  if content_type.include?("text/html")
-    return false
-  end
+  return false if content_type.include?("text/html")
 
   File.open(dest, "wb") { |f| f.write(response.body) }
   true
@@ -145,13 +182,243 @@ rescue StandardError => e
 end
 
 # ---------------------------------------------------------------------------
-# OpenLibrary API
+# Goodreads scraping
+# ---------------------------------------------------------------------------
+
+def goodreads_search(query)
+  encoded = URI.encode_www_form_component(query).gsub("%20", "+")
+  url = "https://www.goodreads.com/search?utf8=%E2%9C%93&q=#{encoded}&search_type=books"
+  puts "\nSearching Goodreads..."
+
+  response = http_get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
+
+  unless response&.code == "200"
+    puts "  Goodreads search unavailable (HTTP #{response&.code})."
+    return []
+  end
+
+  html = response.body
+  results = []
+
+  # Parse search results — look for table rows with book data
+  # Goodreads search results contain <tr itemtype="http://schema.org/Book"> or similar patterns
+  # Each result has a book title link and author name
+
+  # Strategy 1: Look for bookTitle and authorName spans/anchors
+  html.scan(/<tr[^>]*>.*?<\/tr>/m).each do |row|
+    next unless row.include?("bookTitle") || row.include?("/book/show/")
+
+    title = nil
+    author = nil
+    book_url = nil
+
+    # Extract book URL and title
+    if row =~ /<a[^>]+class="bookTitle"[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/m
+      book_url = $1
+      title = decode_html(strip_tags($2)).strip
+    elsif row =~ /<a[^>]+href="(\/book\/show\/[^"]+)"[^>]*>(.*?)<\/a>/m
+      book_url = $1
+      title = decode_html(strip_tags($2)).strip
+    end
+
+    # Extract author
+    if row =~ /<a[^>]+class="authorName"[^>]*>(.*?)<\/a>/m
+      author = decode_html(strip_tags($1)).strip
+    elsif row =~ /<span[^>]+itemprop="name"[^>]*>(.*?)<\/span>/m
+      author = decode_html(strip_tags($1)).strip
+    end
+
+    next unless title && book_url
+
+    full_url = book_url.start_with?("http") ? book_url : "https://www.goodreads.com#{book_url}"
+    results << { title: title, author: author || "Unknown", url: full_url }
+
+    break if results.size >= 10
+  end
+
+  # Strategy 2: If strategy 1 found nothing, try a more general pattern
+  if results.empty?
+    html.scan(/href="(\/book\/show\/[^"]+)"[^>]*>([^<]+)</).each do |match|
+      book_url = "https://www.goodreads.com#{match[0]}"
+      title = decode_html(match[1]).strip
+      next if title.empty? || title.length < 2
+
+      # Try to find nearby author
+      author = "Unknown"
+      results << { title: title, author: author, url: book_url }
+      break if results.size >= 10
+    end
+  end
+
+  if results.empty?
+    puts "  No results found on Goodreads."
+  end
+
+  results
+rescue StandardError => e
+  puts "  Goodreads search failed: #{e.message}"
+  []
+end
+
+def display_goodreads_results(results)
+  return if results.empty?
+
+  puts "\nResults:"
+  results.each_with_index do |r, i|
+    puts "  #{i + 1}. #{r[:title]} — #{r[:author]}"
+  end
+end
+
+def scrape_goodreads_detail(url)
+  puts "\nFetching Goodreads book page..."
+  response = http_get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
+
+  unless response&.code == "200"
+    puts "  Could not fetch book page (HTTP #{response&.code})."
+    return nil
+  end
+
+  html = response.body
+  detail = {}
+
+  # --- Title ---
+  # Look for the main title in various patterns
+  if html =~ /<h1[^>]*data-testid="bookTitle"[^>]*>(.*?)<\/h1>/m
+    raw_title = decode_html(strip_tags($1)).strip
+    # Split title:subtitle on colon
+    if raw_title.include?(":")
+      parts = raw_title.split(":", 2)
+      detail[:title] = parts[0].strip
+      detail[:subtitle] = parts[1].strip
+    else
+      detail[:title] = raw_title
+    end
+  elsif html =~ /<h1[^>]*class="[^"]*bookTitle[^"]*"[^>]*>(.*?)<\/h1>/m
+    raw_title = decode_html(strip_tags($1)).strip
+    if raw_title.include?(":")
+      parts = raw_title.split(":", 2)
+      detail[:title] = parts[0].strip
+      detail[:subtitle] = parts[1].strip
+    else
+      detail[:title] = raw_title
+    end
+  elsif html =~ /<meta[^>]+property="og:title"[^>]+content="([^"]+)"/
+    raw_title = decode_html($1).strip
+    if raw_title.include?(":")
+      parts = raw_title.split(":", 2)
+      detail[:title] = parts[0].strip
+      detail[:subtitle] = parts[1].strip
+    else
+      detail[:title] = raw_title
+    end
+  end
+
+  # --- Series/Saga ---
+  # Look for series info like "(The Lord of the Rings #1)"
+  if html =~ /\(([^)]+?)\s*#(\d+(?:\.\d+)?)\)/
+    detail[:saga_name] = decode_html($1).strip
+    detail[:saga_order] = $2.to_i
+  elsif html =~ /<a[^>]+href="\/series\/[^"]*"[^>]*>([^<]+)<\/a>\s*#?(\d+)?/
+    detail[:saga_name] = decode_html($1).strip
+    detail[:saga_order] = $2 ? $2.to_i : 1
+  end
+
+  # --- Author(s) ---
+  authors = []
+  # Look for contributor/author names
+  html.scan(/<span[^>]*class="[^"]*ContributorLink__name[^"]*"[^>]*>(.*?)<\/span>/m).each do |match|
+    name = decode_html(strip_tags(match[0])).strip
+    authors << name unless name.empty? || authors.include?(name)
+  end
+
+  # Fallback: authorName class
+  if authors.empty?
+    html.scan(/<a[^>]+class="authorName"[^>]*>.*?<span[^>]*itemprop="name"[^>]*>(.*?)<\/span>/m).each do |match|
+      name = decode_html(strip_tags(match[0])).strip
+      authors << name unless name.empty? || authors.include?(name)
+    end
+  end
+
+  # Fallback: schema.org author
+  if authors.empty?
+    html.scan(/<meta[^>]+property="books:author"[^>]+content="([^"]+)"/m).each do |match|
+      name = decode_html(match[0]).strip
+      authors << name unless name.empty? || authors.include?(name)
+    end
+  end
+
+  detail[:authors] = authors unless authors.empty?
+
+  # --- Publication date ---
+  # Look for "First published" or publication date
+  if html =~ /First published\s+([^<\n]+)/i
+    detail[:first_publishing_date] = decode_html($1).strip.gsub(/\s+/, " ")
+  elsif html =~ /Published\s+([^<\n]+)/i
+    date_str = decode_html($1).strip.gsub(/\s+/, " ")
+    # Clean up: remove "by Publisher" portion
+    date_str = date_str.split(/\s+by\s+/i).first.to_s.strip
+    detail[:first_publishing_date] = date_str
+  elsif html =~ /publication.*?date.*?>([^<]+)</mi
+    detail[:first_publishing_date] = decode_html($1).strip
+  end
+
+  # --- Original Title ---
+  if html =~ /Original Title\s*<\/dt>\s*<dd[^>]*>(.*?)<\/dd>/mi
+    detail[:original_title] = decode_html(strip_tags($1)).strip
+  elsif html =~ /Original Title.*?<[^>]+>\s*([^<]+)/mi
+    val = decode_html($1).strip
+    detail[:original_title] = val unless val.empty?
+  end
+
+  # --- ISBN / ISBN13 ---
+  if html =~ /ISBN13.*?(\d{13})/m
+    detail[:isbn] = $1
+  elsif html =~ /ISBN.*?(\d{13})/m
+    detail[:isbn] = $1
+  elsif html =~ /ISBN.*?(\d{9}[\dXx])/m
+    detail[:isbn] = $1
+  end
+
+  # Also try meta tags
+  if detail[:isbn].nil? || detail[:isbn].to_s.empty?
+    if html =~ /<meta[^>]+property="books:isbn"[^>]+content="([^"]+)"/
+      detail[:isbn] = $1.strip
+    end
+  end
+
+  # --- Publisher ---
+  if html =~ /Publisher\s*<\/dt>\s*<dd[^>]*>(.*?)<\/dd>/mi
+    detail[:publisher] = decode_html(strip_tags($1)).strip
+  elsif html =~ /Publisher.*?<[^>]+>\s*([^<]+)/mi
+    val = decode_html($1).strip
+    detail[:publisher] = val unless val.empty? || val.length > 100
+  end
+
+  # --- Cover image URL ---
+  if html =~ /<img[^>]+class="[^"]*ResponsiveImage[^"]*"[^>]+src="([^"]+)"/
+    detail[:cover_url] = $1
+  elsif html =~ /<meta[^>]+property="og:image"[^>]+content="([^"]+)"/
+    detail[:cover_url] = $1
+  elsif html =~ /<img[^>]+id="coverImage"[^>]+src="([^"]+)"/
+    detail[:cover_url] = $1
+  elsif html =~ /<img[^>]+src="(https:\/\/[^"]*goodreads[^"]*\/books\/[^"]+)"/
+    detail[:cover_url] = $1
+  end
+
+  detail
+rescue StandardError => e
+  puts "  Goodreads detail scraping failed: #{e.message}"
+  nil
+end
+
+# ---------------------------------------------------------------------------
+# OpenLibrary API (fallback)
 # ---------------------------------------------------------------------------
 
 def search_openlibrary(query)
   encoded = URI.encode_www_form_component(query)
   url = "https://openlibrary.org/search.json?title=#{encoded}&limit=10"
-  puts "\nSearching OpenLibrary..."
+  puts "\nSearching OpenLibrary (fallback)..."
   data = http_get_json(url)
 
   unless data && data["docs"]
@@ -162,7 +429,7 @@ def search_openlibrary(query)
   data["docs"]
 end
 
-def display_search_results(docs)
+def display_openlibrary_results(docs)
   return if docs.empty?
 
   puts "\nResults:"
@@ -194,19 +461,14 @@ end
 def find_best_edition(editions)
   return nil if editions.empty?
 
-  # Prefer Spanish editions
   spanish = editions.select do |ed|
     langs = ed["languages"] || []
     langs.any? { |l| l["key"] == "/languages/spa" }
   end
 
   candidates = spanish.empty? ? editions : spanish
-
-  # Prefer editions with ISBN
   with_isbn = candidates.select { |ed| ed["isbn_13"]&.any? || ed["isbn_10"]&.any? }
-  best = with_isbn.first || candidates.first
-
-  best
+  with_isbn.first || candidates.first
 end
 
 def extract_isbn(edition)
@@ -215,88 +477,93 @@ def extract_isbn(edition)
   isbn13 = edition["isbn_13"]&.first
   return isbn13 if isbn13
 
-  isbn10 = edition["isbn_10"]&.first
-  isbn10
+  edition["isbn_10"]&.first
 end
 
-# ---------------------------------------------------------------------------
-# Goodreads scraping (best-effort)
-# ---------------------------------------------------------------------------
+# Build metadata from an OpenLibrary search result
+def metadata_from_openlibrary(doc, title_query)
+  metadata = {
+    title: doc["title"] || title_query,
+    subtitle: "",
+    original_title: "",
+    first_publishing_date: doc["first_publish_year"].to_s,
+    publish_dates: [],
+    authors: (doc["author_name"] || []).map { |name| { "name" => name, "aliases" => [] } },
+    isbn: "",
+    publisher: "",
+    saga: nil,
+    cover_url: nil
+  }
 
-def scrape_goodreads(query)
-  encoded = URI.encode_www_form_component(query)
-  url = "https://www.goodreads.com/search?q=#{encoded}"
-  puts "\nAttempting Goodreads lookup..."
-
-  response = http_get(url, headers: {
-    "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-    "Accept" => "text/html"
-  })
-
-  unless response&.code == "200"
-    puts "  Goodreads unavailable, skipping."
-    return {}
+  puts "\nFetching OpenLibrary details..."
+  work_key = doc["key"]
+  work = fetch_work_details(work_key)
+  if work && work["title"] && work["title"] != metadata[:title]
+    metadata[:original_title] = work["title"]
   end
 
-  html = response.body
-  result = {}
+  editions = fetch_editions(work_key)
+  best_edition = find_best_edition(editions)
 
-  # Try to extract rating
-  if html =~ /aria-label="(\d+\.\d+) out of 5 stars"/
-    result[:rating] = $1
-  elsif html =~ /class="[^"]*RatingStatistics[^"]*"[^>]*>.*?(\d+\.\d+)/m
-    result[:rating] = $1
+  if best_edition
+    metadata[:isbn] = extract_isbn(best_edition) || ""
+    metadata[:publisher] = best_edition["publishers"]&.first.to_s
+    metadata[:publish_dates] = [best_edition["publish_date"]].compact
   end
 
-  # Try to extract original title
-  if html =~ /Original Title.*?<[^>]+>([^<]+)</m
-    result[:original_title] = $1.strip
+  if metadata[:isbn].empty?
+    isbn_list = doc["isbn"] || []
+    metadata[:isbn] = isbn_list.first.to_s unless isbn_list.empty?
   end
 
-  unless result.empty?
-    puts "  Found Goodreads data: #{result.map { |k, v| "#{k}=#{v}" }.join(", ")}"
-  else
-    puts "  No additional data from Goodreads."
+  # Cover from OpenLibrary
+  cover_id = doc["cover_i"]
+  if cover_id
+    metadata[:cover_url] = "https://covers.openlibrary.org/b/id/#{cover_id}-L.jpg"
   end
 
-  result
-rescue StandardError => e
-  puts "  Goodreads scraping failed: #{e.message}"
-  {}
+  metadata
 end
 
 # ---------------------------------------------------------------------------
 # Cover download
 # ---------------------------------------------------------------------------
 
-def download_cover(isbn, book_id, title)
-  return nil unless isbn && !isbn.empty?
-
+def download_cover(cover_url, isbn, book_id, title)
   FileUtils.mkdir_p(COVERS_DIR)
   sanitized = sanitize_title(title)
   filename = "#{book_id}-#{sanitized}.jpg"
   dest = File.join(COVERS_DIR, filename)
 
-  # Try bookcover.longitood.com first
-  puts "\nDownloading cover from bookcover.longitood.com..."
-  longitood_url = "https://bookcover.longitood.com/bookcover/#{URI.encode_www_form_component(isbn)}"
-  if http_download(longitood_url, dest)
-    puts "  Cover saved: covers/#{filename}"
-    return "covers/#{filename}"
+  # Try Goodreads cover URL first
+  if cover_url && !cover_url.empty?
+    puts "\nDownloading cover from Goodreads..."
+    if http_download(cover_url, dest)
+      if File.size(dest) > 1000
+        puts "  Cover saved: covers/#{filename}"
+        return "covers/#{filename}"
+      else
+        File.delete(dest) if File.exist?(dest)
+        puts "  Goodreads cover too small (likely placeholder), trying fallback..."
+      end
+    else
+      puts "  Goodreads cover download failed, trying fallback..."
+    end
   end
 
-  # Fall back to OpenLibrary covers
-  puts "  Trying OpenLibrary covers..."
-  ol_url = "https://covers.openlibrary.org/b/isbn/#{URI.encode_www_form_component(isbn)}-L.jpg"
-  if http_download(ol_url, dest)
-    # OpenLibrary returns a 1x1 pixel for missing covers
-    if File.size(dest) < 1000
-      File.delete(dest)
-      puts "  OpenLibrary cover too small (likely placeholder), skipping."
-      return nil
+  # Fall back to OpenLibrary covers via ISBN
+  if isbn && !isbn.empty?
+    puts "  Trying OpenLibrary covers..."
+    ol_url = "https://covers.openlibrary.org/b/isbn/#{URI.encode_www_form_component(isbn)}-L.jpg"
+    if http_download(ol_url, dest)
+      if File.size(dest) > 1000
+        puts "  Cover saved: covers/#{filename}"
+        return "covers/#{filename}"
+      else
+        File.delete(dest) if File.exist?(dest)
+        puts "  OpenLibrary cover too small (likely placeholder), skipping."
+      end
     end
-    puts "  Cover saved: covers/#{filename}"
-    return "covers/#{filename}"
   end
 
   puts "  No cover available."
@@ -315,7 +582,7 @@ def select_publisher(default: nil)
   end
   puts "  #{PUBLISHERS.size + 1}. Other (enter custom)"
 
-  if default
+  if default && !default.empty?
     print "Select [#{default}]: "
   else
     print "Select: "
@@ -325,7 +592,7 @@ def select_publisher(default: nil)
   abort "\nCancelled." unless input
   input = input.strip
 
-  return default if input.empty? && default
+  return default if input.empty? && default && !default.empty?
 
   num = input.to_i
   if num >= 1 && num <= PUBLISHERS.size
@@ -333,9 +600,8 @@ def select_publisher(default: nil)
   elsif num == PUBLISHERS.size + 1
     prompt("  Enter publisher name", required: true)
   elsif input.empty?
-    default || prompt("  Enter publisher name", required: true)
+    default && !default.empty? ? default : prompt("  Enter publisher name", required: true)
   else
-    # Treat as custom text input
     input
   end
 end
@@ -348,12 +614,22 @@ def prompt_score
   loop do
     input = prompt("Score (1-10)", required: true)
     score = input.to_i
-    if score >= 1 && score <= 10
-      return score
-    end
+    return score if score >= 1 && score <= 10
 
     puts "  Please enter a number between 1 and 10."
   end
+end
+
+# ---------------------------------------------------------------------------
+# Git auto-commit
+# ---------------------------------------------------------------------------
+
+def git_auto_commit(book)
+  author = book["authors"]&.first&.dig("name") || "Unknown"
+  system("git", "add", "db.json", "covers/")
+  system("git", "commit", "-m", "Add #{book["title"]} - #{author} book")
+rescue StandardError
+  # Don't fail if git is not available or repo not initialized
 end
 
 # ---------------------------------------------------------------------------
@@ -367,104 +643,118 @@ def main
 
   books = load_db
 
-  # Step 1: Prompt for title
-  title_query = prompt("\nBook title", required: true)
-
-  # Step 2: Search OpenLibrary
-  docs = search_openlibrary(title_query)
-
-  # Step 3: Let user pick a result or enter manually
-  selected_doc = nil
-  if docs.any?
-    display_search_results(docs)
-    puts "\n  0. None of these — enter manually"
-    choice = prompt("Select a result (1-#{docs.size}, or 0)")
-    num = choice.to_i
-    selected_doc = docs[num - 1] if num >= 1 && num <= docs.size
+  # Step 1: Prompt for search query (or take from ARGV)
+  search_query = ARGV.join(" ").strip
+  if search_query.empty?
+    search_query = prompt("\nSearch query (e.g. 'Anochecer Isaac')", required: true)
   else
-    puts "\nNo results found. You'll enter details manually."
+    puts "\nSearching for: #{search_query}"
   end
 
-  # Step 4: Fetch details
-  metadata = {
-    title: title_query,
+  # Step 2: Search Goodreads (primary)
+  metadata = nil
+  gr_results = goodreads_search(search_query)
+
+  if gr_results.any?
+    display_goodreads_results(gr_results)
+    puts "\n  0. None of these — enter manually"
+    choice = prompt("Select a result (1-#{gr_results.size}, or 0)")
+    num = choice.to_i
+
+    if num >= 1 && num <= gr_results.size
+      selected = gr_results[num - 1]
+      detail = scrape_goodreads_detail(selected[:url])
+
+      if detail
+        metadata = {
+          title: detail[:title] || selected[:title],
+          subtitle: detail[:subtitle] || "",
+          original_title: detail[:original_title] || "",
+          first_publishing_date: detail[:first_publishing_date] || "",
+          publish_dates: [],
+          authors: (detail[:authors] || [selected[:author]]).map { |name| { "name" => name, "aliases" => [] } },
+          isbn: detail[:isbn] || "",
+          publisher: detail[:publisher] || "",
+          saga: nil,
+          cover_url: detail[:cover_url]
+        }
+
+        if detail[:saga_name]
+          metadata[:saga] = { "name" => detail[:saga_name], "order" => detail[:saga_order] || 1 }
+        end
+
+        puts "\n  Goodreads data loaded successfully."
+      else
+        puts "\n  Could not scrape book details. Falling back..."
+      end
+    end
+  end
+
+  # Step 3: Fall back to OpenLibrary if Goodreads yielded nothing
+  if metadata.nil?
+    docs = search_openlibrary(search_query)
+
+    if docs.any?
+      display_openlibrary_results(docs)
+      puts "\n  0. None of these — enter manually"
+      choice = prompt("Select a result (1-#{docs.size}, or 0)")
+      num = choice.to_i
+
+      if num >= 1 && num <= docs.size
+        metadata = metadata_from_openlibrary(docs[num - 1], search_query)
+      end
+    else
+      puts "\nNo results found on either service. You'll enter details manually."
+    end
+  end
+
+  # Step 4: If still no metadata, start with empty defaults
+  metadata ||= {
+    title: search_query,
+    subtitle: "",
     original_title: "",
     first_publishing_date: "",
     publish_dates: [],
     authors: [],
     isbn: "",
-    publisher: ""
+    publisher: "",
+    saga: nil,
+    cover_url: nil
   }
 
-  if selected_doc
-    puts "\nFetching details..."
-    work_key = selected_doc["key"]
-
-    # Basic metadata from search result
-    metadata[:title] = selected_doc["title"] || title_query
-    metadata[:first_publishing_date] = selected_doc["first_publish_year"].to_s
-    metadata[:authors] = (selected_doc["author_name"] || []).map do |name|
-      { "name" => name, "aliases" => [] }
-    end
-
-    # Fetch work details for original title
-    work = fetch_work_details(work_key)
-    if work
-      if work["title"] && work["title"] != metadata[:title]
-        metadata[:original_title] = work["title"]
-      end
-    end
-
-    # Fetch editions to find Spanish one with ISBN
-    editions = fetch_editions(work_key)
-    best_edition = find_best_edition(editions)
-
-    if best_edition
-      metadata[:isbn] = extract_isbn(best_edition) || ""
-      if best_edition["publishers"]&.any?
-        metadata[:publisher] = best_edition["publishers"].first
-      end
-      if best_edition["publish_date"]
-        metadata[:publish_dates] = [best_edition["publish_date"]]
-      end
-    end
-
-    # Fallback: ISBNs from search result
-    if metadata[:isbn].empty?
-      isbn_list = selected_doc["isbn"] || []
-      metadata[:isbn] = isbn_list.first.to_s unless isbn_list.empty?
-    end
-  end
-
-  # Goodreads scraping (best-effort)
-  gr_query = metadata[:title]
-  gr_query += " #{metadata[:authors].first["name"]}" if metadata[:authors].any?
-  gr_data = scrape_goodreads(gr_query)
-
-  if metadata[:original_title].empty? && gr_data[:original_title]
-    metadata[:original_title] = gr_data[:original_title]
-  end
-
-  # Step 5: Show fetched metadata and let user confirm/override
+  # Step 5: Interactive field review — show each scraped field, let user confirm or override
   puts "\n" + "-" * 50
   puts "  Review & Edit Book Details"
   puts "-" * 50
 
   metadata[:title] = prompt("Title", default: metadata[:title], required: true)
-  metadata[:subtitle] = prompt("Subtitle (press enter to skip)")
+
+  # Check for duplicate
+  existing = books.find { |b| b["title"].downcase == metadata[:title].downcase }
+  if existing
+    author_name = existing["authors"]&.first&.dig("name") || "Unknown"
+    puts "\n  Book already exists: \"#{existing["title"]}\" by #{author_name} (ID: #{existing["id"]})"
+    puts "  To edit it, run:"
+    puts "    ruby edit_book.rb"
+    exit 0
+  end
+
+  metadata[:subtitle] = prompt("Subtitle (press enter to skip)", default: metadata[:subtitle])
   metadata[:original_title] = prompt("Original title", default: metadata[:original_title])
   metadata[:first_publishing_date] = prompt("First publishing date", default: metadata[:first_publishing_date])
 
   # Publish dates
   pd_default = metadata[:publish_dates].join(", ")
   pd_input = prompt("Publish dates (comma-separated)", default: pd_default)
-  metadata[:publish_dates] = pd_input.split(",").map(&:strip).reject(&:empty?)
+  metadata[:publish_dates] = pd_input.to_s.split(",").map(&:strip).reject(&:empty?)
 
   # Authors
   if metadata[:authors].any?
     puts "\nAuthors:"
     metadata[:authors].each_with_index do |a, i|
-      puts "  #{i + 1}. #{a["name"]} (aliases: #{a["aliases"].join(", ").then { |s| s.empty? ? "none" : s }})"
+      aliases_str = a["aliases"]&.join(", ")
+      aliases_str = aliases_str && !aliases_str.empty? ? aliases_str : "none"
+      puts "  #{i + 1}. #{a["name"]} (aliases: #{aliases_str})"
     end
     unless prompt_yes_no("Keep these authors?", default: "y")
       metadata[:authors] = []
@@ -482,9 +772,7 @@ def main
     end
   end
 
-  if metadata[:authors].empty?
-    puts "  Warning: no authors entered."
-  end
+  puts "  Warning: no authors entered." if metadata[:authors].empty?
 
   # ISBN
   metadata[:isbn] = prompt("ISBN", default: metadata[:isbn])
@@ -493,17 +781,35 @@ def main
   metadata[:publisher] = select_publisher(default: metadata[:publisher])
 
   # Saga
-  saga_name = prompt("Book saga/series name (press enter to skip)")
-  metadata[:saga] = nil
-  unless saga_name.empty?
-    loop do
-      order_input = prompt("Order in saga (number)", required: true)
-      order = order_input.to_i
-      if order >= 1
-        metadata[:saga] = { "name" => saga_name, "order" => order }
-        break
+  if metadata[:saga]
+    saga_default_name = metadata[:saga]["name"]
+    saga_default_order = metadata[:saga]["order"]
+    saga_name = prompt("Book saga/series name", default: saga_default_name)
+    if saga_name.empty?
+      metadata[:saga] = nil
+    else
+      loop do
+        order_input = prompt("Order in saga (number)", default: saga_default_order.to_s, required: true)
+        order = order_input.to_i
+        if order >= 1
+          metadata[:saga] = { "name" => saga_name, "order" => order }
+          break
+        end
+        puts "  Please enter a positive number."
       end
-      puts "  Please enter a positive number."
+    end
+  else
+    saga_name = prompt("Book saga/series name (press enter to skip)")
+    unless saga_name.empty?
+      loop do
+        order_input = prompt("Order in saga (number)", required: true)
+        order = order_input.to_i
+        if order >= 1
+          metadata[:saga] = { "name" => saga_name, "order" => order }
+          break
+        end
+        puts "  Please enter a positive number."
+      end
     end
   end
 
@@ -514,7 +820,7 @@ def main
   book_id = next_id(books)
 
   # Step 7: Download cover
-  cover_path = download_cover(metadata[:isbn], book_id, metadata[:title])
+  cover_path = download_cover(metadata[:cover_url], metadata[:isbn], book_id, metadata[:title])
   covers = []
   if cover_path
     covers << { "file" => cover_path, "default" => true }
@@ -524,9 +830,9 @@ def main
   book = {
     "id" => book_id,
     "title" => metadata[:title],
-    "subtitle" => metadata[:subtitle],
-    "original_title" => metadata[:original_title],
-    "first_publishing_date" => metadata[:first_publishing_date],
+    "subtitle" => metadata[:subtitle].to_s,
+    "original_title" => metadata[:original_title].to_s,
+    "first_publishing_date" => metadata[:first_publishing_date].to_s,
     "publish_dates" => metadata[:publish_dates],
     "authors" => metadata[:authors],
     "identifiers" => [],
@@ -537,7 +843,7 @@ def main
     "review" => ""
   }
 
-  unless metadata[:isbn].empty?
+  unless metadata[:isbn].to_s.empty?
     book["identifiers"] << { "type" => "ISBN", "value" => metadata[:isbn] }
   end
 
@@ -550,7 +856,7 @@ def main
   puts "  Original:    #{book["original_title"]}" unless book["original_title"].empty?
   puts "  Authors:     #{book["authors"].map { |a| a["name"] }.join(", ")}"
   puts "  Published:   #{book["first_publishing_date"]}"
-  puts "  ISBN:        #{metadata[:isbn]}" unless metadata[:isbn].empty?
+  puts "  ISBN:        #{metadata[:isbn]}" unless metadata[:isbn].to_s.empty?
   puts "  Publisher:   #{book["publisher"]}"
   puts "  Score:       #{book["score"]}/10"
   puts "  Saga:        #{metadata[:saga]["name"]} ##{metadata[:saga]["order"]}" if metadata[:saga]
@@ -566,8 +872,10 @@ def main
   # Step 10: Save
   books << book
   save_db(books)
-
   puts "\nBook saved to db.json! (ID: #{book_id})"
+
+  # Step 11: Git auto-commit
+  git_auto_commit(book)
 end
 
 # ---------------------------------------------------------------------------

@@ -7,15 +7,13 @@ Single-page book tracking app at books.42.uy. No frameworks — vanilla HTML/CSS
 ## Commands
 
 ```bash
-# Serve locally
-python3 -m http.server 8000
-
-# Add a book
-ruby add_book.rb
-
-# Add/edit a review
-ruby add_review.rb
+make server   # python3 -m http.server 8000
+make add      # ruby add_book.rb — search Goodreads, scrape metadata, download cover
+make edit     # ruby edit_book.rb — refetch metadata from Goodreads, field-by-field update
+make review   # ruby add_review.rb — select book, edit review via $EDITOR
 ```
+
+All three scripts auto-commit to git after changes: "Add/Edit/Review &lt;title&gt; - &lt;author&gt; book".
 
 ## Design System
 

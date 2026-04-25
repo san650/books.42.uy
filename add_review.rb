@@ -167,3 +167,8 @@ end
 if new_score
   puts "Score updated to #{new_score}/10."
 end
+
+# Auto-commit
+author = book["authors"]&.first&.dig("name") || "Unknown"
+system("git", "add", "db.json")
+system("git", "commit", "-m", "Review #{book["title"]} - #{author} book")
