@@ -81,6 +81,7 @@
     <div class="flex-1 flex flex-col justify-center px-4 py-3 min-w-0">
       <h3 class="row-title font-title text-lg leading-tight color-deep" data-slot="title">
         <time class="font-mono text-xs fw-700 color-mid" data-slot="year"></time>
+        <span class="saga-order font-mono text-xs fw-700 color-orange" data-slot="order" hidden></span>
       </h3>
       <p class="row-subtitle font-body text-xs color-mid italic" data-slot="subtitle" hidden></p>
       <p class="row-original font-body text-xs color-mid" data-slot="original" hidden></p>
@@ -405,7 +406,7 @@
   .ph-4 { background: linear-gradient(160deg, var(--c-purple), var(--c-orange)); }
 
   /* Text overflow — fixed row height */
-  .row-title {
+  .row-title-text {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -440,7 +441,7 @@
   /* Saga end separator */
   .saga-end {
     height: 3px;
-    background: var(--c-yellow);
+    background: var(--c-orange);
   }
 
   /* Saga group — cover col tint */
@@ -449,6 +450,24 @@
   }
   .saga-group .book-row:nth-child(even) .book-cover-col {
     background: rgba(69,46,90,0.14);
+  }
+
+  /* Saga order badge — flex-pushed to far right of title */
+  .row-title {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+  }
+  .row-title-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  .saga-order {
+    margin-left: auto;
+    flex-shrink: 0;
   }
 
   /* Detail saga badge */
@@ -633,9 +652,15 @@
     // Sort standalone alphabetically
     standalone.sort((a, b) => a.title.localeCompare(b.title, 'es'));
 
-    // Sort each saga group by order
+    // Sort each saga group by order, then by title for books without an order
     for (const group of sagas.values()) {
-      group.sort((a, b) => (a.saga.order ?? 0) - (b.saga.order ?? 0));
+      group.sort((a, b) => {
+        const ao = a.saga.order, bo = b.saga.order;
+        if (ao != null && bo != null) return ao - bo;
+        if (ao != null) return -1;
+        if (bo != null) return 1;
+        return a.title.localeCompare(b.title, 'es');
+      });
     }
 
     // Merge: saga groups sort by their name among standalone titles
@@ -703,12 +728,25 @@
     slot(frag, 'cover').appendChild(createCoverEl(book));
 
     const titleEl = slot(frag, 'title');
-    titleEl.prepend(book.title + ' ');
+    const titleText = document.createElement('span');
+    titleText.className = 'row-title-text';
+    titleText.textContent = book.title + ' ';
+    titleEl.prepend(titleText);
     const yearEl = slot(frag, 'year');
     if (book.first_publishing_date) {
       yearEl.textContent = book.first_publishing_date;
+      titleText.appendChild(yearEl);
     } else {
       yearEl.remove();
+    }
+
+    // Saga order badge
+    const orderEl = slot(frag, 'order');
+    if (book.saga?.order != null) {
+      orderEl.textContent = `#${book.saga.order}`;
+      orderEl.hidden = false;
+    } else {
+      orderEl.remove();
     }
 
     // Subtitle
