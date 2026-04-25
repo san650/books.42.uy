@@ -51,8 +51,10 @@
   </header>
   <div class="bg-orange accent-strip"></div>
   <div id="detail-body" class="detail-grid">
-    <aside id="detail-cover-col" class="bg-purple flex items-start justify-center p-4">
+    <aside id="detail-cover-col" class="bg-purple flex items-start justify-center p-4 relative">
       <figure id="detail-cover-wrap"></figure>
+      <button id="detail-prev" class="detail-nav detail-nav-prev font-mono fw-700" aria-label="Previous book">&lt;</button>
+      <button id="detail-next" class="detail-nav detail-nav-next font-mono fw-700" aria-label="Next book">&gt;</button>
     </aside>
     <div id="detail-meta-col" class="flex flex-col">
       <p id="detail-author" class="bg-surface font-body fw-600 text-base color-orange px-4 py-3"></p>
@@ -115,7 +117,7 @@
   <dl class="help-list bg-white p-5">
     <div class="flex items-center gap-3 py-2">
       <dt><kbd class="bg-surface font-mono text-xs fw-700 color-deep px-2 py-1">&darr;</kbd> <kbd class="bg-surface font-mono text-xs fw-700 color-deep px-2 py-1">&uarr;</kbd></dt>
-      <dd class="font-body text-sm color-mid">Navigate book list</dd>
+      <dd class="font-body text-sm color-mid">Navigate book list / prev&middot;next in detail</dd>
     </div>
     <div class="flex items-center gap-3 py-2">
       <dt><kbd class="bg-surface font-mono text-xs fw-700 color-deep px-2 py-1">Enter</kbd></dt>
@@ -328,6 +330,7 @@
 
   .object-cover { object-fit: cover; }
   .min-w-0 { min-width: 0; }
+  .relative { position: relative; }
 }
 
 /* ========================================
@@ -444,7 +447,7 @@
   }
 
   /* Detail saga badge */
-  .detail-saga-badge {
+  .detail-saga-badge:not([hidden]) {
     display: inline-block;
     padding: 0.15rem 0.5rem;
     margin-top: 0.5rem;
@@ -492,7 +495,28 @@
     &:nth-child(even) { background: var(--surface); }
   }
 
+  /* Detail nav buttons — mobile only */
+  .detail-nav {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(30, 16, 78, 0.55);
+    color: var(--c-white);
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 1;
+    &:active { background: rgba(30, 16, 78, 0.8); }
+  }
+  .detail-nav-prev { left: 4px; }
+  .detail-nav-next { right: 4px; }
+  .detail-nav[disabled] { opacity: 0.25; pointer-events: none; }
+
   @media (max-width: 640px) {
+    .detail-nav { display: block; }
     dialog {
       max-width: 100%;
       max-height: 100%;
@@ -811,8 +835,29 @@
       detailReviewSection.classList.add('hidden');
     }
 
+    updateDetailNav();
     detailDialog.showModal();
   };
+
+  // --- Dialog navigation ---
+  const detailPrev = document.getElementById('detail-prev');
+  const detailNext = document.getElementById('detail-next');
+
+  const updateDetailNav = () => {
+    detailPrev.disabled = selectedIndex <= 0;
+    detailNext.disabled = selectedIndex >= displayedBooks.length - 1;
+  };
+
+  const navigateDetail = (delta) => {
+    const next = selectedIndex + delta;
+    if (next < 0 || next >= displayedBooks.length) return;
+    selectedIndex = next;
+    updateSelection();
+    openBookDetail(displayedBooks[selectedIndex]);
+  };
+
+  detailPrev.addEventListener('click', () => navigateDetail(-1));
+  detailNext.addEventListener('click', () => navigateDetail(1));
 
   // --- Dialog: close on backdrop click ---
   detailDialog.addEventListener('click', (e) => { if (e.target === detailDialog) detailDialog.close(); });
@@ -856,6 +901,19 @@
     }
 
     if (inSearch) return;
+
+    // Arrow keys navigate books inside the detail dialog
+    if (detailOpen && (e.key === 'ArrowDown' || e.key === 'ArrowRight')) {
+      e.preventDefault();
+      navigateDetail(1);
+      return;
+    }
+    if (detailOpen && (e.key === 'ArrowUp' || e.key === 'ArrowLeft')) {
+      e.preventDefault();
+      navigateDetail(-1);
+      return;
+    }
+
     if (detailOpen || helpOpen) return;
 
     const rows = bookList.querySelectorAll('.book-row');
