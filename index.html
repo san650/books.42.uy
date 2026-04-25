@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Lev — Personal book tracker">
+<title>Lev</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+</head>
+<body>
+
+<!-- Toolbar -->
+<nav class="bg-deep flex items-center gap-4 px-5 py-4 w-full">
+  <a href="/" class="flex items-center gap-3 shrink-0" style="text-decoration:none">
+    <img src="assets/logo.svg" alt="" class="w-6 h-6">
+    <mark class="font-brand text-lg fw-700 uppercase tracking-wide color-white bg-deep">Lev</mark>
+  </a>
+  <search class="flex-1">
+    <input id="search" type="search" placeholder="Search book..." class="w-full bg-white color-deep font-body text-sm py-2 px-3 search-input">
+  </search>
+</nav>
+<div class="bg-orange accent-strip"></div>
+
+<!-- Book List -->
+<main class="bg-white max-w-app mx-auto flex-1 w-full">
+  <output id="book-count" class="bg-surface-alt color-mid font-mono text-xs fw-700 tracking-wide uppercase block px-5 py-2"></output>
+  <div id="book-list"></div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-purple flex items-center justify-between flex-wrap gap-2 px-5 py-3 max-w-app mx-auto w-full">
+  <small class="font-mono text-xs fw-700 color-white-50 tracking-sm">&copy; 2025 Lev &mdash; MIT License</small>
+  <a href="https://github.com/santiagoferreira/books" target="_blank" rel="noopener" class="font-mono text-xs fw-700 color-yellow tracking-sm footer-link">GitHub</a>
+</footer>
+
+<!-- Book Detail Dialog -->
+<dialog id="book-detail" class="book-dialog">
+  <header id="detail-header" class="bg-deep px-5 py-5 flex items-start justify-between">
+    <div>
+      <h2 id="detail-title" class="font-title text-xl color-white leading-tight"></h2>
+      <p id="detail-original" class="font-body text-sm color-white-50 italic mt-1"></p>
+    </div>
+    <button id="detail-close" class="bg-purple color-white font-mono text-sm fw-700 py-1 px-3 uppercase tracking-wide close-btn">Esc</button>
+  </header>
+  <div class="bg-orange accent-strip"></div>
+  <div id="detail-body" class="detail-grid">
+    <aside id="detail-cover-col" class="bg-purple flex items-start justify-center p-4">
+      <figure id="detail-cover-wrap"></figure>
+    </aside>
+    <div id="detail-meta-col" class="flex flex-col">
+      <p id="detail-author" class="bg-surface font-body fw-600 text-base color-orange px-4 py-3"></p>
+      <div id="detail-meta-rows"></div>
+    </div>
+  </div>
+  <section id="detail-score-section" class="detail-score-strip bg-surface-alt flex items-center">
+    <data id="detail-score" class="bg-orange color-white font-mono text-3xl fw-700 text-center detail-score-number"></data>
+    <p class="font-brand text-xs uppercase tracking-wider color-mid px-4 py-3">Personal Score / 10</p>
+  </section>
+  <section id="detail-review-section" class="bg-deep p-5">
+    <h3 class="font-mono text-xs fw-700 uppercase tracking-wide color-yellow mb-3">Review</h3>
+    <blockquote id="detail-review" class="font-title text-lg leading-relaxed color-white"></blockquote>
+  </section>
+</dialog>
+
+<!-- Templates -->
+<template id="tpl-book-row">
+  <article class="book-row">
+    <div class="book-cover-col" data-slot="cover"></div>
+    <div class="flex-1 flex flex-col justify-center px-4 py-3 min-w-0">
+      <h3 class="font-title text-lg leading-tight color-deep" data-slot="title">
+        <time class="font-mono text-xs fw-700 color-mid" data-slot="year"></time>
+      </h3>
+      <p class="font-body text-xs color-mid" style="opacity:0.6;margin-top:1px" data-slot="original" hidden></p>
+      <p class="font-body text-sm color-mid mt-1" data-slot="author"></p>
+    </div>
+    <div class="score-col-w shrink-0 flex items-center justify-center">
+      <data class="book-score" data-slot="score"></data>
+    </div>
+  </article>
+</template>
+
+<template id="tpl-meta-row">
+  <div class="meta-row">
+    <span class="meta-label-w shrink-0 flex items-center font-mono text-xs fw-700 uppercase tracking-wide color-mid px-3 py-2" data-slot="label"></span>
+    <span class="flex items-center color-deep px-3 py-2" data-slot="value"></span>
+  </div>
+</template>
+
+<!-- Help Dialog -->
+<dialog id="help" class="help-dialog">
+  <header class="bg-deep px-5 py-4 flex items-center justify-between">
+    <h2 class="font-brand text-base fw-700 uppercase tracking-wide color-white">Keyboard Shortcuts</h2>
+    <button class="bg-purple color-white font-mono text-sm fw-700 py-1 px-3 uppercase tracking-wide close-btn help-close-btn">Esc</button>
+  </header>
+  <div class="bg-orange accent-strip"></div>
+  <dl class="help-list bg-white p-5">
+    <div class="flex items-center gap-3 py-2">
+      <dt><kbd class="bg-surface font-mono text-xs fw-700 color-deep px-2 py-1">&darr;</kbd> <kbd class="bg-surface font-mono text-xs fw-700 color-deep px-2 py-1">&uarr;</kbd></dt>
+      <dd class="font-body text-sm color-mid">Navigate book list</dd>
+    </div>
+    <div class="flex items-center gap-3 py-2">
+      <dt><kbd class="bg-surface font-mono text-xs fw-700 color-deep px-2 py-1">Enter</kbd></dt>
+      <dd class="font-body text-sm color-mid">Open selected book</dd>
+    </div>
+    <div class="flex items-center gap-3 py-2">
+      <dt><kbd class="bg-surface font-mono text-xs fw-700 color-deep px-2 py-1">Esc</kbd></dt>
+      <dd class="font-body text-sm color-mid">Close dialog / blur search</dd>
+    </div>
+    <div class="flex items-center gap-3 py-2">
+      <dt><kbd class="bg-surface font-mono text-xs fw-700 color-deep px-2 py-1">F</kbd></dt>
+      <dd class="font-body text-sm color-mid">Focus search bar</dd>
+    </div>
+    <div class="flex items-center gap-3 py-2">
+      <dt><kbd class="bg-surface font-mono text-xs fw-700 color-deep px-2 py-1">?</kbd></dt>
+      <dd class="font-body text-sm color-mid">Show this help</dd>
+    </div>
+  </dl>
+</dialog>
+
+<style>
+/* ========================================
+   @font-face & Design Tokens (outside layers)
+   ======================================== */
+@font-face {
+  font-family: 'SpaceMono';
+  src: url('assets/space-mono-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DMSerif';
+  src: url('assets/dm-serif-display-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'WorkSans';
+  src: url('assets/work-sans-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'WorkSans';
+  src: url('assets/work-sans-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrainsMono';
+  src: url('assets/jetbrains-mono-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --c-deep: #1E104E;
+  --c-purple: #452E5A;
+  --c-orange: #FF653F;
+  --c-yellow: #FFC85C;
+  --c-white: #FFFFFF;
+  --surface: #F4F1F7;
+  --surface-alt: #EAE5F0;
+
+  --f-brand: 'SpaceMono', monospace;
+  --f-title: 'DMSerif', serif;
+  --f-body: 'WorkSans', sans-serif;
+  --f-mono: 'JetBrainsMono', monospace;
+
+  --text-xs: 0.7rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+}
+
+@layer reset, utility, component;
+
+/* ========================================
+   @layer reset
+   ======================================== */
+@layer reset {
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--f-body);
+    font-size: var(--text-base);
+    color: var(--c-deep);
+    background: var(--surface);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+  a { color: inherit; }
+  button { cursor: pointer; border: none; font: inherit; }
+  input { border: none; font: inherit; outline: none; }
+  img { display: block; max-width: 100%; }
+  dl, dt, dd { margin: 0; }
+}
+
+/* ========================================
+   @layer utility
+   ======================================== */
+@layer utility {
+  .bg-deep { background: var(--c-deep); }
+  .bg-purple { background: var(--c-purple); }
+  .bg-orange { background: var(--c-orange); }
+  .bg-yellow { background: var(--c-yellow); }
+  .bg-white { background: var(--c-white); }
+  .bg-surface { background: var(--surface); }
+  .bg-surface-alt { background: var(--surface-alt); }
+
+  .color-deep { color: var(--c-deep); }
+  .color-purple { color: var(--c-purple); }
+  .color-orange { color: var(--c-orange); }
+  .color-yellow { color: var(--c-yellow); }
+  .color-white { color: var(--c-white); }
+  .color-mid { color: var(--c-purple); }
+  .color-white-50 { color: rgba(255,255,255,0.5); }
+
+  .font-brand { font-family: var(--f-brand); }
+  .font-title { font-family: var(--f-title); }
+  .font-body { font-family: var(--f-body); }
+  .font-mono { font-family: var(--f-mono); }
+
+  .text-xs { font-size: var(--text-xs); }
+  .text-sm { font-size: var(--text-sm); }
+  .text-base { font-size: var(--text-base); }
+  .text-lg { font-size: var(--text-lg); }
+  .text-xl { font-size: var(--text-xl); }
+  .text-2xl { font-size: var(--text-2xl); }
+  .text-3xl { font-size: var(--text-3xl); }
+
+  .fw-400 { font-weight: 400; }
+  .fw-600 { font-weight: 600; }
+  .fw-700 { font-weight: 700; }
+
+  .uppercase { text-transform: uppercase; }
+  .italic { font-style: italic; }
+  .leading-tight { line-height: 1.2; }
+  .leading-relaxed { line-height: 1.55; }
+  .tracking-sm { letter-spacing: 0.04em; }
+  .tracking-wide { letter-spacing: 0.1em; }
+  .tracking-wider { letter-spacing: 0.12em; }
+  .text-center { text-align: center; }
+
+  .p-1 { padding: var(--sp-1); }
+  .p-2 { padding: var(--sp-2); }
+  .p-3 { padding: var(--sp-3); }
+  .p-4 { padding: var(--sp-4); }
+  .p-5 { padding: var(--sp-5); }
+  .p-6 { padding: var(--sp-6); }
+  .px-2 { padding-inline: var(--sp-2); }
+  .px-3 { padding-inline: var(--sp-3); }
+  .px-4 { padding-inline: var(--sp-4); }
+  .px-5 { padding-inline: var(--sp-5); }
+  .py-1 { padding-block: var(--sp-1); }
+  .py-2 { padding-block: var(--sp-2); }
+  .py-3 { padding-block: var(--sp-3); }
+  .py-4 { padding-block: var(--sp-4); }
+  .py-5 { padding-block: var(--sp-5); }
+  .mt-1 { margin-top: var(--sp-1); }
+  .mt-2 { margin-top: var(--sp-2); }
+  .mb-3 { margin-bottom: var(--sp-3); }
+  .mx-auto { margin-inline: auto; }
+  .gap-2 { gap: var(--sp-2); }
+  .gap-3 { gap: var(--sp-3); }
+  .gap-4 { gap: var(--sp-4); }
+
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .flex-1 { flex: 1; }
+  .flex-wrap { flex-wrap: wrap; }
+  .items-center { align-items: center; }
+  .items-start { align-items: flex-start; }
+  .items-stretch { align-items: stretch; }
+  .justify-center { justify-content: center; }
+  .justify-between { justify-content: space-between; }
+  .shrink-0 { flex-shrink: 0; }
+  .grid { display: grid; }
+  .block { display: block; }
+  .hidden { display: none; }
+
+  .w-full { width: 100%; }
+  .w-6 { width: 1.5rem; }
+  .h-6 { height: 1.5rem; }
+  .max-w-app { max-width: 640px; }
+
+  .cover-sm { width: 44px; height: 64px; }
+  .cover-lg { width: 88px; height: 130px; }
+  .score-col-w { width: 56px; }
+  .cover-col-w { width: 64px; }
+  .meta-label-w { width: 90px; }
+
+  .object-cover { object-fit: cover; }
+  .min-w-0 { min-width: 0; }
+}
+
+/* ========================================
+   @layer component
+   ======================================== */
+@layer component {
+  .accent-strip { height: 4px; }
+
+  .search-input {
+    transition: background 0.15s;
+    &::placeholder {
+      color: var(--c-purple);
+      font-family: var(--f-mono);
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    &:focus {
+      background: var(--c-yellow);
+    }
+  }
+
+  .book-row {
+    display: flex;
+    align-items: stretch;
+    cursor: pointer;
+    transition: background 0.1s;
+    background: var(--c-white);
+    &:nth-child(even) { background: var(--surface); }
+    &:nth-child(even) .book-cover-col { background: rgba(30,16,78,0.06); }
+    &:hover { background: var(--c-yellow); }
+    &:hover .book-score { background: var(--c-deep); color: var(--c-yellow); }
+    &:hover .book-cover-col { background: rgba(30,16,78,0.08); }
+    &.selected { background: var(--surface-alt); }
+    &.selected .book-cover-col { background: rgba(30,16,78,0.08); }
+  }
+
+  .book-cover-col {
+    width: 64px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-3);
+    background: rgba(30,16,78,0.04);
+  }
+
+  .book-score {
+    font-family: var(--f-mono);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--c-deep);
+    transition: background 0.1s, color 0.1s;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .book-score-high { background: var(--c-orange); color: var(--c-white); }
+
+  .cover-ph { display: flex; align-items: center; justify-content: center; }
+  .ph-0 { background: linear-gradient(160deg, var(--c-orange), var(--c-yellow)); }
+  .ph-1 { background: linear-gradient(160deg, var(--c-purple), var(--c-deep)); }
+  .ph-2 { background: linear-gradient(160deg, var(--c-deep), var(--c-orange)); }
+  .ph-3 { background: linear-gradient(160deg, var(--c-yellow), var(--c-orange)); }
+  .ph-4 { background: linear-gradient(160deg, var(--c-purple), var(--c-orange)); }
+
+  .detail-grid { display: grid; grid-template-columns: 120px 1fr; }
+  .detail-score-number { width: 120px; flex-shrink: 0; padding: var(--sp-3) 0; }
+
+  .meta-row {
+    display: flex;
+    background: var(--c-white);
+    &:nth-child(odd) { background: var(--surface); }
+  }
+
+  .close-btn {
+    transition: background 0.1s;
+    &:hover { background: var(--c-orange); }
+  }
+
+  .footer-link {
+    text-decoration: none;
+    transition: color 0.1s;
+    &:hover { color: var(--c-orange); }
+  }
+
+  dialog {
+    border: none;
+    padding: 0;
+    max-width: 640px;
+    width: 100%;
+    margin: auto;
+    overflow: hidden;
+    background: var(--c-white);
+    &::backdrop { background: rgba(30,16,78,0.6); }
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.2s ease, transform 0.2s ease,
+                overlay 0.2s ease allow-discrete,
+                display 0.2s ease allow-discrete;
+    @starting-style { opacity: 0; transform: scale(0.95); }
+    &:not([open]) { opacity: 0; transform: scale(0.95); }
+  }
+
+  .help-list div {
+    &:nth-child(even) { background: var(--surface); }
+  }
+
+  @media (max-width: 640px) {
+    dialog {
+      max-width: 100%;
+      max-height: 100%;
+      width: 100vw;
+      height: 100dvh;
+      margin: 0;
+    }
+    .detail-grid { grid-template-columns: 1fr; }
+    .detail-score-strip { flex-direction: column; }
+    .detail-score-number { width: 100%; }
+    footer { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (min-width: 641px) {
+    nav { max-width: 640px; margin-inline: auto; }
+    .accent-strip { max-width: 640px; margin-inline: auto; }
+  }
+}
+</style>
+
+<script type="module">
+  // Data source: local db.json controlled by the user.
+  // DOM construction uses safe textContent and createElement where possible.
+  // Template strings for structural HTML only — no user-facing input is rendered.
+
+  // --- Data ---
+  const response = await fetch('db.json');
+  const allBooks = (await response.json()).sort((a, b) =>
+    a.title.localeCompare(b.title, 'es')
+  );
+
+  // --- DOM refs ---
+  const bookList = document.getElementById('book-list');
+  const bookCount = document.getElementById('book-count');
+  const searchInput = document.getElementById('search');
+  const detailDialog = document.getElementById('book-detail');
+  const helpDialog = document.getElementById('help');
+  const detailTitle = document.getElementById('detail-title');
+  const detailOriginal = document.getElementById('detail-original');
+  const detailAuthor = document.getElementById('detail-author');
+  const detailCoverWrap = document.getElementById('detail-cover-wrap');
+  const detailMetaRows = document.getElementById('detail-meta-rows');
+  const detailScore = document.getElementById('detail-score');
+  const detailReviewSection = document.getElementById('detail-review-section');
+  const detailReview = document.getElementById('detail-review');
+
+  // --- State ---
+  let displayedBooks = [...allBooks];
+  let selectedIndex = -1;
+
+  // --- Fuzzy search (trigram) ---
+  const trigrams = (str) => {
+    const s = str.toLowerCase();
+    if (s.length < 3) return new Set([s]);
+    const set = new Set();
+    for (let i = 0; i <= s.length - 3; i++) set.add(s.slice(i, i + 3));
+    return set;
+  };
+
+  const trigramScore = (query, text) => {
+    const qTri = trigrams(query);
+    const tTri = trigrams(text);
+    let matches = 0;
+    for (const t of qTri) if (tTri.has(t)) matches++;
+    return qTri.size === 0 ? 0 : matches / qTri.size;
+  };
+
+  const bookMatchesQuery = (book, query) => {
+    const fields = [
+      book.title,
+      book.original_title ?? '',
+      ...(book.authors?.map(a => a.name) ?? [])
+    ];
+    return fields.some(f => trigramScore(query, f) >= 0.3);
+  };
+
+  // --- Templates ---
+  const bookRowTpl = document.getElementById('tpl-book-row');
+  const metaRowTpl = document.getElementById('tpl-meta-row');
+
+  const slot = (root, name) => root.querySelector(`[data-slot="${name}"]`);
+
+  // --- Cover helpers ---
+  const gradientClass = (id) => `ph-${id % 5}`;
+
+  const createCoverEl = (book, size = 'sm') => {
+    const cls = size === 'sm' ? 'cover-sm' : 'cover-lg';
+    const defaultCover = book.covers?.find(c => c.default);
+
+    if (defaultCover) {
+      const img = document.createElement('img');
+      img.src = defaultCover.file;
+      img.alt = '';
+      img.className = `${cls} object-cover`;
+      img.onerror = () => {
+        const ph = document.createElement('div');
+        ph.className = `${cls} cover-ph ${gradientClass(book.id)}`;
+        img.replaceWith(ph);
+      };
+      return img;
+    }
+
+    const ph = document.createElement('div');
+    ph.className = `${cls} cover-ph ${gradientClass(book.id)}`;
+    return ph;
+  };
+
+  // --- Render book list using <template> ---
+  const renderBooks = (books) => {
+    displayedBooks = books;
+    selectedIndex = -1;
+    bookList.replaceChildren();
+
+    if (books.length === 0) {
+      const p = document.createElement('p');
+      p.className = 'font-body text-sm color-mid p-5';
+      p.textContent = 'No books found.';
+      bookList.appendChild(p);
+    } else {
+      for (const [i, book] of books.entries()) {
+        const frag = bookRowTpl.content.cloneNode(true);
+        const article = frag.querySelector('article');
+        article.dataset.index = i;
+
+        // Cover
+        slot(frag, 'cover').appendChild(createCoverEl(book));
+
+        // Title + year
+        const titleEl = slot(frag, 'title');
+        titleEl.prepend(book.title + ' ');
+        const yearEl = slot(frag, 'year');
+        if (book.first_publishing_date) {
+          yearEl.textContent = book.first_publishing_date;
+        } else {
+          yearEl.remove();
+        }
+
+        // Original title
+        const origEl = slot(frag, 'original');
+        if (book.original_title && book.original_title !== book.title) {
+          origEl.textContent = book.original_title;
+          origEl.hidden = false;
+        } else {
+          origEl.remove();
+        }
+
+        // Author
+        const authorEl = slot(frag, 'author');
+        const authors = book.authors?.map(a => a.name).join(', ');
+        if (authors) {
+          authorEl.textContent = authors;
+        } else {
+          authorEl.remove();
+        }
+
+        // Score
+        const scoreEl = slot(frag, 'score');
+        const hasScore = book.score != null;
+        scoreEl.textContent = hasScore ? book.score : '\u2013';
+        if (hasScore) scoreEl.value = book.score;
+        if (hasScore && book.score >= 9) scoreEl.classList.add('book-score-high');
+
+        bookList.appendChild(frag);
+      }
+    }
+
+    bookCount.textContent = `${books.length} ${books.length === 1 ? 'libro' : 'libros'}`;
+  };
+
+  // --- Search ---
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim();
+    renderBooks(query ? allBooks.filter(b => bookMatchesQuery(b, query)) : [...allBooks]);
+  });
+
+  // --- Dialog: populate and show ---
+  const openBookDetail = (book) => {
+    detailTitle.textContent = book.title;
+
+    if (book.original_title && book.original_title !== book.title) {
+      detailOriginal.textContent = book.original_title;
+      detailOriginal.classList.remove('hidden');
+    } else {
+      detailOriginal.classList.add('hidden');
+    }
+
+    detailAuthor.textContent = book.authors?.map(a => a.name).join(', ') ?? '';
+    detailCoverWrap.replaceChildren(createCoverEl(book, 'lg'));
+
+    // Meta rows using <template>
+    detailMetaRows.replaceChildren();
+    const rows = [];
+    if (book.first_publishing_date) rows.push({ label: 'Year', value: book.first_publishing_date, mono: true });
+    if (book.publisher) rows.push({ label: 'Publisher', value: book.publisher, mono: false });
+    for (const id of (book.identifiers ?? [])) rows.push({ label: id.type, value: id.value, mono: true });
+    if (book.publish_dates?.length > 1) rows.push({ label: 'Editions', value: book.publish_dates.join(', '), mono: false });
+
+    for (const r of rows) {
+      const frag = metaRowTpl.content.cloneNode(true);
+      slot(frag, 'label').textContent = r.label;
+      const valueEl = slot(frag, 'value');
+      valueEl.textContent = r.value;
+      valueEl.classList.add(...(r.mono ? ['font-mono', 'text-xs', 'fw-700'] : ['font-body', 'text-sm']));
+      detailMetaRows.appendChild(frag);
+    }
+
+    const hasScore = book.score != null;
+    detailScore.textContent = hasScore ? book.score : '\u2013';
+    if (hasScore) detailScore.value = book.score;
+
+    if (book.review) {
+      detailReview.textContent = book.review;
+      detailReviewSection.classList.remove('hidden');
+    } else {
+      detailReviewSection.classList.add('hidden');
+    }
+
+    detailDialog.showModal();
+  };
+
+  // --- Dialog: close on backdrop click ---
+  detailDialog.addEventListener('click', (e) => { if (e.target === detailDialog) detailDialog.close(); });
+  helpDialog.addEventListener('click', (e) => { if (e.target === helpDialog) helpDialog.close(); });
+
+  // Close buttons
+  document.getElementById('detail-close').addEventListener('click', () => detailDialog.close());
+  document.querySelector('.help-close-btn').addEventListener('click', () => helpDialog.close());
+
+  // --- Book row click (event delegation) ---
+  bookList.addEventListener('click', (e) => {
+    const row = e.target.closest('.book-row');
+    if (!row) return;
+    const index = parseInt(row.dataset.index, 10);
+    selectedIndex = index;
+    updateSelection();
+    openBookDetail(displayedBooks[index]);
+  });
+
+  // --- Selection visual ---
+  const updateSelection = () => {
+    const rows = bookList.querySelectorAll('.book-row');
+    for (const [i, row] of rows.entries()) row.classList.toggle('selected', i === selectedIndex);
+    rows[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+  };
+
+  // --- Keyboard navigation ---
+  document.addEventListener('keydown', (e) => {
+    const inSearch = document.activeElement === searchInput;
+    const detailOpen = detailDialog.open;
+    const helpOpen = helpDialog.open;
+
+    if (e.key === 'Escape') {
+      if (detailOpen) {
+        requestAnimationFrame(() => bookList.querySelectorAll('.book-row')[selectedIndex]?.focus({ preventScroll: true }));
+        return;
+      }
+      if (helpOpen) return;
+      if (inSearch) { e.preventDefault(); searchInput.blur(); return; }
+      return;
+    }
+
+    if (inSearch) return;
+    if (detailOpen || helpOpen) return;
+
+    const rows = bookList.querySelectorAll('.book-row');
+    const maxIndex = rows.length - 1;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, maxIndex);
+        updateSelection();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, 0);
+        updateSelection();
+        break;
+      case 'Enter':
+      case ' ':
+        if (selectedIndex >= 0 && selectedIndex < displayedBooks.length) {
+          e.preventDefault();
+          openBookDetail(displayedBooks[selectedIndex]);
+        }
+        break;
+      case 'f':
+      case 'F':
+        e.preventDefault();
+        searchInput.focus();
+        break;
+      case '?':
+        e.preventDefault();
+        helpDialog.showModal();
+        break;
+    }
+  });
+
+  detailDialog.addEventListener('close', () => {
+    bookList.querySelectorAll('.book-row')[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+  });
+
+  // --- Init ---
+  renderBooks([...allBooks]);
+</script>
+</body>
+</html>
