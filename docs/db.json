@@ -180,7 +180,7 @@
   },
   {
     "id": 6,
-    "title": "El Sueño del Águila",
+    "title": "El sueño del águila",
     "subtitle": "Boudica, Reina Guerrera de los Celtas",
     "original_title": "Dreaming the Eagle",
     "first_publishing_date": "2003",
@@ -217,7 +217,7 @@
   },
   {
     "id": 7,
-    "title": "El Sueño Del Toro Rojo",
+    "title": "El sueño del toro rojo",
     "subtitle": "Boudica, Reina Guerrera de los Celtas",
     "original_title": "Dreaming the Bull",
     "first_publishing_date": "2004",
@@ -282,6 +282,43 @@
     "saga": {
       "name": "Boudica, Reina Guerrera de los Celtas",
       "order": 3
+    },
+    "score": 8,
+    "review": ""
+  },
+  {
+    "id": 9,
+    "title": "El sueño de la serpiente",
+    "subtitle": "Boudica, la reina guerrera de los celtas",
+    "original_title": "Dreaming the Serpent Spear",
+    "first_publishing_date": "2006",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Manda Scott",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-350-6090-5"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/9-el-sue-o-de-la-serpiente.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Edhasa",
+    "saga": {
+      "name": "Boudica, Reina Guerrera de los Celtas",
+      "order": 4
     },
     "score": 8,
     "review": ""
