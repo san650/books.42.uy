@@ -356,5 +356,39 @@
     "saga": null,
     "score": 5,
     "review": ""
+  },
+  {
+    "id": 11,
+    "title": "La leyenda del Santo Bebedor",
+    "subtitle": "",
+    "original_title": "Die Legende vom heiligen Trinker",
+    "first_publishing_date": "1939",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Joseph Roth",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-339-0233-7"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/11-la-leyenda-del-santo-bebedor.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "Anagrama",
+    "saga": null,
+    "score": 6,
+    "review": ""
   }
 ]
