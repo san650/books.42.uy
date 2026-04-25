@@ -800,5 +800,42 @@
     },
     "score": 7,
     "review": ""
+  },
+  {
+    "id": 24,
+    "title": "El mesías de Dune",
+    "subtitle": "Las crónicas de Dune 2",
+    "original_title": "Dune Messiah",
+    "first_publishing_date": "1969",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Frank Patrick Herbert",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-987-725-439-6"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/24-el-mes-as-de-dune.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "DeBolsillo",
+    "saga": {
+      "name": "Dune",
+      "order": 2
+    },
+    "score": 6,
+    "review": ""
   }
 ]
