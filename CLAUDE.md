@@ -7,7 +7,7 @@ Single-page book tracking app at books.42.uy. No frameworks — vanilla HTML/CSS
 ## Commands
 
 ```bash
-make server   # python3 -m http.server 8000
+make server   # python3 -m http.server 8000 -d public
 make add      # ruby add_book.rb — search Goodreads, scrape metadata, download cover
 make edit     # ruby edit_book.rb — refetch metadata from Goodreads, field-by-field update
 make review   # ruby add_review.rb — select book, edit review via $EDITOR
@@ -105,9 +105,10 @@ Global `keydown` listener with `selectedIndex` tracking. All keybindings are sup
 
 ## File Conventions
 
-- `db.json`: pretty-printed, books sorted alphabetically by `title`. Saga books sort by saga name then order within the group.
-- Cover files: `covers/<id>-<sanitized-title>.<ext>` (lowercase, hyphens, no spaces).
-- Ruby scripts are self-contained single files with no gem dependencies beyond stdlib.
+- `public/` contains all files served by GitHub Pages: `index.html`, `404.html`, `CNAME`, `assets/`, `covers/`, `db.json`.
+- `public/db.json`: pretty-printed, books sorted alphabetically by `title`. Saga books sort by saga name then order within the group.
+- Cover files: `public/covers/<id>-<sanitized-title>.<ext>` (lowercase, hyphens, no spaces).
+- Ruby scripts share common functionality via `common.rb` (loaded with `require_relative`).
 
 ## Data Schema
 
@@ -123,4 +124,4 @@ Book rows have fixed height. Title and subtitle each allow max 2 lines with elli
 
 ## Deployment
 
-GitHub Pages with custom domain books.42.uy. 404.html redirects to index.html. CNAME file required.
+GitHub Pages serving from `public/` directory with custom domain books.42.uy. 404.html redirects to index.html. CNAME file required.

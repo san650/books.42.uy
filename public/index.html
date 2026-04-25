@@ -6,6 +6,11 @@
 <meta name="description" content="Lev — Personal book tracker">
 <title>Lev</title>
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="theme-color" content="#1E104E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 </head>
 <body>
 
@@ -29,8 +34,8 @@
 
 <!-- Footer -->
 <footer class="bg-purple flex items-center justify-between flex-wrap gap-2 px-5 py-3 max-w-app mx-auto w-full">
-  <small class="font-mono text-xs fw-700 color-white-50 tracking-sm">&copy; 2025 Lev &mdash; MIT License</small>
-  <a href="https://github.com/santiagoferreira/books" target="_blank" rel="noopener" class="font-mono text-xs fw-700 color-yellow tracking-sm footer-link">GitHub</a>
+  <small class="font-mono text-xs fw-700 color-white-50 tracking-sm">&copy; <time datetime="2026">2026</time> Santiago Ferreira &mdash; MIT License</small>
+  <a href="https://github.com/san650/books.42.uy" target="_blank" rel="noopener" class="font-mono text-xs fw-700 color-yellow tracking-sm footer-link">GitHub</a>
 </footer>
 
 <!-- Book Detail Dialog -->
@@ -892,6 +897,11 @@
 
   // --- Init ---
   renderBooks(allBooks);
+
+  // --- Service worker ---
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
 </script>
 </body>
 </html>
