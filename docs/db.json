@@ -662,5 +662,38 @@
     "saga": null,
     "score": 10,
     "review": ""
+  },
+  {
+    "id": 20,
+    "title": "La muerte de Ivan Ilich ; Hadyi Murad",
+    "subtitle": "",
+    "original_title": "Смерть Ивана Ильича",
+    "first_publishing_date": "1886",
+    "publish_dates": [
+      "1912"
+    ],
+    "authors": [
+      {
+        "name": "Leo Tolstoy",
+        "aliases": [
+          "León Tolstoi",
+          "Lev Tolstoi",
+          "Leo Tolstoy"
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "9878420649344"
+      }
+    ],
+    "covers": [
+
+    ],
+    "publisher": "Alianza",
+    "saga": null,
+    "score": 10,
+    "review": ""
   }
 ]
