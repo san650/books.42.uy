@@ -28,7 +28,10 @@
 
 <!-- Book List -->
 <main class="bg-white max-w-app mx-auto flex-1 w-full">
-  <output id="book-count" class="bg-surface-alt color-mid font-mono text-xs fw-700 tracking-wide uppercase block px-5 py-2"></output>
+  <div class="bg-surface-alt flex items-center justify-between px-5 py-2">
+    <output id="book-count" class="color-mid font-mono text-xs fw-700 tracking-wide uppercase"></output>
+    <span class="color-mid font-mono text-xs fw-700 tracking-wide uppercase">My Score</span>
+  </div>
   <div id="book-list"></div>
 </main>
 
@@ -66,7 +69,7 @@
     <p class="font-brand text-xs uppercase tracking-wider color-mid px-4 py-3">Personal Score</p>
   </section>
   <section id="detail-review-section" class="bg-deep p-5">
-    <h3 class="font-mono text-xs fw-700 uppercase tracking-wide color-yellow mb-3">Review</h3>
+    <h3 class="font-mono text-xs fw-700 uppercase tracking-wide color-yellow mb-3">My Review</h3>
     <blockquote id="detail-review" class="font-title text-lg leading-relaxed color-white"></blockquote>
   </section>
 </dialog>
@@ -525,6 +528,8 @@
       width: 100vw;
       height: 100dvh;
       margin: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
     .detail-grid { grid-template-columns: 1fr; }
     .detail-score-strip { flex-direction: column; }
@@ -782,6 +787,7 @@
     }
 
     bookCount.textContent = `${flat.length} ${flat.length === 1 ? 'book' : 'books'}`;
+
   };
 
   // --- Search ---
