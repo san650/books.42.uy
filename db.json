@@ -1,7 +1,39 @@
 [
   {
+    "id": 2,
+    "title": "Ana Karenina",
+    "subtitle": "Una novela en ocho partes",
+    "original_title": "Anna Karenina",
+    "first_publishing_date": "1878",
+    "publish_dates": [
+      "1878"
+    ],
+    "authors": [
+      {
+        "name": "Lev Tolstói",
+        "aliases": [
+          "Leo Tolstoy"
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-9105-031-0"
+      }
+    ],
+    "covers": [
+
+    ],
+    "publisher": "Alfaguara",
+    "score": 10,
+    "review": "Una de las mejores novelas jamás escritas.",
+    "saga": null
+  },
+  {
     "id": 1,
     "title": "Anochecer",
+    "subtitle": "",
     "original_title": "Nightfall",
     "first_publishing_date": "1990",
     "publish_dates": [
@@ -32,6 +64,205 @@
     ],
     "publisher": "DeBolsillo",
     "score": 5,
+    "review": "",
+    "saga": null
+  },
+  {
+    "id": 8,
+    "title": "Cuentos",
+    "subtitle": "",
+    "original_title": "The First Forty-Nine Stories",
+    "first_publishing_date": "1939",
+    "publish_dates": [
+
+    ],
+    "authors": [
+      {
+        "name": "Ernest Hemingway",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-8346-743-5"
+      }
+    ],
+    "covers": [
+      {
+        "file": "covers/8-cuentos.jpg",
+        "default": true
+      }
+    ],
+    "publisher": "DeBolsillo",
+    "saga": null,
+    "score": 6,
     "review": ""
+  },
+  {
+    "id": 5,
+    "title": "El retorno del rey",
+    "subtitle": "",
+    "original_title": "The Return of the King",
+    "first_publishing_date": "1955",
+    "publish_dates": [
+      "1955-10-20"
+    ],
+    "authors": [
+      {
+        "name": "J.R.R. Tolkien",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-450-7035-0"
+      }
+    ],
+    "covers": [
+
+    ],
+    "publisher": "Minotauro",
+    "score": 10,
+    "review": "",
+    "saga": {
+      "name": "El Señor de los Anillos",
+      "order": 3
+    }
+  },
+  {
+    "id": 6,
+    "title": "Ficciones",
+    "subtitle": "",
+    "original_title": "",
+    "first_publishing_date": "1944",
+    "publish_dates": [
+      "1944"
+    ],
+    "authors": [
+      {
+        "name": "Jorge Luis Borges",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-663-0236-0"
+      }
+    ],
+    "covers": [
+
+    ],
+    "publisher": "DeBolsillo",
+    "score": 10,
+    "review": "",
+    "saga": null
+  },
+  {
+    "id": 3,
+    "title": "La comunidad del anillo",
+    "subtitle": "Primera parte de El Señor de los Anillos",
+    "original_title": "The Fellowship of the Ring",
+    "first_publishing_date": "1954",
+    "publish_dates": [
+      "1954-07-29"
+    ],
+    "authors": [
+      {
+        "name": "J.R.R. Tolkien",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-450-7033-6"
+      }
+    ],
+    "covers": [
+
+    ],
+    "publisher": "Minotauro",
+    "score": 9,
+    "review": "El inicio perfecto de una épica que define el género.",
+    "saga": {
+      "name": "El Señor de los Anillos",
+      "order": 1
+    }
+  },
+  {
+    "id": 4,
+    "title": "Las dos torres",
+    "subtitle": "",
+    "original_title": "The Two Towers",
+    "first_publishing_date": "1954",
+    "publish_dates": [
+      "1954-11-11"
+    ],
+    "authors": [
+      {
+        "name": "J.R.R. Tolkien",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-450-7034-3"
+      }
+    ],
+    "covers": [
+
+    ],
+    "publisher": "Minotauro",
+    "score": 8,
+    "review": "",
+    "saga": {
+      "name": "El Señor de los Anillos",
+      "order": 2
+    }
+  },
+  {
+    "id": 7,
+    "title": "Rayuela",
+    "subtitle": "",
+    "original_title": "",
+    "first_publishing_date": "1963",
+    "publish_dates": [
+      "1963"
+    ],
+    "authors": [
+      {
+        "name": "Julio Cortázar",
+        "aliases": [
+
+        ]
+      }
+    ],
+    "identifiers": [
+      {
+        "type": "ISBN",
+        "value": "978-84-376-0602-5"
+      }
+    ],
+    "covers": [
+
+    ],
+    "publisher": "Sudamericana",
+    "score": 8,
+    "review": "",
+    "saga": null
   }
 ]
