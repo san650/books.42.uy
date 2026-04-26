@@ -205,6 +205,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 30,
+      "name": "Umberto Eco",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1339,6 +1346,35 @@
         "order": 2
       },
       "score": 6,
+      "review": ""
+    },
+    {
+      "id": 39,
+      "title": "El nombre de la rosa",
+      "subtitle": "",
+      "original_title": "Il nome della rosa",
+      "first_publishing_date": "1980",
+      "publish_dates": [
+
+      ],
+      "author_ids": [
+        30
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-264-1880-7"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/39-el-nombre-de-la-rosa.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Lumen",
+      "saga": null,
+      "score": 9,
       "review": ""
     }
   ]
