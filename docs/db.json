@@ -198,6 +198,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 29,
+      "name": "Douglas Adams",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1300,6 +1307,38 @@
       "publisher": "Anagrama",
       "saga": null,
       "score": 5,
+      "review": ""
+    },
+    {
+      "id": 38,
+      "title": "El restaurante del fin del mundo",
+      "subtitle": "",
+      "original_title": "The restaurant at the end of the universe",
+      "first_publishing_date": "1980",
+      "publish_dates": [
+
+      ],
+      "author_ids": [
+        29
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-339-7328-3"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/38-el-restaurante-del-fin-del-mundo.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Anagrama",
+      "saga": {
+        "name": "Guía del autoestopista galáctico",
+        "order": 2
+      },
+      "score": 6,
       "review": ""
     }
   ]
