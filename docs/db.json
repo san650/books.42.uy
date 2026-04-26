@@ -170,6 +170,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 25,
+      "name": "Tom Sharpe",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1156,6 +1163,35 @@
       "publisher": "Anagrama",
       "saga": null,
       "score": 7,
+      "review": ""
+    },
+    {
+      "id": 34,
+      "title": "Wilt",
+      "subtitle": "",
+      "original_title": "Wilt",
+      "first_publishing_date": "1976",
+      "publish_dates": [
+
+      ],
+      "author_ids": [
+        25
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-339-0266-5"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/34-wilt.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Anagrama",
+      "saga": null,
+      "score": 8,
       "review": ""
     }
   ]
