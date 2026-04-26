@@ -184,6 +184,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 27,
+      "name": "Evelyn Waugh",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1228,6 +1235,35 @@
       "publisher": "Anagrama",
       "saga": null,
       "score": 9,
+      "review": ""
+    },
+    {
+      "id": 36,
+      "title": "¡Noticia bomba!",
+      "subtitle": "",
+      "original_title": "Scoop",
+      "first_publishing_date": "1938",
+      "publish_dates": [
+
+      ],
+      "author_ids": [
+        27
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-339-0256-6"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/36-noticia-bomba.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Anagrama",
+      "saga": null,
+      "score": 8,
       "review": ""
     }
   ]
