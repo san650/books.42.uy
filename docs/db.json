@@ -156,6 +156,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 23,
+      "name": "John Kennedy Toole",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1084,6 +1091,35 @@
       "publisher": "Anagrama",
       "saga": null,
       "score": 9,
+      "review": ""
+    },
+    {
+      "id": 32,
+      "title": "La Biblia de neón",
+      "subtitle": "",
+      "original_title": "The Neon Bible",
+      "first_publishing_date": "1989",
+      "publish_dates": [
+
+      ],
+      "author_ids": [
+        23
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-339-6656-8"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/32-la-biblia-de-ne-n.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Anagrama",
+      "saga": null,
+      "score": 4,
       "review": ""
     }
   ]
