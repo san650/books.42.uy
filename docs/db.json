@@ -177,6 +177,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 26,
+      "name": "Nick Hornby",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1192,6 +1199,35 @@
       "publisher": "Anagrama",
       "saga": null,
       "score": 8,
+      "review": ""
+    },
+    {
+      "id": 35,
+      "title": "Alta fidelidad",
+      "subtitle": "",
+      "original_title": "High Fidelity",
+      "first_publishing_date": "1995",
+      "publish_dates": [
+
+      ],
+      "author_ids": [
+        26
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-339-0225-2"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/35-alta-fidelidad.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Anagrama",
+      "saga": null,
+      "score": 9,
       "review": ""
     }
   ]
