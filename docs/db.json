@@ -163,6 +163,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 24,
+      "name": "Jack Kerouac",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1120,6 +1127,35 @@
       "publisher": "Anagrama",
       "saga": null,
       "score": 4,
+      "review": ""
+    },
+    {
+      "id": 33,
+      "title": "En el camino",
+      "subtitle": "",
+      "original_title": "On the Road",
+      "first_publishing_date": "1957",
+      "publish_dates": [
+
+      ],
+      "author_ids": [
+        24
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-339-2014-0"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/33-en-el-camino.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Anagrama",
+      "saga": null,
+      "score": 7,
       "review": ""
     }
   ]
