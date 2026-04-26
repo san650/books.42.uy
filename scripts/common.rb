@@ -178,9 +178,9 @@ def find_or_create_author(db, name, aliases: [])
 end
 
 def resolve_author_names(db, book)
-  (book["author_ids"] || []).filter_map do |aid|
+  (book["author_ids"] || []).map do |aid|
     db["authors"].find { |a| a["id"] == aid }&.dig("name")
-  end
+  end.compact
 end
 
 def author_book_count(db, author)
@@ -277,8 +277,56 @@ def read_key
     when "\e[D" then :left
     when "\r", "\n" then :enter
     when "\u0003" then :ctrl_c
-    else :unknown
+    else input.to_s.downcase
     end
+  end
+end
+
+def interactive_choice(choices, prompt_label: "Select", default: 0)
+  return nil if choices.empty?
+
+  selected = default.clamp(0, choices.size - 1)
+  rendered_lines = 0
+
+  render = lambda {
+    if rendered_lines > 0
+      print "\e[#{rendered_lines}A"
+      rendered_lines.times { print "\e[2K\n" }
+      print "\e[#{rendered_lines}A"
+    end
+
+    puts "\e[2K  \e[90m#{prompt_label}\e[0m"
+    choices.each_with_index do |choice, idx|
+      key = choice[:key] || choice["key"]
+      label = choice[:label] || choice["label"]
+      prefix = idx == selected ? "\e[33m>\e[0m \e[1m" : "  "
+      suffix = idx == selected ? "\e[0m" : ""
+      hotkey = key ? "[#{key}] " : ""
+      puts "\e[2K  #{prefix}#{hotkey}#{label}#{suffix}"
+    end
+    rendered_lines = choices.size + 1
+  }
+
+  render.call
+
+  loop do
+    key = read_key
+    case key
+    when :up
+      selected -= 1 if selected > 0
+    when :down
+      selected += 1 if selected < choices.size - 1
+    when :enter
+      return choices[selected]
+    when :ctrl_c
+      puts ""
+      exit 130
+    else
+      matched = choices.find { |choice| (choice[:key] || choice["key"]).to_s.downcase == key }
+      return matched if matched
+      next
+    end
+    render.call
   end
 end
 
@@ -362,6 +410,33 @@ def prompt_score(current_score)
     puts "Score must be 1-10. Keeping current score."
     nil
   end
+end
+
+def prompt_score_update(current_score)
+  loop do
+    input = Readline.readline("New score? (current: #{current_score || "none"}) [enter to keep]: ", false)
+    if input.nil?
+      puts ""
+      exit 130
+    end
+
+    input = input.strip
+    return nil if input.empty?
+
+    score = input.to_i
+    return score if score >= 1 && score <= 10 && score.to_s == input
+
+    puts "  Please enter a whole number between 1 and 10, or press enter to keep current."
+  end
+end
+
+def numeric_score?(book)
+  book["score"].is_a?(Numeric)
+end
+
+def format_book_title_author(book, db)
+  author = resolve_author_names(db, book).first || "Unknown"
+  "#{book["title"]} — #{author}"
 end
 
 # ---------------------------------------------------------------------------
@@ -884,6 +959,13 @@ def git_auto_commit(action, book, db, include_covers: false)
   system("git", "add", DB_PATH)
   system("git", "add", "#{COVERS_DIR}/") if include_covers
   system("git", "commit", "-m", "#{action} #{book["title"]} - #{author} book")
+rescue StandardError
+  # Don't fail if git is not available or repo not initialized
+end
+
+def git_commit_paths(paths, message)
+  Array(paths).each { |path| system("git", "add", path) }
+  system("git", "commit", "-m", message)
 rescue StandardError
   # Don't fail if git is not available or repo not initialized
 end

@@ -1,4 +1,4 @@
-.PHONY: server add edit review author format
+.PHONY: server add edit review author score format
 
 server:
 	python3 -m http.server 8000 -d docs
@@ -14,6 +14,9 @@ review:
 
 author:
 	ruby scripts/edit_author.rb
+
+score:
+	ruby scripts/score_books.rb
 
 format:
 	ruby scripts/precommit.rb
