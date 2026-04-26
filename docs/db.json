@@ -142,6 +142,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 21,
+      "name": "Hunter S. Thompson",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1013,6 +1020,35 @@
       "author_ids": [
         20
       ]
+    },
+    {
+      "id": 30,
+      "title": "Miedo y asco en Las Vegas",
+      "subtitle": "Un viaje salvaje al corazón del Sueño Americano",
+      "original_title": "Fear and Loathing in Las Vegas",
+      "first_publishing_date": "1971",
+      "publish_dates": [
+
+      ],
+      "author_ids": [
+        21
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-339-0257-3"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/30-miedo-y-asco-en-las-vegas.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Anagrama",
+      "saga": null,
+      "score": 7,
+      "review": ""
     }
   ]
 }
