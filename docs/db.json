@@ -149,6 +149,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 22,
+      "name": "Vladimir Nabokov",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1048,6 +1055,35 @@
       "publisher": "Anagrama",
       "saga": null,
       "score": 7,
+      "review": ""
+    },
+    {
+      "id": 31,
+      "title": "Lolita",
+      "subtitle": "",
+      "original_title": "Lolita",
+      "first_publishing_date": "1955",
+      "publish_dates": [
+
+      ],
+      "author_ids": [
+        22
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN",
+          "value": "978-84-339-6827-2"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/31-lolita.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Anagrama",
+      "saga": null,
+      "score": 9,
       "review": ""
     }
   ]
