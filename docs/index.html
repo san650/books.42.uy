@@ -15,24 +15,26 @@
 <body>
 
 <!-- Toolbar -->
-<nav class="bg-deep flex items-center gap-4 px-3 py-4 w-full">
-  <a href="/" class="flex items-center gap-3 shrink-0" style="text-decoration:none">
-    <img src="assets/logo.svg" alt="" class="w-6 h-6">
-    <mark class="font-brand text-lg fw-700 uppercase tracking-wide color-white bg-deep">Lev</mark>
-  </a>
-  <search class="flex-1">
-    <input id="search" type="search" placeholder="Search book..." class="w-full bg-white color-deep font-body text-sm py-2 px-3 search-input">
-  </search>
-</nav>
-<div class="bg-orange accent-strip"></div>
-
-<!-- Book List -->
-<main class="bg-white max-w-app mx-auto flex-1 w-full">
-  <div class="list-meta bg-surface-alt flex items-center justify-between px-3 py-2">
+<div class="toolbar-sticky bg-deep">
+  <nav class="bg-deep flex items-center gap-4 px-3 py-4 w-full">
+    <a href="/" class="flex items-center gap-3 shrink-0" style="text-decoration:none">
+      <img src="assets/logo.svg" alt="" class="w-6 h-6">
+      <mark class="font-brand text-lg fw-700 uppercase tracking-wide color-white bg-deep">Lev</mark>
+    </a>
+    <search class="flex-1">
+      <input id="search" type="search" placeholder="Search book..." class="w-full bg-white color-deep font-body text-sm py-2 px-3 search-input">
+    </search>
+  </nav>
+  <div class="bg-orange accent-strip"></div>
+  <div class="list-meta bg-surface-alt flex items-center justify-between px-3 py-2 max-w-app mx-auto w-full">
     <output id="book-count" class="color-mid font-mono text-xs fw-700 tracking-wide uppercase"></output>
     <button id="group-toggle" class="group-toggle font-mono text-xs fw-700 tracking-wide uppercase" type="button"></button>
     <span class="color-mid font-mono text-xs fw-700 tracking-wide uppercase">My Score</span>
   </div>
+</div>
+
+<!-- Book List -->
+<main class="bg-white max-w-app mx-auto flex-1 w-full">
   <div id="book-list"></div>
 </main>
 
@@ -342,6 +344,7 @@
    @layer component
    ======================================== */
 @layer component {
+  .toolbar-sticky { position: sticky; top: 0; z-index: 10; }
   .accent-strip { height: 4px; }
 
   .list-meta {
