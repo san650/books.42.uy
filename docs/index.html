@@ -15,7 +15,7 @@
 <body>
 
 <!-- Toolbar -->
-<nav class="bg-deep flex items-center gap-4 px-5 py-4 w-full">
+<nav class="bg-deep flex items-center gap-4 px-3 py-4 w-full">
   <a href="/" class="flex items-center gap-3 shrink-0" style="text-decoration:none">
     <img src="assets/logo.svg" alt="" class="w-6 h-6">
     <mark class="font-brand text-lg fw-700 uppercase tracking-wide color-white bg-deep">Lev</mark>
@@ -28,8 +28,9 @@
 
 <!-- Book List -->
 <main class="bg-white max-w-app mx-auto flex-1 w-full">
-  <div class="bg-surface-alt flex items-center justify-between px-5 py-2">
+  <div class="list-meta bg-surface-alt flex items-center justify-between px-3 py-2">
     <output id="book-count" class="color-mid font-mono text-xs fw-700 tracking-wide uppercase"></output>
+    <button id="group-toggle" class="group-toggle font-mono text-xs fw-700 tracking-wide uppercase" type="button"></button>
     <span class="color-mid font-mono text-xs fw-700 tracking-wide uppercase">My Score</span>
   </div>
   <div id="book-list"></div>
@@ -343,6 +344,27 @@
 @layer component {
   .accent-strip { height: 4px; }
 
+  .list-meta {
+    display: grid;
+    grid-template-columns: 1fr auto 65px;
+    column-gap: var(--sp-5);
+    row-gap: var(--sp-2);
+  }
+
+  .group-toggle {
+    background: transparent;
+    color: var(--c-orange);
+    padding: 0;
+    text-align: left;
+    transition: background 0.1s, color 0.1s;
+    &:hover,
+    &:focus-visible {
+      background: var(--c-yellow);
+      color: var(--c-deep);
+      outline: none;
+    }
+  }
+
   .search-input {
     transition: background 0.15s;
     &::placeholder {
@@ -588,6 +610,7 @@
   const bookList = document.getElementById('book-list');
   const bookCount = document.getElementById('book-count');
   const searchInput = document.getElementById('search');
+  const groupToggle = document.getElementById('group-toggle');
   const detailDialog = document.getElementById('book-detail');
   const helpDialog = document.getElementById('help');
   const detailTitle = document.getElementById('detail-title');
@@ -602,8 +625,30 @@
   const detailReview = document.getElementById('detail-review');
 
   // --- State ---
+  const GROUP_MODE_STORAGE_KEY = 'lev.groupMode';
+  const GROUP_MODES = { TITLE: 'title', AUTHOR: 'author' };
+
+  const readGroupMode = () => {
+    try {
+      return localStorage.getItem(GROUP_MODE_STORAGE_KEY) === GROUP_MODES.AUTHOR
+        ? GROUP_MODES.AUTHOR
+        : GROUP_MODES.TITLE;
+    } catch {
+      return GROUP_MODES.TITLE;
+    }
+  };
+
+  const storeGroupMode = (mode) => {
+    try {
+      localStorage.setItem(GROUP_MODE_STORAGE_KEY, mode);
+    } catch {
+      // Persistence is a nice-to-have; rendering still works without it.
+    }
+  };
+
   let displayedBooks = [];
   let selectedIndex = -1;
+  let groupMode = readGroupMode();
 
   // --- Fuzzy search (trigram + accent normalization) ---
   const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -646,7 +691,7 @@
   // --- Sorting: saga groups + alphabetical ---
   // Books with a saga group together. Groups sort by saga name among standalone books.
   // Within a group, books sort by saga.order. Standalone books sort by title.
-  const sortBooks = (books) => {
+  const buildTitleEntries = (books) => {
     // Separate saga books and standalone books
     const sagas = new Map(); // saga name -> [books]
     const standalone = [];
@@ -680,6 +725,29 @@
     const entries = [];
     for (const book of standalone) entries.push({ type: 'standalone', sortKey: book.title, book });
     for (const [name, books] of sagas) entries.push({ type: 'saga', sortKey: name, name, books });
+    entries.sort((a, b) => a.sortKey.localeCompare(b.sortKey, 'es'));
+
+    return entries;
+  };
+
+  const buildAuthorEntries = (books) => {
+    const authors = new Map();
+
+    for (const book of books) {
+      const names = bookAuthorNames(book);
+      const groupNames = names.length > 0 ? names : ['Unknown Author'];
+
+      for (const name of groupNames) {
+        if (!authors.has(name)) authors.set(name, []);
+        authors.get(name).push(book);
+      }
+    }
+
+    const entries = [];
+    for (const [name, groupBooks] of authors) {
+      groupBooks.sort((a, b) => a.title.localeCompare(b.title, 'es'));
+      entries.push({ type: 'author', sortKey: name, name, books: groupBooks });
+    }
     entries.sort((a, b) => a.sortKey.localeCompare(b.sortKey, 'es'));
 
     return entries;
@@ -798,12 +866,48 @@
     return frag;
   };
 
-  // --- Render book list with saga grouping ---
+  const updateGroupToggle = () => {
+    groupToggle.textContent = groupMode === GROUP_MODES.AUTHOR ? 'List by title' : 'Group by author';
+  };
+
+  const visibleBooksForQuery = () => {
+    const query = searchInput.value.trim();
+    if (!query) return allBooks;
+
+    const matches = allBooks.filter(b => bookMatchesQuery(b, query));
+    matches.sort((a, b) => bookRelevance(b, query) - bookRelevance(a, query));
+    return matches;
+  };
+
+  const appendGroup = (entry, startingIndex) => {
+    const headerFrag = sagaHeaderTpl.content.cloneNode(true);
+    slot(headerFrag, 'saga-name').textContent = entry.name;
+    slot(headerFrag, 'saga-count').textContent = `${entry.books.length} ${entry.books.length === 1 ? 'book' : 'books'}`;
+    bookList.appendChild(headerFrag);
+
+    const group = document.createElement('div');
+    group.className = 'saga-group';
+    let flatIndex = startingIndex;
+    for (const book of entry.books) {
+      group.appendChild(buildBookRow(book, flatIndex));
+      flatIndex++;
+    }
+    bookList.appendChild(group);
+
+    bookList.appendChild(sagaEndTpl.content.cloneNode(true));
+    return flatIndex;
+  };
+
+  // --- Render book list with selected grouping ---
   const renderBooks = (books) => {
     selectedIndex = -1;
     bookList.replaceChildren();
 
-    const entries = sortBooks(books);
+    updateGroupToggle();
+
+    const entries = groupMode === GROUP_MODES.AUTHOR
+      ? buildAuthorEntries(books)
+      : buildTitleEntries(books);
 
     // Build flat list for keyboard nav and dialog lookup
     const flat = [];
@@ -825,38 +929,25 @@
           bookList.appendChild(buildBookRow(entry.book, flatIndex));
           flatIndex++;
         } else {
-          // Saga header
-          const headerFrag = sagaHeaderTpl.content.cloneNode(true);
-          slot(headerFrag, 'saga-name').textContent = entry.name;
-          slot(headerFrag, 'saga-count').textContent = `${entry.books.length} ${entry.books.length === 1 ? 'book' : 'books'}`;
-          bookList.appendChild(headerFrag);
-
-          // Saga group wrapper
-          const group = document.createElement('div');
-          group.className = 'saga-group';
-          for (const book of entry.books) {
-            group.appendChild(buildBookRow(book, flatIndex));
-            flatIndex++;
-          }
-          bookList.appendChild(group);
-
-          // Saga end separator
-          bookList.appendChild(sagaEndTpl.content.cloneNode(true));
+          flatIndex = appendGroup(entry, flatIndex);
         }
       }
     }
 
-    bookCount.textContent = `${flat.length} ${flat.length === 1 ? 'book' : 'books'}`;
+    const countLabel = groupMode === GROUP_MODES.AUTHOR ? 'row' : 'book';
+    bookCount.textContent = `${flat.length} ${flat.length === 1 ? countLabel : `${countLabel}s`}`;
 
   };
 
   // --- Search ---
   searchInput.addEventListener('input', () => {
-    const query = searchInput.value.trim();
-    if (!query) { renderBooks(allBooks); return; }
-    const matches = allBooks.filter(b => bookMatchesQuery(b, query));
-    matches.sort((a, b) => bookRelevance(b, query) - bookRelevance(a, query));
-    renderBooks(matches);
+    renderBooks(visibleBooksForQuery());
+  });
+
+  groupToggle.addEventListener('click', () => {
+    groupMode = groupMode === GROUP_MODES.AUTHOR ? GROUP_MODES.TITLE : GROUP_MODES.AUTHOR;
+    storeGroupMode(groupMode);
+    renderBooks(visibleBooksForQuery());
   });
 
   // --- Dialog: populate and show ---
