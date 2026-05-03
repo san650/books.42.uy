@@ -14,7 +14,7 @@ class AddBookOrchestratorTest < Test::Unit::TestCase
       "Title" => "Crónicas Marcianas",
       "Subtitle" => "",
       "Original title" => "The Martian Chronicles",
-      "First publishing date" => "1946",
+      "First publishing year" => "1946",
       "Authors" => ["Ray Bradbury"],
       "Identifiers (ISBN-10 / ISBN-13)" => [{ "type" => "ISBN_13", "value" => "9788445078259" }],
       "Publisher" => "Minotauro",

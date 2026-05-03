@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "../publishers"
+require_relative "../text"
 
 # Normalize a raw ISBN string. Returns nil if it does not parse as ISBN-10
 # or ISBN-13.
@@ -30,17 +31,17 @@ def standardize(title:, subtitle: nil, original_title: nil, authors: [], publish
                 publish_date: nil, first_publishing_date: nil, isbn_13: nil, isbn_10: nil,
                 identifiers: nil, cover_url: nil, url: nil, language: nil, saga: nil)
   ids = identifiers || build_identifiers(isbn_13, isbn_10)
-  # Per-source `publish_date` (the edition's print year) is folded into
-  # first_publishing_date when no canonical first-publication year is
-  # supplied. Lev only stores a single year.
-  first_pub = first_publishing_date.to_s.empty? ? publish_date.to_s : first_publishing_date.to_s
+  # Lev only stores the year. Both first_publishing_date and the per-source
+  # publish_date may be free-form strings — pull a 4-digit year out of them
+  # and keep only that.
+  first_pub_year = extract_year(first_publishing_date) || extract_year(publish_date)
   {
     "title" => title,
     "subtitle" => subtitle.to_s.empty? ? nil : subtitle,
     "original_title" => original_title.to_s.empty? ? nil : original_title,
     "authors" => Array(authors).compact,
     "publisher" => sanitize_publisher(publisher),
-    "first_publishing_date" => first_pub.empty? ? nil : first_pub,
+    "first_publishing_date" => first_pub_year,
     "identifiers" => ids,
     "cover_url" => cover_url,
     "url" => url,

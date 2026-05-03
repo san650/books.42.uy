@@ -72,7 +72,7 @@ def add_book(db:, query:, http: DEFAULT_HTTP, picker: CLIPicker.new, save: true,
   original_title = picker.single("Original title", original_candidates).to_s
 
   first_pub_candidates = collect_field(pairs) { |r| r["first_publishing_date"] }
-  first_pub = picker.single("First publishing date", first_pub_candidates).to_s
+  first_pub = extract_year(picker.single("First publishing year", first_pub_candidates)).to_s
 
   authors_candidates = collect_field(pairs) { |r| r["authors"] }
   authors_candidates = canonicalize_author_candidates(db, authors_candidates)

@@ -82,9 +82,10 @@ def edit_book(db:, book:, http: DEFAULT_HTTP, picker: CLIPicker.new, save: true,
   book["original_title"] = picker.single("Original title", original_candidates, current: book["original_title"]).to_s
 
   first_pub_candidates = collect_field(pairs) { |r| r["first_publishing_date"] }
-  book["first_publishing_date"] = picker.single("First publishing date",
-                                                first_pub_candidates,
-                                                current: book["first_publishing_date"]).to_s
+  picked_year = picker.single("First publishing year",
+                              first_pub_candidates,
+                              current: book["first_publishing_date"])
+  book["first_publishing_date"] = extract_year(picked_year).to_s
 
   authors_candidates = collect_field(pairs) { |r| r["authors"] }
   authors_candidates = canonicalize_author_candidates(db, authors_candidates)

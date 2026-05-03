@@ -70,10 +70,55 @@ class StandardizeTest < Test::Unit::TestCase
     assert_equal "1946", record["first_publishing_date"]
   end
 
+  def test_first_publishing_date_extracted_from_iso_date
+    record = standardize(title: "T", publish_date: "2011-04-12")
+    assert_equal "2011", record["first_publishing_date"]
+  end
+
+  def test_first_publishing_date_extracted_from_free_text
+    record = standardize(title: "T", first_publishing_date: "April 1946, Doubleday")
+    assert_equal "1946", record["first_publishing_date"]
+  end
+
+  def test_first_publishing_date_dropped_when_no_year_found
+    record = standardize(title: "T", first_publishing_date: "n/a")
+    refute record.key?("first_publishing_date")
+  end
+
   def test_explicit_identifiers_passthrough
     ids = [{ "type" => "ISBN_13", "value" => "9788445078259" }]
     record = standardize(title: "T", identifiers: ids)
     assert_equal ids, record["identifiers"]
+  end
+end
+
+class ExtractYearTest < Test::Unit::TestCase
+  def test_isolated_year
+    assert_equal "1946", extract_year("1946")
+  end
+
+  def test_iso_date
+    assert_equal "2011", extract_year("2011-04-12")
+  end
+
+  def test_free_text
+    assert_equal "1946", extract_year("April 1946")
+    assert_equal "1990", extract_year("1990s")
+  end
+
+  def test_picks_first_year_when_multiple
+    assert_equal "2011", extract_year("2011-2014")
+  end
+
+  def test_no_year
+    assert_nil extract_year("n/a")
+    assert_nil extract_year("")
+    assert_nil extract_year(nil)
+  end
+
+  def test_long_digit_run_does_not_match
+    assert_nil extract_year("12345")
+    assert_nil extract_year("9788445078259")
   end
 end
 

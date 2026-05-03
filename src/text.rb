@@ -27,6 +27,17 @@ def strip_tags(str)
   str.gsub(/<[^>]+>/, "")
 end
 
+# Pull a 4-digit year out of a free-form date string. Returns the year as a
+# String, or nil if no plausible year is found. Picks the first standalone
+# 4-digit run — "2011-04-12" → "2011", "April 1946" → "1946", "1990s" →
+# "1990", "12345" → nil.
+def extract_year(value)
+  return nil if value.nil?
+
+  m = value.to_s.match(/(?<!\d)(\d{4})(?!\d)/)
+  m ? m[1] : nil
+end
+
 # Convert a book title to a URL/file-friendly slug:
 #   1. lowercase
 #   2. remove diacritics
