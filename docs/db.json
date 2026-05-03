@@ -1920,6 +1920,32 @@
       "saga": null,
       "score": 6,
       "review": ""
+    },
+    {
+      "id": 61,
+      "title": "¿Cuánta Tierra Necesita Un Hombre?",
+      "subtitle": "",
+      "original_title": "Mnogo li cheloveku zemli nuzhno",
+      "first_publishing_date": "1886",
+      "author_ids": [
+        13
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788492683352"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/61-cuanta-tierra-necesita-un-hombre.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Nordica Libros",
+      "saga": null,
+      "score": 6,
+      "review": ""
     }
   ],
   "publishers": [
@@ -1938,6 +1964,7 @@
     "Librerias Libertador",
     "Lumen",
     "Minotauro",
+    "Nordica Libros",
     "Nova",
     "Nørdica Libros",
     "Penguin Random House",
