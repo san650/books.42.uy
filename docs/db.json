@@ -2233,6 +2233,29 @@
       "saga": null,
       "score": 10,
       "review": ""
+    },
+    {
+      "id": 72,
+      "title": "Guerra y Paz",
+      "subtitle": "",
+      "original_title": "",
+      "first_publishing_date": "1869",
+      "author_ids": [
+        13
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/72-guerra-y-paz.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": null,
+      "score": 10,
+      "review": ""
     }
   ],
   "publishers": [
