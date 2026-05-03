@@ -283,6 +283,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 41,
+      "name": "Juan Rulfo",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1695,12 +1702,39 @@
       "saga": null,
       "score": 9,
       "review": ""
+    },
+    {
+      "id": 54,
+      "title": "Pedro Páramo",
+      "subtitle": "",
+      "original_title": "",
+      "first_publishing_date": "1955",
+      "author_ids": [
+        41
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_10",
+          "value": "8437604184"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/54-pedro-paramo.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Cátedra",
+      "saga": null,
+      "score": 7,
+      "review": ""
     }
   ],
   "publishers": [
     "Alfaguara",
     "Alianza",
     "Anagrama",
+    "Cátedra",
     "DeBolsillo",
     "Edhasa",
     "Editorial Impedimenta",
