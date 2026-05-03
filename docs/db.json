@@ -1669,6 +1669,32 @@
       "saga": null,
       "score": 8,
       "review": ""
+    },
+    {
+      "id": 53,
+      "title": "2001",
+      "subtitle": "una odisea espacial",
+      "original_title": "2001. A Space Odyssey",
+      "first_publishing_date": "1968",
+      "author_ids": [
+        3
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788497599290"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/53-2001.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "DeBolsillo",
+      "saga": null,
+      "score": 9,
+      "review": ""
     }
   ],
   "publishers": [
