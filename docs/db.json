@@ -1728,6 +1728,29 @@
       "saga": null,
       "score": 7,
       "review": ""
+    },
+    {
+      "id": 55,
+      "title": "El Conde Belisario",
+      "subtitle": "",
+      "original_title": "Count Belisarius",
+      "first_publishing_date": "1982",
+      "author_ids": [
+        18
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788435015653"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "Edhasa",
+      "saga": null,
+      "score": 10,
+      "review": ""
     }
   ],
   "publishers": [
