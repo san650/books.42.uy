@@ -1376,6 +1376,32 @@
       "saga": null,
       "score": 9,
       "review": ""
+    },
+    {
+      "id": 40,
+      "title": "Cronicas Marcianas",
+      "subtitle": "",
+      "original_title": "The Martian Chronicles",
+      "first_publishing_date": "1946",
+      "publish_dates": [
+
+      ],
+      "author_ids": [
+
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/40-cronicas-marcianas.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Minotauro",
+      "saga": null,
+      "score": 6,
+      "review": ""
     }
   ]
 }
