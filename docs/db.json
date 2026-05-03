@@ -374,6 +374,13 @@
       "aliases": [
         "Gerald Tyrwhitt-Wilson"
       ]
+    },
+    {
+      "id": 54,
+      "name": "J.R.R. Tolkien",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -2373,6 +2380,32 @@
       "publisher": "",
       "saga": null,
       "score": 6,
+      "review": ""
+    },
+    {
+      "id": 78,
+      "title": "La comunidad del anillo",
+      "subtitle": "El Señor de los Anillos",
+      "original_title": "The Fellowship of the Ring",
+      "first_publishing_date": "1954",
+      "author_ids": [
+        54
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/78-la-comunidad-del-anillo.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": {
+        "name": "El Señor de los Anillos",
+        "order": 1
+      },
+      "score": 9,
       "review": ""
     }
   ],
