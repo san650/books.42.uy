@@ -86,11 +86,6 @@ def edit_book(db:, book:, http: DEFAULT_HTTP, picker: CLIPicker.new, save: true,
                                                 first_pub_candidates,
                                                 current: book["first_publishing_date"]).to_s
 
-  publish_dates_candidates = collect_field(pairs) { |r| r["publish_dates"] }
-  book["publish_dates"] = picker.multi("Publish dates",
-                                       publish_dates_candidates,
-                                       current: book["publish_dates"] || [])
-
   authors_candidates = collect_field(pairs) { |r| r["authors"] }
   current_author_names = resolve_author_names(db, book)
   author_names = picker.multi("Authors", authors_candidates, current: current_author_names)
@@ -148,9 +143,7 @@ def edit_book_cli
     exit 0
   end
 
-  display_book_list(books, db)
-  index = prompt_book_selection(books, db)
-  book = books[index]
+  book = prompt_book_selection(books, db)
 
   UI.current.say ""
   UI.current.say "Selected: #{book["title"]}"
@@ -169,7 +162,6 @@ def edit_book_cli
   UI.current.say "  Original:    #{book["original_title"]}" unless book["original_title"].to_s.empty?
   UI.current.say "  Authors:     #{resolve_author_names(db, book).join(", ")}"
   UI.current.say "  First pub:   #{book["first_publishing_date"]}" unless book["first_publishing_date"].to_s.empty?
-  UI.current.say "  Published:   #{(book["publish_dates"] || []).join(", ")}" if (book["publish_dates"] || []).any?
   (book["identifiers"] || []).each { |id| UI.current.say "  #{id["type"]}:    #{id["value"]}" }
   UI.current.say "  Publisher:   #{book["publisher"]}"
   UI.current.say "  Saga:        #{book["saga"]["name"]} ##{book["saga"]["order"]}" if book["saga"]

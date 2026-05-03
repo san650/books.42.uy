@@ -74,9 +74,6 @@ def add_book(db:, query:, http: DEFAULT_HTTP, picker: CLIPicker.new, save: true,
   first_pub_candidates = collect_field(pairs) { |r| r["first_publishing_date"] }
   first_pub = picker.single("First publishing date", first_pub_candidates).to_s
 
-  publish_dates_candidates = collect_field(pairs) { |r| r["publish_dates"] }
-  publish_dates = picker.multi("Publish dates", publish_dates_candidates)
-
   authors_candidates = collect_field(pairs) { |r| r["authors"] }
   author_names = picker.multi("Authors", authors_candidates)
   author_names = picker.author_fallback_names if author_names.empty?
@@ -123,7 +120,6 @@ def add_book(db:, query:, http: DEFAULT_HTTP, picker: CLIPicker.new, save: true,
     "subtitle" => subtitle.to_s,
     "original_title" => original_title.to_s,
     "first_publishing_date" => first_pub.to_s,
-    "publish_dates" => publish_dates,
     "author_ids" => author_ids,
     "identifiers" => identifiers,
     "covers" => covers,
@@ -184,7 +180,6 @@ def add_book_cli(argv = ARGV)
   UI.current.say "  Original:    #{book["original_title"]}" unless book["original_title"].empty?
   UI.current.say "  Authors:     #{resolve_author_names(db, book).join(", ")}"
   UI.current.say "  First pub:   #{book["first_publishing_date"]}" unless book["first_publishing_date"].empty?
-  UI.current.say "  Published:   #{book["publish_dates"].join(", ")}" if book["publish_dates"].any?
   book["identifiers"].each { |id| UI.current.say "  #{id["type"]}:    #{id["value"]}" }
   UI.current.say "  Publisher:   #{book["publisher"]}"
   UI.current.say "  Saga:        #{book["saga"]["name"]} ##{book["saga"]["order"]}" if book["saga"]

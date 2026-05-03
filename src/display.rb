@@ -3,37 +3,27 @@
 require_relative "authors"
 require_relative "interactive_select"
 
-def format_book_line(book, index, db)
-  marker = book["review"].to_s.strip.empty? ? " " : "*"
+def format_book_line(book, db)
   names = resolve_author_names(db, book)
-  author = names.first || "Unknown"
-  score  = book["score"] || "?"
-
-  parts = [book["title"]]
-  subtitle = book["subtitle"].to_s
-  parts << subtitle unless subtitle.empty?
-  parts << author
-  label = parts.join(" — ")
-
-  saga = book["saga"]
-  saga_tag = saga ? " [#{saga["name"]} ##{saga["order"]}]" : ""
-
-  format("[%s] %2d. %s (%s/10)%s", marker, index + 1, label, score, saga_tag)
+  authors = names.empty? ? "Unknown" : names.join(", ")
+  "#{book["title"]} — #{authors}"
 end
 
 def display_book_list(books, db)
   UI.current.say ""
-  books.each_with_index do |book, i|
-    UI.current.say "  #{format_book_line(book, i, db)}"
-  end
+  books.each { |book| UI.current.say "  #{format_book_line(book, db)}" }
   UI.current.say ""
 end
 
+# Sort books alphabetically by title (Spanish-locale-friendly), let the user
+# pick one, return the selected book. The interactive selector renders the
+# list itself, so callers should not also call display_book_list.
 def prompt_book_selection(books, db)
-  items = books.each_with_index.map { |book, i| format_book_line(book, i, db) }
+  sorted = books.sort_by { |b| b["title"].to_s.unicode_normalize(:nfkd).downcase }
+  items = sorted.map { |book| format_book_line(book, db) }
   idx = interactive_select(items, prompt_label: "Select a book")
   abort "\nCancelled." unless idx
-  idx
+  sorted[idx]
 end
 
 def format_book_title_author(book, db)

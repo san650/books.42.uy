@@ -30,14 +30,17 @@ def standardize(title:, subtitle: nil, original_title: nil, authors: [], publish
                 publish_date: nil, first_publishing_date: nil, isbn_13: nil, isbn_10: nil,
                 identifiers: nil, cover_url: nil, url: nil, language: nil, saga: nil)
   ids = identifiers || build_identifiers(isbn_13, isbn_10)
+  # Per-source `publish_date` (the edition's print year) is folded into
+  # first_publishing_date when no canonical first-publication year is
+  # supplied. Lev only stores a single year.
+  first_pub = first_publishing_date.to_s.empty? ? publish_date.to_s : first_publishing_date.to_s
   {
     "title" => title,
     "subtitle" => subtitle.to_s.empty? ? nil : subtitle,
     "original_title" => original_title.to_s.empty? ? nil : original_title,
     "authors" => Array(authors).compact,
     "publisher" => sanitize_publisher(publisher),
-    "first_publishing_date" => first_publishing_date.to_s.empty? ? nil : first_publishing_date.to_s,
-    "publish_dates" => publish_date.to_s.empty? ? [] : [publish_date.to_s],
+    "first_publishing_date" => first_pub.empty? ? nil : first_pub,
     "identifiers" => ids,
     "cover_url" => cover_url,
     "url" => url,

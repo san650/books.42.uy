@@ -59,9 +59,15 @@ class StandardizeTest < Test::Unit::TestCase
     assert_equal "ISBN_10", record["identifiers"][1]["type"]
   end
 
-  def test_publish_date_lifted_to_array
+  def test_publish_date_falls_back_into_first_publishing_date
     record = standardize(title: "T", publish_date: "2020")
-    assert_equal ["2020"], record["publish_dates"]
+    assert_equal "2020", record["first_publishing_date"]
+    refute record.key?("publish_dates"), "publish_dates is no longer in the schema"
+  end
+
+  def test_first_publishing_date_takes_priority_over_publish_date
+    record = standardize(title: "T", first_publishing_date: "1946", publish_date: "2020")
+    assert_equal "1946", record["first_publishing_date"]
   end
 
   def test_explicit_identifiers_passthrough

@@ -38,8 +38,15 @@ def interactive_select(items, prompt_label: "Select", default: 0, multi: false, 
       idx = offset + i
       if idx < items.size
         checkbox = multi ? (chosen.include?(idx) ? "[•] " : "[ ] ") : ""
-        if idx == cursor
-          UI.current.say "\e[2K\e[33m>\e[0m \e[1m#{checkbox}#{items[idx]}\e[0m"
+        is_cursor = idx == cursor
+        is_chosen = multi && chosen.include?(idx)
+
+        if is_cursor
+          # Cursor row: bold green.
+          UI.current.say "\e[2K\e[32m>\e[0m \e[1;32m#{checkbox}#{items[idx]}\e[0m"
+        elsif is_chosen
+          # Selected (non-cursor) multi-select row: green.
+          UI.current.say "\e[2K  \e[32m#{checkbox}#{items[idx]}\e[0m"
         else
           UI.current.say "\e[2K  #{checkbox}#{items[idx]}"
         end

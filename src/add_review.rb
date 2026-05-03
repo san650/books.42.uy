@@ -36,9 +36,7 @@ def add_review_cli
     exit 0
   end
 
-  display_book_list(books, db)
-  index = prompt_book_selection(books, db)
-  book = books[index]
+  book = prompt_book_selection(books, db)
 
   UI.current.say ""
   UI.current.say "Selected: #{book["title"]}"

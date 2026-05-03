@@ -11,7 +11,6 @@ def print_record_summary(label, record)
   warn "  authors:   #{record["authors"].join(", ")}" if record["authors"]&.any?
   warn "  publisher: #{record["publisher"]}" if record["publisher"]
   warn "  first pub: #{record["first_publishing_date"]}" if record["first_publishing_date"]
-  warn "  published: #{record["publish_dates"].join(", ")}" if record["publish_dates"]&.any?
   (record["identifiers"] || []).each do |id|
     warn "  #{id["type"].downcase.tr("_", "-").ljust(9)}: #{id["value"]}"
   end

@@ -996,7 +996,6 @@
     if (book.first_publishing_date) rows.push({ label: 'Year', value: book.first_publishing_date, mono: true });
     if (book.publisher) rows.push({ label: 'Publisher', value: book.publisher, mono: false });
     for (const id of (book.identifiers ?? [])) rows.push({ label: id.type, value: id.value, mono: true });
-    if (book.publish_dates?.length > 1) rows.push({ label: 'Editions', value: book.publish_dates.join(', '), mono: false });
     if (book.saga?.name) rows.push({ label: 'Saga', value: `${book.saga.name} #${book.saga.order}`, mono: true });
 
     for (const r of rows) {
