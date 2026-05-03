@@ -1911,7 +1911,10 @@
         }
       ],
       "covers": [
-
+        {
+          "file": "covers/60-nueva-visita-a-un-mundo-feliz.jpg",
+          "default": true
+        }
       ],
       "publisher": "DeBolsillo",
       "saga": null,
