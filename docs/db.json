@@ -318,6 +318,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 46,
+      "name": "J. D. Salinger",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1853,6 +1860,32 @@
       "publisher": "Duomo",
       "saga": null,
       "score": 7,
+      "review": ""
+    },
+    {
+      "id": 59,
+      "title": "El guardián entre el centeno",
+      "subtitle": "",
+      "original_title": "The Catcher in the Rye",
+      "first_publishing_date": "1945",
+      "author_ids": [
+        46
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788420674209"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/59-el-guardian-entre-el-centeno.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Alianza",
+      "saga": null,
+      "score": 8,
       "review": ""
     }
   ],
