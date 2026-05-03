@@ -261,6 +261,14 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 38,
+      "name": "Fedor Dostoievski",
+      "aliases": [
+        "Fyodor Dostoevsky",
+        "Фёдор Михайлович Достоевский"
+      ]
     }
   ],
   "books": [
@@ -1574,6 +1582,29 @@
       "publisher": "Nørdica Libros",
       "saga": null,
       "score": 7,
+      "review": ""
+    },
+    {
+      "id": 50,
+      "title": "El Jugador",
+      "subtitle": "",
+      "original_title": "Igrok",
+      "first_publishing_date": "1866",
+      "author_ids": [
+        38
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9789875460225"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "Librerias Libertador",
+      "saga": null,
+      "score": 9,
       "review": ""
     }
   ]
