@@ -1549,6 +1549,32 @@
       "saga": null,
       "score": 8,
       "review": ""
+    },
+    {
+      "id": 49,
+      "title": "El cupón falso",
+      "subtitle": "",
+      "original_title": "Falshivi kupon",
+      "first_publishing_date": "1904",
+      "author_ids": [
+        13
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788417281120"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/49-el-cupon-falso.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Nørdica Libros",
+      "saga": null,
+      "score": 7,
+      "review": ""
     }
   ]
 }
