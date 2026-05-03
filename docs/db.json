@@ -269,6 +269,13 @@
         "Fyodor Dostoevsky",
         "Фёдор Михайлович Достоевский"
       ]
+    },
+    {
+      "id": 39,
+      "name": "William Golding",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1605,6 +1612,32 @@
       "publisher": "Librerias Libertador",
       "saga": null,
       "score": 9,
+      "review": ""
+    },
+    {
+      "id": 51,
+      "title": "El dios Escorpión",
+      "subtitle": "El dios Escorpión, Clonc Clonc, El enviado especial.",
+      "original_title": "The Scorpion God. Three Short Novels",
+      "first_publishing_date": "1971",
+      "author_ids": [
+        39
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788420653532"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/51-el-dios-escorpion.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Alianza",
+      "saga": null,
+      "score": 5,
       "review": ""
     }
   ],
