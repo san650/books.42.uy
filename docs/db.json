@@ -233,6 +233,13 @@
       "aliases": [
         "Stanisław Lem"
       ]
+    },
+    {
+      "id": 34,
+      "name": "Franz Kafka",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1386,6 +1393,36 @@
         "order": 1
       },
       "score": 7,
+      "review": ""
+    },
+    {
+      "id": 44,
+      "title": "El proceso",
+      "subtitle": "",
+      "original_title": "Der Prozess",
+      "first_publishing_date": "1925",
+      "author_ids": [
+        34
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788420678191"
+        },
+        {
+          "type": "ISBN_10",
+          "value": "8420678198"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/44-el-proceso.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Alianza",
+      "saga": null,
+      "score": 9,
       "review": ""
     }
   ]
