@@ -353,6 +353,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 51,
+      "name": "George Orwell",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -2039,12 +2046,39 @@
       "saga": null,
       "score": 4,
       "review": ""
+    },
+    {
+      "id": 65,
+      "title": "Rebelión en la granja",
+      "subtitle": "",
+      "original_title": "Animal Farm",
+      "first_publishing_date": "1945",
+      "author_ids": [
+        51
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9789875801431"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/65-rebelion-en-la-granja.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Booket",
+      "saga": null,
+      "score": 10,
+      "review": ""
     }
   ],
   "publishers": [
     "Alfaguara",
     "Alianza",
     "Anagrama",
+    "Booket",
     "Cátedra",
     "DeBolsillo",
     "Duomo",
