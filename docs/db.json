@@ -2279,6 +2279,29 @@
       "saga": null,
       "score": 9,
       "review": ""
+    },
+    {
+      "id": 74,
+      "title": "Ubik",
+      "subtitle": "",
+      "original_title": "Ubik",
+      "first_publishing_date": "1969",
+      "author_ids": [
+        17
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/74-ubik.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": null,
+      "score": 8,
+      "review": ""
     }
   ],
   "publishers": [
