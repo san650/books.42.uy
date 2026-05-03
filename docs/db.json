@@ -2184,6 +2184,32 @@
       },
       "score": 10,
       "review": ""
+    },
+    {
+      "id": 70,
+      "title": "Claudio, el Dios, y su esposa Mesalina",
+      "subtitle": "",
+      "original_title": "Claudius the God and his Wife Messalina",
+      "first_publishing_date": "1934",
+      "author_ids": [
+        18
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/70-claudio-el-dios-y-su-esposa-mesalina.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": {
+        "name": "Claudio",
+        "order": 2
+      },
+      "score": 10,
+      "review": ""
     }
   ],
   "publishers": [
