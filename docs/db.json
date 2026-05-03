@@ -381,6 +381,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 55,
+      "name": "W. H. Hudson",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -2505,6 +2512,26 @@
       "saga": null,
       "score": 7,
       "review": ""
+    },
+    {
+      "id": 83,
+      "title": "La Tierra Purpúrea",
+      "subtitle": "",
+      "original_title": "The Purple Land",
+      "first_publishing_date": "1885",
+      "author_ids": [
+        55
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+
+      ],
+      "publisher": "Ediciones de la Banda Oriental",
+      "saga": null,
+      "score": 10,
+      "review": ""
     }
   ],
   "publishers": [
@@ -2516,6 +2543,7 @@
     "DeBolsillo",
     "Duomo",
     "Edhasa",
+    "Ediciones de la Banda Oriental",
     "Editorial Impedimenta",
     "Emecé",
     "Galaxia Gutenberg",
