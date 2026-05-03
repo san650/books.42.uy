@@ -219,6 +219,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 32,
+      "name": "Ray Bradbury",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1394,10 +1401,13 @@
 
       ],
       "author_ids": [
-
+        32
       ],
       "identifiers": [
-
+        {
+          "type": "ISBN_13",
+          "value": "9789505471010"
+        }
       ],
       "covers": [
         {
