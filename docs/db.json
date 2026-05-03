@@ -297,6 +297,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 43,
+      "name": "Cixin Liu",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1766,7 +1773,7 @@
       "original_title": "",
       "first_publishing_date": "2006",
       "author_ids": [
-        42
+        43
       ],
       "identifiers": [
         {
@@ -1781,7 +1788,10 @@
         }
       ],
       "publisher": "Nova",
-      "saga": null,
+      "saga": {
+        "name": "Trilogía de los Tres Cuerpos",
+        "order": 1
+      },
       "score": 7,
       "review": ""
     }
