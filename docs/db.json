@@ -2302,6 +2302,29 @@
       "saga": null,
       "score": 8,
       "review": ""
+    },
+    {
+      "id": 75,
+      "title": "Un Mundo Feliz",
+      "subtitle": "",
+      "original_title": "Brave New World",
+      "first_publishing_date": "1932",
+      "author_ids": [
+        47
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/75-un-mundo-feliz.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": null,
+      "score": 9,
+      "review": ""
     }
   ],
   "publishers": [
