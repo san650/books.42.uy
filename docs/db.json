@@ -2482,6 +2482,29 @@
       "saga": null,
       "score": 5,
       "review": ""
+    },
+    {
+      "id": 82,
+      "title": "El Silmarillion",
+      "subtitle": "",
+      "original_title": "The Silmarillion",
+      "first_publishing_date": "1977",
+      "author_ids": [
+        54
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/82-el-silmarillion.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": null,
+      "score": 7,
+      "review": ""
     }
   ],
   "publishers": [
