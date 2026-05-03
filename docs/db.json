@@ -212,6 +212,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 31,
+      "name": "Ursula K. Le Guin",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1395,6 +1402,35 @@
       "covers": [
         {
           "file": "covers/40-cronicas-marcianas.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Minotauro",
+      "saga": null,
+      "score": 6,
+      "review": ""
+    },
+    {
+      "id": 41,
+      "title": "El relato",
+      "subtitle": "",
+      "original_title": "The Telling",
+      "first_publishing_date": "2000",
+      "publish_dates": [
+        "2021-03"
+      ],
+      "author_ids": [
+        31
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788445009772"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/41-el-relato.jpg",
           "default": true
         }
       ],
