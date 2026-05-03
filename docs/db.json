@@ -1490,6 +1490,32 @@
       "saga": null,
       "score": 4,
       "review": ""
+    },
+    {
+      "id": 47,
+      "title": "El día antes de la revolución",
+      "subtitle": "",
+      "original_title": "The Day before the Revolution",
+      "first_publishing_date": "1974",
+      "author_ids": [
+        31
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788417281847"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/47-el-dia-antes-de-la-revolucion.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Nørdica Libros",
+      "saga": null,
+      "score": 4,
+      "review": ""
     }
   ]
 }
