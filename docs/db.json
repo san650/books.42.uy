@@ -360,6 +360,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 52,
+      "name": "Jules Verne",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -2072,6 +2079,32 @@
       "saga": null,
       "score": 10,
       "review": ""
+    },
+    {
+      "id": 66,
+      "title": "El faro del fin del mundo",
+      "subtitle": "",
+      "original_title": "Le phare du bout du monde",
+      "first_publishing_date": "1905",
+      "author_ids": [
+        52
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9789500397605"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/66-el-faro-del-fin-del-mundo.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "LOSADA",
+      "saga": null,
+      "score": 7,
+      "review": ""
     }
   ],
   "publishers": [
@@ -2089,6 +2122,7 @@
     "HUM",
     "La Factoría De Ideas",
     "Librerias Libertador",
+    "LOSADA",
     "Lumen",
     "Mestas Ediciones",
     "Minotauro",
