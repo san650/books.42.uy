@@ -254,6 +254,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 37,
+      "name": "Natsume Sōseki",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1515,6 +1522,32 @@
       "publisher": "Nørdica Libros",
       "saga": null,
       "score": 4,
+      "review": ""
+    },
+    {
+      "id": 48,
+      "title": "Sanshiro",
+      "subtitle": "",
+      "original_title": "Sanshiro",
+      "first_publishing_date": "2009",
+      "author_ids": [
+        37
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788493711009"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/48-sanshiro.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Editorial Impedimenta",
+      "saga": null,
+      "score": 8,
       "review": ""
     }
   ]
