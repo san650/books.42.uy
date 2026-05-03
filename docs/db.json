@@ -346,6 +346,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 50,
+      "name": "Honoré de Balzac",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -2008,6 +2015,29 @@
       "publisher": "Mestas Ediciones",
       "saga": null,
       "score": 7,
+      "review": ""
+    },
+    {
+      "id": 64,
+      "title": "Tratado de la vida Elegante",
+      "subtitle": "",
+      "original_title": "Traité de la vie élégante",
+      "first_publishing_date": "1833",
+      "author_ids": [
+        50
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788415130147"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "Editorial Impedimenta",
+      "saga": null,
+      "score": 4,
       "review": ""
     }
   ],
