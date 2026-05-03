@@ -276,6 +276,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 40,
+      "name": "Truman Capote",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1638,6 +1645,29 @@
       "publisher": "Alianza",
       "saga": null,
       "score": 5,
+      "review": ""
+    },
+    {
+      "id": 52,
+      "title": "Desayuno En Tiffanys",
+      "subtitle": "",
+      "original_title": "Breakfast at Tiffany's",
+      "first_publishing_date": "1950",
+      "author_ids": [
+        40
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9789875661547"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "DeBolsillo",
+      "saga": null,
+      "score": 8,
       "review": ""
     }
   ],
