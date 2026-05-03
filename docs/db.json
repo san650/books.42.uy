@@ -304,6 +304,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 44,
+      "name": "William Gibson",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1792,6 +1799,29 @@
         "name": "Trilogía de los Tres Cuerpos",
         "order": 1
       },
+      "score": 7,
+      "review": ""
+    },
+    {
+      "id": 57,
+      "title": "Neuromante",
+      "subtitle": "",
+      "original_title": "Neuromancer",
+      "first_publishing_date": "1984",
+      "author_ids": [
+        44
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788445009406"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "Minotauro",
+      "saga": null,
       "score": 7,
       "review": ""
     }
