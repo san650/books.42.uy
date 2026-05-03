@@ -191,16 +191,17 @@ end
 # Interactive list selector (arrow key navigation)
 # ---------------------------------------------------------------------------
 
-def interactive_select(items, prompt_label: "Select", default: 0)
+def interactive_select(items, prompt_label: "Select", default: 0, multi: false, preselected: [])
   return nil if items.empty?
+  return [] if multi && items.empty?
 
-  selected = default.clamp(0, items.size - 1)
+  cursor = default.clamp(0, items.size - 1)
+  chosen = preselected.is_a?(Array) ? preselected.select { |i| i.between?(0, items.size - 1) }.uniq : []
   max_visible = [items.size, 20].min
   offset = 0
   rendered_lines = 0
 
   render = lambda {
-    # Clear previously rendered lines
     if rendered_lines > 0
       print "\e[#{rendered_lines}A"
       rendered_lines.times { print "\e[2K\n" }
@@ -209,20 +210,24 @@ def interactive_select(items, prompt_label: "Select", default: 0)
 
     lines = 0
 
-    # Show scroll indicator if needed
+    label = multi ? "#{prompt_label} (space=toggle, enter=confirm)" : prompt_label
     if items.size > max_visible
-      pos = "#{selected + 1}/#{items.size}"
-      puts "\e[2K  \e[90m#{prompt_label} (#{pos})\e[0m"
+      pos = "#{cursor + 1}/#{items.size}"
+      puts "\e[2K  \e[90m#{label} (#{pos})\e[0m"
+      lines += 1
+    elsif multi
+      puts "\e[2K  \e[90m#{label}\e[0m"
       lines += 1
     end
 
     max_visible.times do |i|
       idx = offset + i
       if idx < items.size
-        if idx == selected
-          puts "\e[2K  \e[33m>\e[0m \e[1m#{items[idx]}\e[0m"
+        checkbox = multi ? (chosen.include?(idx) ? "[x] " : "[ ] ") : ""
+        if idx == cursor
+          puts "\e[2K  \e[33m>\e[0m \e[1m#{checkbox}#{items[idx]}\e[0m"
         else
-          puts "\e[2K    #{items[idx]}"
+          puts "\e[2K    #{checkbox}#{items[idx]}"
         end
       else
         puts "\e[2K"
@@ -239,17 +244,25 @@ def interactive_select(items, prompt_label: "Select", default: 0)
     key = read_key
     case key
     when :up
-      if selected > 0
-        selected -= 1
-        offset = selected if selected < offset
+      if cursor > 0
+        cursor -= 1
+        offset = cursor if cursor < offset
       end
     when :down
-      if selected < items.size - 1
-        selected += 1
-        offset = selected - max_visible + 1 if selected >= offset + max_visible
+      if cursor < items.size - 1
+        cursor += 1
+        offset = cursor - max_visible + 1 if cursor >= offset + max_visible
+      end
+    when :space
+      if multi
+        if chosen.include?(cursor)
+          chosen.delete(cursor)
+        else
+          chosen << cursor
+        end
       end
     when :enter
-      return selected
+      return multi ? chosen.sort : cursor
     when :ctrl_c
       puts ""
       exit 130
@@ -276,6 +289,7 @@ def read_key
     when "\e[C" then :right
     when "\e[D" then :left
     when "\r", "\n" then :enter
+    when " " then :space
     when "\u0003" then :ctrl_c
     else input.to_s.downcase
     end
@@ -482,6 +496,35 @@ rescue JSON::ParserError
   nil
 end
 
+# Retry on 429, 5XX, and network errors with exponential backoff (1s, 2s, 4s).
+# Honors the Retry-After header on 429 when present as a positive integer.
+# Returns the final response (which may still be retryable) or nil on network failure.
+# Other 4XX responses are returned immediately without retry.
+def http_get_with_retry(url, headers: {}, retries: 3)
+  delay = 1
+  attempt = 0
+
+  loop do
+    response = http_get(url, headers: headers)
+    retryable = response.nil? || response.code == "429" || response.code.start_with?("5")
+    return response unless retryable
+
+    attempt += 1
+    break response if attempt > retries
+
+    wait = if response && response.code == "429" && response["retry-after"] =~ /\A\d+\z/
+             response["retry-after"].to_i
+           else
+             delay
+           end
+
+    reason = response ? "HTTP #{response.code}" : "network error"
+    warn "  #{reason} — retrying in #{wait}s (attempt #{attempt}/#{retries})..."
+    sleep wait
+    delay *= 2
+  end
+end
+
 def http_download(url, dest)
   response = http_get(url)
   return false unless response&.code == "200"
@@ -504,12 +547,12 @@ end
 def goodreads_search(query)
   encoded = URI.encode_www_form_component(query).gsub("%20", "+")
   url = "https://www.goodreads.com/search?utf8=%E2%9C%93&q=#{encoded}&search_type=books"
-  puts "\nSearching Goodreads..."
+  warn "Searching Goodreads..."
 
   response = http_get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
 
   unless response&.code == "200"
-    puts "  Goodreads search unavailable (HTTP #{response&.code})."
+    warn "  Goodreads search unavailable (HTTP #{response&.code})."
     return []
   end
 
@@ -560,11 +603,11 @@ def goodreads_search(query)
     end
   end
 
-  puts "  No results found on Goodreads." if results.empty?
+  warn "  No results found on Goodreads." if results.empty?
 
   results
 rescue StandardError => e
-  puts "  Goodreads search failed: #{e.message}"
+  warn "  Goodreads search failed: #{e.message}"
   []
 end
 
@@ -707,7 +750,7 @@ def scrape_goodreads_detail_from_next_data(html)
 
   detail
 rescue JSON::ParserError => e
-  puts "  __NEXT_DATA__ JSON parse error: #{e.message}"
+  warn "  __NEXT_DATA__ JSON parse error: #{e.message}"
   nil
 end
 
@@ -864,34 +907,32 @@ def scrape_goodreads_detail_from_html(html)
 end
 
 def scrape_goodreads_detail(url)
-  puts "\nFetching Goodreads book page..."
+  warn "Fetching Goodreads book page (#{url})..."
   response = http_get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
 
   unless response&.code == "200"
-    puts "  Could not fetch book page (HTTP #{response&.code})."
+    warn "  Could not fetch book page (HTTP #{response&.code})."
     return nil
   end
 
   html = response.body
 
-  # Try structured __NEXT_DATA__ JSON first (more reliable)
   begin
     detail = scrape_goodreads_detail_from_next_data(html)
     if detail && detail[:title] && !detail[:title].empty?
-      puts "  Parsed book data from structured JSON."
+      warn "  Parsed book data from structured JSON."
       return detail
     end
   rescue StandardError => e
-    puts "  __NEXT_DATA__ extraction failed (#{e.message}), falling back to HTML scraping..."
+    warn "  __NEXT_DATA__ extraction failed (#{e.message}), falling back to HTML scraping..."
   end
 
-  # Fall back to HTML scraping
   detail = scrape_goodreads_detail_from_html(html)
   return detail unless detail.empty?
 
   nil
 rescue StandardError => e
-  puts "  Goodreads detail scraping failed: #{e.message}"
+  warn "  Goodreads detail scraping failed: #{e.message}"
   nil
 end
 
@@ -899,53 +940,68 @@ end
 # Spanish Wikipedia augmentation
 # ---------------------------------------------------------------------------
 
-def search_wikipedia_es(title, author = nil)
+WIKIPEDIA_BOOK_KEYWORDS = {
+  "es" => /(?:libro|novela|ficha de libro|t[ií]tulo[_ ]orig|isbn)/i,
+  "en" => /(?:novel|book|original[_ ]title|isbn)/i
+}.freeze
+
+WIKIPEDIA_ORIG_TITLE_RE = {
+  "es" => /t[ií]tulo[_ ]orig(?:inal)?\s*=\s*(.+)/i,
+  "en" => /(?:orig[_ ]title|name[_ ]orig|original[_ ]title)\s*=\s*(.+)/i
+}.freeze
+
+def search_wikipedia(title, author = nil, language: "es")
+  language = language.to_s.downcase
+  language = "es" unless WIKIPEDIA_BOOK_KEYWORDS.key?(language)
+
   query = title.dup
   query << " #{author}" if author && !author.empty?
   encoded = URI.encode_www_form_component(query)
-  url = "https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=#{encoded}&format=json&srlimit=5&srnamespace=0"
+  url = "https://#{language}.wikipedia.org/w/api.php?action=query&list=search&srsearch=#{encoded}&format=json&srlimit=5&srnamespace=0"
 
-  puts "\nSearching Spanish Wikipedia..."
+  warn "Searching #{language.upcase} Wikipedia..."
   data = http_get_json(url)
   return nil unless data && data.dig("query", "search")&.any?
+
+  book_keywords = WIKIPEDIA_BOOK_KEYWORDS[language]
+  orig_title_re = WIKIPEDIA_ORIG_TITLE_RE[language]
 
   data.dig("query", "search").each do |result|
     page_title = result["title"]
     next unless page_title
 
-    parse_url = "https://es.wikipedia.org/w/api.php?action=parse&page=#{URI.encode_www_form_component(page_title)}&prop=wikitext&format=json&redirects=1"
+    parse_url = "https://#{language}.wikipedia.org/w/api.php?action=parse&page=#{URI.encode_www_form_component(page_title)}&prop=wikitext&format=json&redirects=1"
     page_data = http_get_json(parse_url)
     wikitext = page_data&.dig("parse", "wikitext", "*")
     next unless wikitext
-
-    # Verify this is about a book or novel
-    next unless wikitext =~ /(?:libro|novela|ficha de libro|t[ií]tulo[_ ]orig|isbn)/i
+    next unless wikitext =~ book_keywords
 
     info = {}
 
-    # Extract original title
-    if wikitext =~ /t[ií]tulo[_ ]orig(?:inal)?\s*=\s*(.+)/i
+    if wikitext =~ orig_title_re
       val = $1.strip.sub(/\s*[|\}].*/, "").strip
       val = val.gsub(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/, '\1').gsub(/'{2,}/, "").strip
       info[:original_title] = val unless val.empty?
     end
 
-    # Extract ISBN
     if wikitext =~ /isbn\s*=\s*([\d][-\d ]+[\dXx])/i
       isbn = $1.strip.gsub(/[- ]/, "")
       info[:isbn] = isbn if isbn =~ /\A\d{10,13}\z/
     end
 
-    unless info.empty?
-      puts "  Found: #{page_title}"
-      return info
-    end
+    next if info.empty?
+
+    info[:page_title] = page_title
+    info[:url] = "https://#{language}.wikipedia.org/wiki/#{URI.encode_www_form_component(page_title)}"
+    info[:language] = language
+    warn "  Found: #{page_title}"
+    return info
   end
 
-  puts "  No relevant information found."
+  warn "  No relevant information found."
   nil
 rescue StandardError => e
-  puts "  Wikipedia search failed: #{e.message}"
+  warn "  Wikipedia search failed: #{e.message}"
   nil
 end
 

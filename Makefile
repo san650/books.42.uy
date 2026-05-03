@@ -1,4 +1,4 @@
-.PHONY: server add edit review author score format
+.PHONY: server add edit review author score format lookup
 
 server:
 	python3 -m http.server 8000 -d docs
@@ -20,6 +20,9 @@ score:
 
 format:
 	ruby scripts/precommit.rb
+
+lookup:
+	@ruby scripts/lookup.rb $(filter-out $@,$(MAKECMDGOALS))
 
 %:
 	@:
