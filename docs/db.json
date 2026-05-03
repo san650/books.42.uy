@@ -290,6 +290,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 42,
+      "name": "刘慈欣",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1750,6 +1757,32 @@
       "publisher": "Edhasa",
       "saga": null,
       "score": 10,
+      "review": ""
+    },
+    {
+      "id": 56,
+      "title": "El problema de los tres cuerpos",
+      "subtitle": "",
+      "original_title": "",
+      "first_publishing_date": "2006",
+      "author_ids": [
+        42
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788466659734"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/56-el-problema-de-los-tres-cuerpos.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Nova",
+      "saga": null,
+      "score": 7,
       "review": ""
     }
   ],
