@@ -9,16 +9,13 @@ require "tmpdir"
 require "json"
 
 ROOT = File.expand_path("..", __dir__)
-$LOAD_PATH.unshift(File.join(ROOT, "scripts"))
+$LOAD_PATH.unshift(File.join(ROOT, "src"))
 $LOAD_PATH.unshift(File.join(ROOT, "test"))
 
-require "common"
-require "lookup"
-require "book_form"
-require "add_book"
-require "edit_book"
+require "lev"
 
 require "fakes/fake_http_client"
+require "fakes/stub_console_ui"
 
 # Tests must never write to the project's real .cache/ or db.json. Swap the
 # cache for an in-memory implementation by default; tests that exercise the

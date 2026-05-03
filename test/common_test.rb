@@ -220,11 +220,35 @@ class TextHelpersTest < Test::Unit::TestCase
     assert_equal "Hello world", strip_tags("<b>Hello</b> <i>world</i>")
   end
 
-  def test_sanitize_title
-    # sanitize_title is ASCII-only — non-ASCII chars become hyphens.
-    assert_equal "cr-nicas-marcianas", sanitize_title("Crónicas Marcianas")
-    assert_equal "the-martian-chronicles", sanitize_title("The Martian Chronicles!")
+  def test_sanitize_title_lowercases
+    assert_equal "the-martian-chronicles", sanitize_title("The Martian Chronicles")
+  end
+
+  def test_sanitize_title_strips_diacritics
+    assert_equal "cronicas-marcianas", sanitize_title("Crónicas Marcianas")
+    assert_equal "naive-cafe", sanitize_title("Naïve Café")
+    assert_equal "ano-nuevo", sanitize_title("Año Nuevo")
+    assert_equal "uber-alles", sanitize_title("Über Alles")
+    assert_equal "amelie", sanitize_title("Amélie")
+  end
+
+  def test_sanitize_title_whitespace_to_hyphen
+    assert_equal "foo-bar-baz", sanitize_title("foo  bar\tbaz")
+  end
+
+  def test_sanitize_title_ascii_punctuation_to_underscore
+    assert_equal "foo-_-bar", sanitize_title("foo & bar")
+    assert_equal "foo_bar", sanitize_title("foo!bar")
+  end
+
+  def test_sanitize_title_collapses_repeats_and_trims
     assert_equal "foo-bar", sanitize_title("--foo--bar--")
+    assert_equal "foo-bar", sanitize_title("__foo__bar__".tr("_", "-"))
+  end
+
+  def test_sanitize_title_non_ascii_residue_becomes_underscore
+    assert_equal "hello", sanitize_title("Hello 日本").split("-").first
+    assert_equal "_", sanitize_title("a 日 b").split("-")[1]
   end
 end
 
