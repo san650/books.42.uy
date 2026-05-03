@@ -238,9 +238,21 @@
       const block = document.createElement('div');
       block.className = 'decade-group';
 
+      // Left: marker — dot + year label styled like a title.
+      const marker = document.createElement('div');
+      marker.className = 'decade-marker';
+      const dot = document.createElement('span');
+      dot.className = 'decade-dot';
+      const label = document.createElement('span');
+      label.className = 'decade-label';
+      label.textContent = `${g.decade}s`;
+      marker.append(dot, label);
+
+      // Middle: book titles + authors. All books in a decade share the
+      // same score (it's the decade max), so the score is rendered once
+      // per group on the right column.
       const books = document.createElement('div');
       books.className = 'decade-books';
-
       for (const b of g.books) {
         const row = document.createElement('div');
         row.className = 'decade-row';
@@ -251,23 +263,16 @@
         const author = document.createElement('span');
         author.className = 'decade-author';
         author.textContent = bookAuthorNames(b).join(', ') || 'Unknown';
-        const score = document.createElement('span');
-        score.className = 'decade-score';
-        score.textContent = `${b.score}/10`;
-        row.append(title, author, score);
+        row.append(title, author);
         books.appendChild(row);
       }
 
-      const marker = document.createElement('div');
-      marker.className = 'decade-marker';
-      const dot = document.createElement('span');
-      dot.className = 'decade-dot';
-      const label = document.createElement('span');
-      label.className = 'decade-label';
-      label.textContent = `${g.decade}s`;
-      marker.append(dot, label);
+      // Right: shared score badge for the group.
+      const score = document.createElement('span');
+      score.className = 'decade-score';
+      score.textContent = `${g.score}/10`;
 
-      block.append(books, marker);
+      block.append(marker, books, score);
       wrap.appendChild(block);
     }
   };

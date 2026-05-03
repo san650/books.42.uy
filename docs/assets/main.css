@@ -579,16 +579,18 @@
   }
 
   /* ----- Decade timeline ----- */
-  /* Books on the left of a vertical orange line; each decade is a square
-     marker (dot) sitting on the line with the decade label beside it.
-     The line is drawn as a ::before on each .decade-group so segments
-     connect seamlessly between rows; first/last groups trim the line so
-     it starts/ends at the dot rather than overshooting. */
+  /* Three columns per decade: marker (dot + decade label) on the left,
+     books in the middle, single score badge on the right (all books in
+     a decade group share the same score by construction).
+     The vertical line is drawn as a ::before on each .decade-group; the
+     pseudo-elements stack contiguously between siblings so the segments
+     read as one continuous line. First/last groups trim the line so it
+     starts/ends at the dot rather than overshooting. */
   #decade-list { position: relative; }
 
   .decade-group {
     display: grid;
-    grid-template-columns: 1fr 80px;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: var(--sp-3);
     padding: var(--sp-3) var(--sp-5);
@@ -601,9 +603,8 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    /* Dot center: right padding (var(--sp-5)) + dot left offset within
-       80px marker column (0px) + half dot width (7px) = sp-5 + 73 */
-    right: calc(var(--sp-5) + 73px);
+    /* Dot center: left padding (var(--sp-5)) + half dot width (6px) */
+    left: calc(var(--sp-5) + 6px);
     width: 2px;
     background: var(--c-orange);
     z-index: 0;
@@ -615,6 +616,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--sp-1);
+    min-width: 0;
   }
 
   .decade-row {
@@ -637,7 +639,7 @@
     font-weight: 700;
     color: var(--c-orange);
     font-size: var(--text-sm);
-    margin-left: auto;
+    white-space: nowrap;
   }
 
   .decade-marker {
@@ -652,13 +654,14 @@
     height: 14px;
     background: var(--c-orange);
     flex-shrink: 0;
+    border-radius: 10px;
   }
   .decade-label {
-    font-family: var(--f-brand);
-    font-weight: 700;
+    font-family: var(--f-title);
+    font-weight: 400;
     color: var(--c-orange);
-    font-size: var(--text-xs);
-    letter-spacing: 0.1em;
+    font-size: var(--text-lg);
+    line-height: 1;
     white-space: nowrap;
   }
 
