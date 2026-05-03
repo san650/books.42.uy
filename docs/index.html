@@ -329,13 +329,23 @@
   .h-6 { height: 1.5rem; }
   .max-w-app { max-width: 640px; }
 
-  .cover-sm { width: 54px; height: 78px; }
-  .cover-lg { width: 110px; height: 162px; }
+  /* List cover: fills the column edge-to-edge while preserving the source
+     image's aspect ratio. The 2:3 fallback applies to placeholder divs
+     and pre-load img sizing. */
+  .cover-sm {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 2 / 3;
+    display: block;
+    object-fit: contain;
+  }
+  .cover-lg { width: 110px; height: 162px; aspect-ratio: 2 / 3; object-fit: contain; }
   .score-col-w { width: 56px; }
   .cover-col-w { width: 74px; }
   .meta-label-w { width: 90px; }
 
   .object-cover { object-fit: cover; }
+  .object-contain { object-fit: contain; }
   .min-w-0 { min-width: 0; }
   .relative { position: relative; }
 }
@@ -401,9 +411,8 @@
     width: 64px;
     flex-shrink: 0;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--sp-3);
+    align-items: stretch;
+    justify-content: stretch;
     background: rgba(30,16,78,0.04);
   }
 
@@ -799,7 +808,7 @@
       const img = document.createElement('img');
       img.src = defaultCover.file;
       img.alt = '';
-      img.className = `${cls} object-cover`;
+      img.className = `${cls} object-contain`;
       img.onerror = () => img.replaceWith(buildPlaceholder(book, cls));
       return img;
     }
