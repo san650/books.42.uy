@@ -226,6 +226,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 33,
+      "name": "Stanislaw Lem",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1447,6 +1454,35 @@
       "publisher": "Minotauro",
       "saga": null,
       "score": 6,
+      "review": ""
+    },
+    {
+      "id": 42,
+      "title": "Retorno de las estrellas",
+      "subtitle": "",
+      "original_title": "Powróz Gwiazd",
+      "first_publishing_date": "1961",
+      "publish_dates": [
+        "2015-02"
+      ],
+      "author_ids": [
+        33
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788420693675"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/42-retorno-de-las-estrellas.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Alianza",
+      "saga": null,
+      "score": 7,
       "review": ""
     }
   ]
