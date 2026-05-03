@@ -325,6 +325,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 47,
+      "name": "Aldous Huxley",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1886,6 +1893,29 @@
       "publisher": "Alianza",
       "saga": null,
       "score": 8,
+      "review": ""
+    },
+    {
+      "id": 60,
+      "title": "Nueva visita a un mundo feliz",
+      "subtitle": "",
+      "original_title": "Brave New World Revisited",
+      "first_publishing_date": "1958",
+      "author_ids": [
+        47
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9789875663053"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "DeBolsillo",
+      "saga": null,
+      "score": 6,
       "review": ""
     }
   ],
