@@ -151,6 +151,50 @@ class CollectSagasTest < Test::Unit::TestCase
   end
 end
 
+class CanonicalizeAuthorCandidatesTest < Test::Unit::TestCase
+  def setup
+    @db = {
+      "authors" => [
+        { "id" => 1, "name" => "Ray Bradbury", "aliases" => ["Ray D. Bradbury", "R. Bradbury"] },
+        { "id" => 2, "name" => "Isaac Asimov", "aliases" => [] }
+      ],
+      "books" => []
+    }
+  end
+
+  def test_alias_value_is_replaced_with_canonical_name
+    candidates = [{ value: "Ray D. Bradbury", source: "Goodreads", context: "" }]
+    result = canonicalize_author_candidates(@db, candidates)
+    assert_equal "Ray Bradbury", result.first[:value]
+    assert_equal "Goodreads", result.first[:source]
+  end
+
+  def test_canonical_name_is_left_alone
+    candidates = [{ value: "Ray Bradbury", source: "Google Books", context: "" }]
+    result = canonicalize_author_candidates(@db, candidates)
+    assert_same candidates.first, result.first
+  end
+
+  def test_unknown_author_is_left_alone
+    candidates = [{ value: "Octavia Butler", source: "Goodreads", context: "" }]
+    result = canonicalize_author_candidates(@db, candidates)
+    assert_equal "Octavia Butler", result.first[:value]
+  end
+
+  def test_alias_and_canonical_collapse_after_build_options
+    candidates = [
+      { value: "Ray D. Bradbury", source: "Google Books", context: "" },
+      { value: "Ray Bradbury",    source: "Goodreads",    context: "" }
+    ]
+    result = canonicalize_author_candidates(@db, candidates)
+    options = build_options(result)
+    assert_equal 1, options.size, "alias and canonical merge into a single option"
+    assert_equal "Ray Bradbury", options.first[:value]
+    assert_match(/Google Books/, options.first[:label])
+    assert_match(/Goodreads/, options.first[:label])
+  end
+end
+
 class ResolveAuthorIDsTest < Test::Unit::TestCase
   def test_creates_new_authors
     db = { "authors" => [], "books" => [] }

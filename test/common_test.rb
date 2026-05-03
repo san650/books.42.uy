@@ -190,6 +190,19 @@ class AuthorHelpersTest < Test::Unit::TestCase
     assert_equal 1, find_author_by_name(db, "ray bradbury")["id"]
   end
 
+  def test_find_author_by_alias
+    db = { "authors" => [{ "id" => 1, "name" => "Ray Bradbury", "aliases" => ["Ray D. Bradbury", "RB"] }], "books" => [] }
+    assert_equal 1, find_author_by_name(db, "Ray D. Bradbury")["id"]
+    assert_equal 1, find_author_by_name(db, "rb")["id"]
+  end
+
+  def test_find_author_returns_nil_for_missing
+    db = { "authors" => [{ "id" => 1, "name" => "Ray Bradbury", "aliases" => [] }], "books" => [] }
+    assert_nil find_author_by_name(db, "Isaac Asimov")
+    assert_nil find_author_by_name(db, "")
+    assert_nil find_author_by_name(db, nil)
+  end
+
   def test_resolve_author_names
     db = { "authors" => [
       { "id" => 1, "name" => "Ray Bradbury", "aliases" => [] },

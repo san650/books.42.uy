@@ -75,6 +75,7 @@ def add_book(db:, query:, http: DEFAULT_HTTP, picker: CLIPicker.new, save: true,
   first_pub = picker.single("First publishing date", first_pub_candidates).to_s
 
   authors_candidates = collect_field(pairs) { |r| r["authors"] }
+  authors_candidates = canonicalize_author_candidates(db, authors_candidates)
   author_names = picker.multi("Authors", authors_candidates)
   author_names = picker.author_fallback_names if author_names.empty?
   author_ids = author_names.empty? ? [] : resolve_author_ids(db, author_names)

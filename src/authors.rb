@@ -2,8 +2,17 @@
 
 require_relative "db"
 
+# Find an author by canonical name OR by any of their aliases. Case-
+# insensitive. Returns the author hash or nil.
 def find_author_by_name(db, name)
-  db["authors"].find { |a| a["name"].downcase == name.downcase }
+  return nil if name.nil? || name.to_s.empty?
+
+  needle = name.to_s.downcase
+  db["authors"].find do |a|
+    next true if a["name"].to_s.downcase == needle
+
+    (a["aliases"] || []).any? { |al| al.to_s.downcase == needle }
+  end
 end
 
 def find_or_create_author(db, name, aliases: [])

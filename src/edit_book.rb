@@ -87,6 +87,7 @@ def edit_book(db:, book:, http: DEFAULT_HTTP, picker: CLIPicker.new, save: true,
                                                 current: book["first_publishing_date"]).to_s
 
   authors_candidates = collect_field(pairs) { |r| r["authors"] }
+  authors_candidates = canonicalize_author_candidates(db, authors_candidates)
   current_author_names = resolve_author_names(db, book)
   author_names = picker.multi("Authors", authors_candidates, current: current_author_names)
   author_names = picker.author_fallback_names if author_names.empty?
