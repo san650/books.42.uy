@@ -339,6 +339,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 49,
+      "name": "Lewis Carroll",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1976,6 +1983,32 @@
       "saga": null,
       "score": 8,
       "review": ""
+    },
+    {
+      "id": 63,
+      "title": "Las aventuras de Alicia en el país de las maravillas",
+      "subtitle": "",
+      "original_title": "Alice's Adventures in Wonderland",
+      "first_publishing_date": "1865",
+      "author_ids": [
+        49
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788489163430"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/63-las-aventuras-de-alicia-en-el-pais-de-las-maravillas.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Mestas Ediciones",
+      "saga": null,
+      "score": 7,
+      "review": ""
     }
   ],
   "publishers": [
@@ -1993,6 +2026,7 @@
     "La Factoría De Ideas",
     "Librerias Libertador",
     "Lumen",
+    "Mestas Ediciones",
     "Minotauro",
     "Nordica Libros",
     "Nova",
