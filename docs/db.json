@@ -367,6 +367,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 53,
+      "name": "Lord Berners",
+      "aliases": [
+        "Gerald Tyrwhitt-Wilson"
+      ]
     }
   ],
   "books": [
@@ -2105,6 +2112,29 @@
       "saga": null,
       "score": 7,
       "review": ""
+    },
+    {
+      "id": 67,
+      "title": "El Camello",
+      "subtitle": "",
+      "original_title": "The Camel",
+      "first_publishing_date": "1930",
+      "author_ids": [
+        53
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9789872492601"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "La Bestia Equilátera",
+      "saga": null,
+      "score": 5,
+      "review": ""
     }
   ],
   "publishers": [
@@ -2120,6 +2150,7 @@
     "Emecé",
     "Galaxia Gutenberg",
     "HUM",
+    "La Bestia Equilátera",
     "La Factoría De Ideas",
     "Librerias Libertador",
     "LOSADA",
