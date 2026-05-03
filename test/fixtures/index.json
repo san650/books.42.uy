@@ -1,0 +1,77 @@
+{
+  "https://en.wikipedia.org/w/api.php?action=parse&page=The+Martian+Chronicles&prop=wikitext&format=json&redirects=1": {
+    "code": "200",
+    "path": "en.wikipedia.org/89b7131ddb265a53.json",
+    "kind": "json"
+  },
+  "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=The+Martian+Chronicles+Ray+Bradbury&format=json&srlimit=5&srnamespace=0": {
+    "code": "200",
+    "path": "en.wikipedia.org/2226c3e143b612d0.json",
+    "kind": "json"
+  },
+  "https://es.wikipedia.org/w/api.php?action=parse&page=Ben+Moody&prop=wikitext&format=json&redirects=1": {
+    "code": "200",
+    "path": "es.wikipedia.org/214e0d94481760c4.json",
+    "kind": "json"
+  },
+  "https://es.wikipedia.org/w/api.php?action=parse&page=Braindead&prop=wikitext&format=json&redirects=1": {
+    "code": "200",
+    "path": "es.wikipedia.org/e00158b90ce22cb3.json",
+    "kind": "json"
+  },
+  "https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=Ciudad+zombie+David+Moody&format=json&srlimit=5&srnamespace=0": {
+    "code": "200",
+    "path": "es.wikipedia.org/7a608a4504e8d550.json",
+    "kind": "json"
+  },
+  "https://openlibrary.org/api/books?bibkeys=ISBN:9788445078259&format=json&jscmd=data": {
+    "code": "200",
+    "path": "openlibrary.org/8aa90af660567424.json",
+    "kind": "raw"
+  },
+  "https://openlibrary.org/search.json?q=the+martian+chronicles+bradbury&limit=5": {
+    "code": "200",
+    "path": "openlibrary.org/b3167a8424dceee4.json",
+    "kind": "json"
+  },
+  "https://openlibrary.org/search?q=the+martian+chronicles+bradbury": {
+    "code": "200",
+    "path": "openlibrary.org/bf4326c23ee675e1.html",
+    "kind": "raw"
+  },
+  "https://www.goodreads.com/book/show/157572812-study-guide?from_search=true&amp;from_srp=true&amp;qid=FGfVBxUmhl&amp;rank=3": {
+    "code": "200",
+    "path": "www.goodreads.com/f09791d6a3d6d161.html",
+    "kind": "raw"
+  },
+  "https://www.goodreads.com/book/show/22668668-summary-study-guide-the-martian-chronicles-by-ray-bradbury?from_search=true&amp;from_srp=true&amp;qid=FGfVBxUmhl&amp;rank=1": {
+    "code": "200",
+    "path": "www.goodreads.com/95edeed454ae1621.html",
+    "kind": "raw"
+  },
+  "https://www.goodreads.com/book/show/76778.The_Martian_Chronicles?from_search=true&amp;from_srp=true&amp;qid=FGfVBxUmhl&amp;rank=2": {
+    "code": "200",
+    "path": "www.goodreads.com/bb5a41fc001939c2.html",
+    "kind": "raw"
+  },
+  "https://www.goodreads.com/search?utf8=%E2%9C%93&q=9788445078259&search_type=books": {
+    "code": "200",
+    "path": "www.goodreads.com/7e9dff7004626fc3.html",
+    "kind": "raw"
+  },
+  "https://www.goodreads.com/search?utf8=%E2%9C%93&q=the+martian+chronicles+bradbury&search_type=books": {
+    "code": "200",
+    "path": "www.goodreads.com/b99f21b72c18a700.html",
+    "kind": "raw"
+  },
+  "https://www.googleapis.com/books/v1/volumes?q=isbn:9788445078259": {
+    "code": "200",
+    "path": "www.googleapis.com/a8d710b0b6b3e3ee.json",
+    "kind": "raw"
+  },
+  "https://www.googleapis.com/books/v1/volumes?q=the+martian+chronicles+bradbury&maxResults=5": {
+    "code": "200",
+    "path": "www.googleapis.com/2b5035cd8cb517e3.json",
+    "kind": "raw"
+  }
+}

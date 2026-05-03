@@ -1,4 +1,4 @@
-.PHONY: server add edit review author score format lookup
+.PHONY: server add edit update review author score format lookup test
 
 server:
 	python3 -m http.server 8000 -d docs
@@ -6,7 +6,7 @@ server:
 add:
 	ruby scripts/add_book.rb $(filter-out $@,$(MAKECMDGOALS))
 
-edit:
+edit update:
 	ruby scripts/edit_book.rb
 
 review:
@@ -23,6 +23,10 @@ format:
 
 lookup:
 	@ruby scripts/lookup.rb $(filter-out $@,$(MAKECMDGOALS))
+
+test:
+	@ruby -Iscripts -Itest -e "Dir['test/**/*_test.rb'].sort.each { |f| load f }" 2>/dev/null
+
 
 %:
 	@:

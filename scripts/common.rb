@@ -9,10 +9,13 @@ require "tempfile"
 require "fileutils"
 require "readline"
 require "io/console"
+require "digest"
 
 ROOT_DIR = File.expand_path("..", __dir__)
 DB_PATH = File.join(ROOT_DIR, "docs", "db.json")
 COVERS_DIR = File.join(ROOT_DIR, "docs", "covers")
+DEFAULT_CACHE_DIR = File.join(ROOT_DIR, ".cache")
+CACHE_TTL_SECONDS = 48 * 60 * 60
 HTTP_TIMEOUT = 10 # seconds
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " \
@@ -65,6 +68,128 @@ def select_publisher(default: nil)
 
   add_publisher(selected) if selected && !selected.empty?
   selected
+end
+
+# ---------------------------------------------------------------------------
+# Cache layer — per-source key/value store. Key is the ISBN if the input is
+# a valid ISBN-10/13, else SHA1 of the normalized text. Entries older than
+# CACHE_TTL_SECONDS are ignored. Empty / nil results are NOT cached, so
+# transient failures recover.
+#
+# Two implementations:
+#   * DiskCache — JSON files at <dir>/<source>/<key>.json. Default for the
+#     CLI. <dir> defaults to .cache/, overridable via LEV_CACHE_DIR.
+#   * MemoryCache — in-process Hash. Used by the test suite.
+#
+# Swap via Cache.default = MemoryCache.new in tests.
+# ---------------------------------------------------------------------------
+
+def cache_key(query)
+  cleaned = query.to_s.gsub(/[\s\-]/, "")
+  if cleaned =~ /\A(\d{9}[\dXx]|\d{13})\z/
+    cleaned.upcase
+  else
+    Digest::SHA1.hexdigest(query.to_s.strip.downcase)
+  end
+end
+
+class MemoryCache
+  def initialize(ttl: CACHE_TTL_SECONDS, clock: -> { Time.now })
+    @store = {}
+    @ttl = ttl
+    @clock = clock
+  end
+
+  def read(source, key)
+    entry = @store[[source, key]]
+    return nil unless entry
+    return nil if (@clock.call - entry[:cached_at]) >= @ttl
+
+    entry[:result]
+  end
+
+  def write(source, key, result)
+    return if result.nil?
+    return if result.respond_to?(:empty?) && result.empty?
+
+    @store[[source, key]] = { cached_at: @clock.call, result: result }
+  end
+
+  def clear
+    @store.clear
+  end
+
+  def size
+    @store.size
+  end
+end
+
+class DiskCache
+  def initialize(dir: nil, ttl: CACHE_TTL_SECONDS)
+    @dir = dir || ENV["LEV_CACHE_DIR"] || DEFAULT_CACHE_DIR
+    @ttl = ttl
+  end
+
+  attr_reader :dir
+
+  def read(source, key)
+    path = path_for(source, key)
+    return nil unless fresh?(path)
+
+    data = JSON.parse(File.read(path, encoding: "UTF-8"))
+    data["result"]
+  rescue JSON::ParserError, Errno::ENOENT
+    nil
+  end
+
+  def write(source, key, result)
+    return if result.nil?
+    return if result.respond_to?(:empty?) && result.empty?
+
+    path = path_for(source, key)
+    FileUtils.mkdir_p(File.dirname(path))
+    payload = { "cached_at" => Time.now.to_i, "source" => source, "key" => key, "result" => result }
+    File.write(path, JSON.pretty_generate(payload))
+  rescue StandardError => e
+    warn "  Cache write failed (#{source}/#{key}): #{e.message}"
+  end
+
+  def clear
+    FileUtils.rm_rf(@dir)
+  end
+
+  private
+
+  def path_for(source, key)
+    File.join(@dir, source, "#{key}.json")
+  end
+
+  def fresh?(path)
+    File.exist?(path) && (Time.now - File.mtime(path)) < @ttl
+  end
+end
+
+module Cache
+  class << self
+    attr_writer :default
+
+    def default
+      @default ||= DiskCache.new
+    end
+  end
+end
+
+def cached(source, query, cache: Cache.default)
+  key = cache_key(query)
+  hit = cache.read(source, key)
+  if hit
+    warn "  [cache] #{source} hit (#{key[0, 12]})"
+    return hit
+  end
+
+  result = yield
+  cache.write(source, key, result)
+  result
 end
 
 # ---------------------------------------------------------------------------
@@ -223,11 +348,11 @@ def interactive_select(items, prompt_label: "Select", default: 0, multi: false, 
     max_visible.times do |i|
       idx = offset + i
       if idx < items.size
-        checkbox = multi ? (chosen.include?(idx) ? "[x] " : "[ ] ") : ""
+        checkbox = multi ? (chosen.include?(idx) ? "[•] " : "[ ] ") : ""
         if idx == cursor
-          puts "\e[2K  \e[33m>\e[0m \e[1m#{checkbox}#{items[idx]}\e[0m"
+          puts "\e[2K\e[33m>\e[0m \e[1m#{checkbox}#{items[idx]}\e[0m"
         else
-          puts "\e[2K    #{checkbox}#{items[idx]}"
+          puts "\e[2K  #{checkbox}#{items[idx]}"
         end
       else
         puts "\e[2K"
@@ -262,7 +387,10 @@ def interactive_select(items, prompt_label: "Select", default: 0, multi: false, 
         end
       end
     when :enter
-      return multi ? chosen.sort : cursor
+      if multi
+        return chosen.empty? ? [cursor] : chosen.sort
+      end
+      return cursor
     when :ctrl_c
       puts ""
       exit 130
@@ -541,15 +669,40 @@ rescue StandardError => e
 end
 
 # ---------------------------------------------------------------------------
+# HTTP client — thin object wrapper around the module-level helpers so we
+# can inject a fake in tests. Each fetcher takes `http: DEFAULT_HTTP`.
+# ---------------------------------------------------------------------------
+
+class HttpClient
+  def get(url, headers: {}, follow_redirects: true, max_redirects: 5)
+    http_get(url, headers: headers, follow_redirects: follow_redirects, max_redirects: max_redirects)
+  end
+
+  def get_json(url)
+    http_get_json(url)
+  end
+
+  def get_with_retry(url, headers: {}, retries: 3)
+    http_get_with_retry(url, headers: headers, retries: retries)
+  end
+
+  def download(url, dest)
+    http_download(url, dest)
+  end
+end
+
+DEFAULT_HTTP = HttpClient.new
+
+# ---------------------------------------------------------------------------
 # Goodreads search
 # ---------------------------------------------------------------------------
 
-def goodreads_search(query)
+def goodreads_search(query, http: DEFAULT_HTTP)
   encoded = URI.encode_www_form_component(query).gsub("%20", "+")
   url = "https://www.goodreads.com/search?utf8=%E2%9C%93&q=#{encoded}&search_type=books"
   warn "Searching Goodreads..."
 
-  response = http_get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
+  response = http.get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
 
   unless response&.code == "200"
     warn "  Goodreads search unavailable (HTTP #{response&.code})."
@@ -906,9 +1059,9 @@ def scrape_goodreads_detail_from_html(html)
   detail
 end
 
-def scrape_goodreads_detail(url)
+def scrape_goodreads_detail(url, http: DEFAULT_HTTP)
   warn "Fetching Goodreads book page (#{url})..."
-  response = http_get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
+  response = http.get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
 
   unless response&.code == "200"
     warn "  Could not fetch book page (HTTP #{response&.code})."
@@ -950,7 +1103,7 @@ WIKIPEDIA_ORIG_TITLE_RE = {
   "en" => /(?:orig[_ ]title|name[_ ]orig|original[_ ]title)\s*=\s*(.+)/i
 }.freeze
 
-def search_wikipedia(title, author = nil, language: "es")
+def search_wikipedia(title, author = nil, language: "es", http: DEFAULT_HTTP)
   language = language.to_s.downcase
   language = "es" unless WIKIPEDIA_BOOK_KEYWORDS.key?(language)
 
@@ -960,7 +1113,7 @@ def search_wikipedia(title, author = nil, language: "es")
   url = "https://#{language}.wikipedia.org/w/api.php?action=query&list=search&srsearch=#{encoded}&format=json&srlimit=5&srnamespace=0"
 
   warn "Searching #{language.upcase} Wikipedia..."
-  data = http_get_json(url)
+  data = http.get_json(url)
   return nil unless data && data.dig("query", "search")&.any?
 
   book_keywords = WIKIPEDIA_BOOK_KEYWORDS[language]
@@ -971,7 +1124,7 @@ def search_wikipedia(title, author = nil, language: "es")
     next unless page_title
 
     parse_url = "https://#{language}.wikipedia.org/w/api.php?action=parse&page=#{URI.encode_www_form_component(page_title)}&prop=wikitext&format=json&redirects=1"
-    page_data = http_get_json(parse_url)
+    page_data = http.get_json(parse_url)
     wikitext = page_data&.dig("parse", "wikitext", "*")
     next unless wikitext
     next unless wikitext =~ book_keywords

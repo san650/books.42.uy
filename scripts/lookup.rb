@@ -96,45 +96,55 @@ def google_volume_to_record(item)
   )
 end
 
-def fetch_google_books_isbn(isbn)
-  url = "https://www.googleapis.com/books/v1/volumes?q=isbn:#{isbn}"
-  warn "Querying Google Books (ISBN)..."
+def fetch_google_books_isbn(isbn, http: DEFAULT_HTTP)
+  cached("googlebooks", isbn) do
+    url = "https://www.googleapis.com/books/v1/volumes?q=isbn:#{isbn}"
+    warn "Querying Google Books (ISBN)..."
 
-  response = http_get_with_retry(url, headers: { "Accept" => "application/json" })
-  warn "  Google Books HTTP #{response&.code || "network error"}"
-  return nil unless response&.code == "200"
+    response = http.get_with_retry(url, headers: { "Accept" => "application/json" })
+    warn "  Google Books HTTP #{response&.code || "network error"}"
+    next nil unless response&.code == "200"
 
-  data = JSON.parse(response.body)
-  items = data["items"] || []
-  return nil if items.empty?
+    begin
+      data = JSON.parse(response.body)
+    rescue JSON::ParserError => e
+      warn "  Google Books returned invalid JSON: #{e.message}"
+      next nil
+    end
 
-  item = items.find do |it|
-    identifiers = it.dig("volumeInfo", "industryIdentifiers") || []
-    identifiers.any? { |id| isbn_matches?(id["identifier"], isbn) }
+    items = data["items"] || []
+    next nil if items.empty?
+
+    item = items.find do |it|
+      identifiers = it.dig("volumeInfo", "industryIdentifiers") || []
+      identifiers.any? { |id| isbn_matches?(id["identifier"], isbn) }
+    end
+
+    next nil unless item
+
+    google_volume_to_record(item)
   end
-
-  return nil unless item
-
-  google_volume_to_record(item)
-rescue JSON::ParserError => e
-  warn "  Google Books returned invalid JSON: #{e.message}"
-  nil
 end
 
-def fetch_google_books_query(query, limit: 5)
-  encoded = URI.encode_www_form_component(query)
-  url = "https://www.googleapis.com/books/v1/volumes?q=#{encoded}&maxResults=#{limit}"
-  warn "Querying Google Books (query)..."
+def fetch_google_books_query(query, limit: 5, http: DEFAULT_HTTP)
+  cached("googlebooks", query) do
+    encoded = URI.encode_www_form_component(query)
+    url = "https://www.googleapis.com/books/v1/volumes?q=#{encoded}&maxResults=#{limit}"
+    warn "Querying Google Books (query)..."
 
-  response = http_get_with_retry(url, headers: { "Accept" => "application/json" })
-  warn "  Google Books HTTP #{response&.code || "network error"}"
-  return [] unless response&.code == "200"
+    response = http.get_with_retry(url, headers: { "Accept" => "application/json" })
+    warn "  Google Books HTTP #{response&.code || "network error"}"
+    next [] unless response&.code == "200"
 
-  data = JSON.parse(response.body)
-  (data["items"] || []).map { |item| google_volume_to_record(item) }.compact
-rescue JSON::ParserError => e
-  warn "  Google Books returned invalid JSON: #{e.message}"
-  []
+    begin
+      data = JSON.parse(response.body)
+    rescue JSON::ParserError => e
+      warn "  Google Books returned invalid JSON: #{e.message}"
+      next []
+    end
+
+    (data["items"] || []).map { |item| google_volume_to_record(item) }.compact
+  end
 end
 
 # ---------------------------------------------------------------------------
@@ -158,22 +168,27 @@ def openlibrary_entry_to_record(entry)
   )
 end
 
-def fetch_openlibrary_isbn(isbn)
-  url = "https://openlibrary.org/api/books?bibkeys=ISBN:#{isbn}&format=json&jscmd=data"
-  warn "Querying Open Library (ISBN)..."
+def fetch_openlibrary_isbn(isbn, http: DEFAULT_HTTP)
+  cached("openlibrary", isbn) do
+    url = "https://openlibrary.org/api/books?bibkeys=ISBN:#{isbn}&format=json&jscmd=data"
+    warn "Querying Open Library (ISBN)..."
 
-  response = http_get_with_retry(url, headers: { "Accept" => "application/json" })
-  warn "  Open Library HTTP #{response&.code || "network error"}"
-  return nil unless response&.code == "200"
+    response = http.get_with_retry(url, headers: { "Accept" => "application/json" })
+    warn "  Open Library HTTP #{response&.code || "network error"}"
+    next nil unless response&.code == "200"
 
-  data = JSON.parse(response.body)
-  entry = data["ISBN:#{isbn}"]
-  return nil unless entry
+    begin
+      data = JSON.parse(response.body)
+    rescue JSON::ParserError => e
+      warn "  Open Library returned invalid JSON: #{e.message}"
+      next nil
+    end
 
-  openlibrary_entry_to_record(entry)
-rescue JSON::ParserError => e
-  warn "  Open Library returned invalid JSON: #{e.message}"
-  nil
+    entry = data["ISBN:#{isbn}"]
+    next nil unless entry
+
+    openlibrary_entry_to_record(entry)
+  end
 end
 
 def openlibrary_doc_to_record(doc)
@@ -198,27 +213,35 @@ def openlibrary_doc_to_record(doc)
   )
 end
 
-def fetch_openlibrary_query(query, limit: 5)
-  encoded = URI.encode_www_form_component(query)
-  url = "https://openlibrary.org/search.json?q=#{encoded}&limit=#{limit}"
-  warn "Querying Open Library (query)..."
+def fetch_openlibrary_query(query, limit: 5, http: DEFAULT_HTTP)
+  cached("openlibrary", query) do
+    encoded = URI.encode_www_form_component(query)
+    url = "https://openlibrary.org/search.json?q=#{encoded}&limit=#{limit}"
+    warn "Querying Open Library (query)..."
 
-  data = http_get_json(url)
-  return [] unless data && data["docs"]
+    data = http.get_json(url)
+    next [] unless data && data["docs"]
 
-  data["docs"].first(limit).map { |doc| openlibrary_doc_to_record(doc) }.compact
+    data["docs"].first(limit).map { |doc| openlibrary_doc_to_record(doc) }.compact
+  end
 end
 
 # ---------------------------------------------------------------------------
 # OpenLibrary — HTML search (fallback for alternate ranking)
 # ---------------------------------------------------------------------------
 
-def fetch_openlibrary_html(query, limit: 5)
+def fetch_openlibrary_html(query, limit: 5, http: DEFAULT_HTTP)
+  cached("openlibrary_html", query) do
+    fetch_openlibrary_html_uncached(query, limit: limit, http: http)
+  end
+end
+
+def fetch_openlibrary_html_uncached(query, limit: 5, http: DEFAULT_HTTP)
   encoded = URI.encode_www_form_component(query)
   url = "https://openlibrary.org/search?q=#{encoded}"
   warn "Scraping Open Library HTML search..."
 
-  response = http_get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
+  response = http.get(url, headers: { "Accept" => "text/html,application/xhtml+xml" })
   unless response&.code == "200"
     warn "  Open Library HTML HTTP #{response&.code || "network error"}"
     return []
@@ -306,27 +329,29 @@ def goodreads_detail_to_record(detail)
   )
 end
 
-def fetch_goodreads(query, limit: 3)
-  results = goodreads_search(query)
-  return [] if results.empty?
+def fetch_goodreads(query, limit: 3, http: DEFAULT_HTTP)
+  cached("goodreads", query) do
+    results = goodreads_search(query, http: http)
+    next [] if results.empty?
 
-  records = []
-  results.first(limit).each do |result|
-    detail = scrape_goodreads_detail(result[:url])
-    record = goodreads_detail_to_record(detail)
-    if record
-      record["url"] ||= result[:url]
-      records << record
-    elsif result[:title]
-      records << standardize(
-        title: result[:title],
-        authors: result[:author] && result[:author] != "Unknown" ? [result[:author]] : [],
-        url: result[:url]
-      )
+    records = []
+    results.first(limit).each do |result|
+      detail = scrape_goodreads_detail(result[:url], http: http)
+      record = goodreads_detail_to_record(detail)
+      if record
+        record["url"] ||= result[:url]
+        records << record
+      elsif result[:title]
+        records << standardize(
+          title: result[:title],
+          authors: result[:author] && result[:author] != "Unknown" ? [result[:author]] : [],
+          url: result[:url]
+        )
+      end
     end
-  end
 
-  records
+    records
+  end
 end
 
 # ---------------------------------------------------------------------------
@@ -349,23 +374,27 @@ def best_author(records)
   records.flatten.compact.map { |r| (r["authors"] || []).first }.compact.first
 end
 
-def fetch_wikipedia(records)
+def fetch_wikipedia(records, http: DEFAULT_HTTP)
   title = best_title(records)
   return nil unless title
 
   language = detect_language(records)
   author = best_author(records)
-  info = search_wikipedia(title, author, language: language)
-  return nil unless info
+  cache_query = [title, author, language].compact.join("|")
 
-  standardize(
-    title: info[:page_title],
-    original_title: info[:original_title],
-    isbn_13: info[:isbn]&.length == 13 ? info[:isbn] : nil,
-    isbn_10: info[:isbn]&.length == 10 ? info[:isbn] : nil,
-    url: info[:url],
-    language: info[:language]
-  )
+  cached("wikipedia", cache_query) do
+    info = search_wikipedia(title, author, language: language, http: http)
+    next nil unless info
+
+    standardize(
+      title: info[:page_title],
+      original_title: info[:original_title],
+      isbn_13: info[:isbn]&.length == 13 ? info[:isbn] : nil,
+      isbn_10: info[:isbn]&.length == 10 ? info[:isbn] : nil,
+      url: info[:url],
+      language: info[:language]
+    )
+  end
 end
 
 # ---------------------------------------------------------------------------
@@ -375,36 +404,36 @@ end
 # Returns a hash keyed by source label. Each value is a single record (ISBN
 # lookup) or an array of records (text query). Wikipedia, when present, is
 # always a single record (it augments the other sources).
-def lookup(query)
+def lookup(query, http: DEFAULT_HTTP)
   isbn = normalize_isbn(query)
-  isbn ? lookup_isbn(isbn) : lookup_text(query)
+  isbn ? lookup_isbn(isbn, http: http) : lookup_text(query, http: http)
 end
 
-def lookup_isbn(isbn)
+def lookup_isbn(isbn, http: DEFAULT_HTTP)
   warn "Looking up ISBN #{isbn}"
 
-  google = fetch_google_books_isbn(isbn)
-  openlibrary = fetch_openlibrary_isbn(isbn)
-  goodreads = fetch_goodreads(isbn, limit: 1).first
+  google = fetch_google_books_isbn(isbn, http: http)
+  openlibrary = fetch_openlibrary_isbn(isbn, http: http)
+  goodreads = fetch_goodreads(isbn, limit: 1, http: http).first
 
   result = {}
   result["googlebooks"] = google if google
   result["openlibrary"] = openlibrary if openlibrary
   result["goodreads"] = goodreads if goodreads
 
-  wiki = fetch_wikipedia(result.values)
+  wiki = fetch_wikipedia(result.values, http: http)
   result["wikipedia"] = wiki if wiki
 
   result
 end
 
-def lookup_text(query)
+def lookup_text(query, http: DEFAULT_HTTP)
   warn "Searching for: #{query}"
 
-  google = fetch_google_books_query(query)
-  openlibrary_api = fetch_openlibrary_query(query)
-  openlibrary_html = fetch_openlibrary_html(query)
-  goodreads = fetch_goodreads(query)
+  google = fetch_google_books_query(query, http: http)
+  openlibrary_api = fetch_openlibrary_query(query, http: http)
+  openlibrary_html = fetch_openlibrary_html(query, http: http)
+  goodreads = fetch_goodreads(query, http: http)
 
   result = {}
   result["googlebooks"] = google unless google.empty?
@@ -412,7 +441,7 @@ def lookup_text(query)
   result["openlibrary_html"] = openlibrary_html unless openlibrary_html.empty?
   result["goodreads"] = goodreads unless goodreads.empty?
 
-  wiki = fetch_wikipedia(result.values)
+  wiki = fetch_wikipedia(result.values, http: http)
   result["wikipedia"] = wiki if wiki
 
   result
