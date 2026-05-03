@@ -332,6 +332,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 48,
+      "name": "Gabriel García Márquez",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1945,6 +1952,29 @@
       "publisher": "Nordica Libros",
       "saga": null,
       "score": 6,
+      "review": ""
+    },
+    {
+      "id": 62,
+      "title": "Relato de un náufrago",
+      "subtitle": "",
+      "original_title": "",
+      "first_publishing_date": "1970",
+      "author_ids": [
+        48
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9789568367770"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "DeBolsillo",
+      "saga": null,
+      "score": 8,
       "review": ""
     }
   ],
