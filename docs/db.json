@@ -2210,6 +2210,29 @@
       },
       "score": 10,
       "review": ""
+    },
+    {
+      "id": 71,
+      "title": "El Vellocino de Oro",
+      "subtitle": "",
+      "original_title": "The Golden Fleece",
+      "first_publishing_date": "1944",
+      "author_ids": [
+        18
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/71-el-vellocino-de-oro.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": null,
+      "score": 10,
+      "review": ""
     }
   ],
   "publishers": [
