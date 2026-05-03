@@ -2325,6 +2325,32 @@
       "saga": null,
       "score": 9,
       "review": ""
+    },
+    {
+      "id": 76,
+      "title": "El autoestopista galáctico",
+      "subtitle": "",
+      "original_title": "The Hitchhiker Guide To The Galaxy",
+      "first_publishing_date": "1979",
+      "author_ids": [
+        29
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/76-el-autoestopista-galactico.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": {
+        "name": "Guía del autoestopista galáctico",
+        "order": 1
+      },
+      "score": 7,
+      "review": ""
     }
   ],
   "publishers": [
