@@ -2532,6 +2532,32 @@
       "saga": null,
       "score": 10,
       "review": ""
+    },
+    {
+      "id": 84,
+      "title": "La mano izquierda de la oscuridad",
+      "subtitle": "",
+      "original_title": "The Left Hand of Darkness",
+      "first_publishing_date": "1969",
+      "author_ids": [
+        31
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788445009314"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/84-la-mano-izquierda-de-la-oscuridad.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Minotauro",
+      "saga": null,
+      "score": 7,
+      "review": ""
     }
   ],
   "publishers": [
