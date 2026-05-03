@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Lev — library stats">
+<title>Lev — Stats</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="theme-color" content="#1E104E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="stylesheet" href="assets/main.css">
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar-sticky bg-deep">
+  <nav class="bg-deep flex items-center gap-4 px-3 py-4 w-full">
+    <a href="/" class="flex items-center gap-3 shrink-0" style="text-decoration:none">
+      <img src="assets/logo.svg" alt="" class="w-6 h-6">
+      <mark class="font-brand text-lg fw-700 uppercase tracking-wide color-white bg-deep">Lev</mark>
+    </a>
+    <div class="flex items-center gap-4 ml-auto">
+      <a href="index.html" class="font-mono text-xs fw-700 uppercase tracking-wide color-white-65 nav-link">Books</a>
+      <a href="stats.html" class="font-mono text-xs fw-700 uppercase tracking-wide color-orange nav-link" aria-current="page">Stats</a>
+    </div>
+  </nav>
+  <div class="bg-orange accent-strip"></div>
+</div>
+
+<!-- Hero -->
+<section class="bg-deep color-white py-6 px-3 max-w-app mx-auto w-full">
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <p class="hero-num" id="hero-books"></p>
+      <p class="hero-label">Books read</p>
+    </div>
+    <div class="hero-stat">
+      <p class="hero-num" id="hero-authors"></p>
+      <p class="hero-label">Authors</p>
+    </div>
+    <div class="hero-stat">
+      <p class="hero-num" id="hero-span"></p>
+      <p class="hero-label">Years span</p>
+    </div>
+  </div>
+</section>
+
+<!-- Perfect 10s -->
+<section class="bg-white max-w-app mx-auto w-full">
+  <h2 class="font-brand text-xs fw-700 uppercase tracking-wider color-orange px-5 py-3 section-label">Perfect 10s</h2>
+  <ul id="perfect-tens" class="trophy-list"></ul>
+</section>
+
+<!-- Score distribution -->
+<section class="bg-surface max-w-app mx-auto w-full">
+  <h2 class="font-brand text-xs fw-700 uppercase tracking-wider color-orange px-5 py-3 section-label">Score distribution</h2>
+  <div id="score-chart" class="px-5 pb-5"></div>
+</section>
+
+<!-- TASTE -->
+<header class="bg-purple py-4 px-5 text-center max-w-app mx-auto w-full">
+  <span class="font-brand text-sm fw-700 uppercase tracking-wider color-yellow">Taste</span>
+</header>
+
+<section class="bg-white max-w-app mx-auto w-full">
+  <h2 class="font-brand text-xs fw-700 uppercase tracking-wider color-orange px-5 py-3 section-label">Highest-ranked authors</h2>
+  <p class="font-mono text-xs color-mid px-5 pb-2">mean × (1 − e<sup>−n/3</sup>)</p>
+  <ol id="ranked-authors" class="ranked-list"></ol>
+</section>
+
+<section class="bg-surface max-w-app mx-auto w-full">
+  <h2 class="font-brand text-xs fw-700 uppercase tracking-wider color-orange px-5 py-3 section-label">Most-read authors</h2>
+  <ol id="read-authors" class="ranked-list"></ol>
+</section>
+
+<!-- ERAS -->
+<header class="bg-purple py-4 px-5 text-center max-w-app mx-auto w-full">
+  <span class="font-brand text-sm fw-700 uppercase tracking-wider color-yellow">Eras</span>
+</header>
+
+<section class="bg-white max-w-app mx-auto w-full pb-5">
+  <h2 class="font-brand text-xs fw-700 uppercase tracking-wider color-orange px-5 py-3 section-label">Best book per decade</h2>
+  <div id="decade-list"></div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-purple flex items-center justify-between flex-wrap gap-2 px-5 py-3 max-w-app mx-auto w-full">
+  <small class="font-mono text-xs fw-700 color-white-50 tracking-sm">&copy; <time datetime="2026">2026</time> Santiago Ferreira &mdash; MIT License</small>
+  <a href="https://github.com/san650/books.42.uy" target="_blank" rel="noopener" class="font-mono text-xs fw-700 color-yellow tracking-sm footer-link">GitHub</a>
+</footer>
+
+
+<script type="module" src="assets/stats.js"></script>
+</body>
+</html>

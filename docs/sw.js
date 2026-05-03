@@ -1,9 +1,13 @@
-const CACHE_NAME = 'lev-v3'
+const CACHE_NAME = 'lev-v5'
 
 const SHELL_ASSETS = [
   '/',
   '/index.html',
+  '/stats.html',
   '/manifest.json',
+  '/assets/main.css',
+  '/assets/main.js',
+  '/assets/stats.js',
   '/assets/logo.svg',
   '/assets/icon-192.png',
   '/assets/icon-512.png',
