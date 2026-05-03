@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lev-v1'
+const CACHE_NAME = 'lev-v3'
 
 const SHELL_ASSETS = [
   '/',
@@ -34,24 +34,63 @@ self.addEventListener('activate', e => {
   )
 })
 
-// Fetch strategy:
-// - db.json: network first, fall back to cache
-// - covers: cache first, fall back to network (and cache the response)
-// - shell assets: cache first, fall back to network
+// Compute a short hex fingerprint of a string. Web Crypto exposes SHA-1
+// natively (MD5 is not available in browsers); we keep the first 16 hex
+// chars which is plenty for change detection.
+async function fingerprint(text) {
+  const buf = new TextEncoder().encode(text)
+  const digest = await crypto.subtle.digest('SHA-1', buf)
+  return Array.from(new Uint8Array(digest))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+    .slice(0, 16)
+}
+
+async function notifyDbUpdated(hash) {
+  const clients = await self.clients.matchAll({ includeUncontrolled: true })
+  for (const client of clients) {
+    client.postMessage({ type: 'db-updated', hash })
+  }
+}
+
+// Stale-while-revalidate for db.json. The page receives the cached copy
+// instantly (or the network copy on first visit), and we always kick off a
+// network fetch in the background. When the new payload differs from the
+// cached one, the SW updates the cache and posts a `db-updated` message so
+// the page can re-render.
+async function handleDbJson(request) {
+  const cache = await caches.open(CACHE_NAME)
+  const cached = await cache.match('/db.json')
+
+  const networkPromise = fetch(request, { cache: 'no-store' })
+    .then(async response => {
+      if (!response.ok) return null
+      const text = await response.clone().text()
+      const newHash = await fingerprint(text)
+
+      let oldHash = null
+      if (cached) oldHash = await fingerprint(await cached.clone().text())
+
+      await cache.put('/db.json', response.clone())
+
+      // Only notify when we already had a cached copy and it differs —
+      // first-visit responses are already what the page is rendering.
+      if (oldHash !== null && oldHash !== newHash) await notifyDbUpdated(newHash)
+      return response
+    })
+    .catch(() => null)
+
+  return cached || (await networkPromise) || new Response('{}', {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' }
+  })
+}
+
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url)
 
   if (url.pathname === '/db.json') {
-    // Network first for data freshness
-    e.respondWith(
-      fetch(e.request)
-        .then(response => {
-          const clone = response.clone()
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone))
-          return response
-        })
-        .catch(() => caches.match(e.request))
-    )
+    e.respondWith(handleDbJson(e.request))
     return
   }
 
