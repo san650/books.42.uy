@@ -2135,6 +2135,29 @@
       "saga": null,
       "score": 5,
       "review": ""
+    },
+    {
+      "id": 68,
+      "title": "1984",
+      "subtitle": "",
+      "original_title": "1984",
+      "first_publishing_date": "1948",
+      "author_ids": [
+        51
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/68-1984.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": null,
+      "score": 10,
+      "review": ""
     }
   ],
   "publishers": [
