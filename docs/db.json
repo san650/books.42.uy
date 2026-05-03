@@ -311,6 +311,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 45,
+      "name": "Kim Leine",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -1824,6 +1831,29 @@
       "saga": null,
       "score": 7,
       "review": ""
+    },
+    {
+      "id": 58,
+      "title": "El Fiordo de la Eternidad",
+      "subtitle": "Un canto al eterno deseo de libertad",
+      "original_title": "Profeterne i Evighedsfjorden",
+      "first_publishing_date": "2012",
+      "author_ids": [
+        45
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788415355458"
+        }
+      ],
+      "covers": [
+
+      ],
+      "publisher": "Duomo",
+      "saga": null,
+      "score": 7,
+      "review": ""
     }
   ],
   "publishers": [
@@ -1832,6 +1862,7 @@
     "Anagrama",
     "Cátedra",
     "DeBolsillo",
+    "Duomo",
     "Edhasa",
     "Editorial Impedimenta",
     "Emecé",
