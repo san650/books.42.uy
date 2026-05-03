@@ -2459,6 +2459,29 @@
       },
       "score": 9,
       "review": ""
+    },
+    {
+      "id": 81,
+      "title": "El Hobbit",
+      "subtitle": "Historia de una ida y una vuelta",
+      "original_title": "The Hobbit",
+      "first_publishing_date": "1937",
+      "author_ids": [
+        54
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/81-el-hobbit.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": null,
+      "score": 5,
+      "review": ""
     }
   ],
   "publishers": [
