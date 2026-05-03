@@ -2407,6 +2407,32 @@
       },
       "score": 9,
       "review": ""
+    },
+    {
+      "id": 79,
+      "title": "Las dos torres",
+      "subtitle": "El Señor de los Anillos",
+      "original_title": "The Two Towers",
+      "first_publishing_date": "1954",
+      "author_ids": [
+        54
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/79-las-dos-torres.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": {
+        "name": "El Señor de los Anillos",
+        "order": 2
+      },
+      "score": 9,
+      "review": ""
     }
   ],
   "publishers": [
