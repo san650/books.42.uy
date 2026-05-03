@@ -231,7 +231,7 @@
       "id": 33,
       "name": "Stanislaw Lem",
       "aliases": [
-
+        "Stanisław Lem"
       ]
     }
   ],
@@ -1356,6 +1356,35 @@
       ],
       "publisher": "Alianza",
       "saga": null,
+      "score": 7,
+      "review": ""
+    },
+    {
+      "id": 43,
+      "title": "Relatos del piloto Pirx",
+      "subtitle": "",
+      "original_title": "Opowiésci o pilocie Pirxie, 1",
+      "first_publishing_date": "1991",
+      "author_ids": [
+        33
+      ],
+      "identifiers": [
+        {
+          "type": "ISBN_13",
+          "value": "9788420610993"
+        }
+      ],
+      "covers": [
+        {
+          "file": "covers/43-relatos-del-piloto-pirx.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "Alianza",
+      "saga": {
+        "name": "Relatos del piloto Pirx",
+        "order": 1
+      },
       "score": 7,
       "review": ""
     }
