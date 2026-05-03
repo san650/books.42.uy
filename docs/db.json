@@ -2256,6 +2256,29 @@
       "saga": null,
       "score": 10,
       "review": ""
+    },
+    {
+      "id": 73,
+      "title": "¿Sueñan Los Androides con Ovejas Eléctricas?",
+      "subtitle": "",
+      "original_title": "Do Androids Dream of Electric Sheep?",
+      "first_publishing_date": "1968",
+      "author_ids": [
+        17
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/73-suenan-los-androides-con-ovejas-electricas.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": null,
+      "score": 9,
+      "review": ""
     }
   ],
   "publishers": [
