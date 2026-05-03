@@ -6,7 +6,7 @@ require "fileutils"
 require_relative "constants"
 
 def load_db
-  empty = { "authors" => [], "books" => [] }
+  empty = { "authors" => [], "books" => [], "publishers" => [] }
   return empty unless File.exist?(DB_PATH)
 
   data = File.read(DB_PATH, encoding: "UTF-8")
@@ -15,9 +15,10 @@ def load_db
   parsed = JSON.parse(data)
 
   if parsed.is_a?(Hash) && parsed.key?("authors") && parsed.key?("books")
+    parsed["publishers"] ||= []
     parsed
   elsif parsed.is_a?(Array)
-    { "authors" => [], "books" => parsed }
+    { "authors" => [], "books" => parsed, "publishers" => [] }
   else
     empty
   end
@@ -29,8 +30,16 @@ end
 def save_db(db)
   db["authors"].sort_by! { |a| (a["name"] || "").unicode_normalize(:nfkd).downcase }
   db["books"].sort_by! { |b| (b["title"] || "").unicode_normalize(:nfkd).downcase }
+  db["publishers"] ||= []
+  db["publishers"].sort_by! { |p| p.to_s.unicode_normalize(:nfkd).downcase }
 
-  json = JSON.pretty_generate(db, indent: "  ")
+  ordered = {
+    "authors" => db["authors"],
+    "books" => db["books"],
+    "publishers" => db["publishers"]
+  }
+
+  json = JSON.pretty_generate(ordered, indent: "  ")
 
   FileUtils.mkdir_p(File.dirname(DB_PATH))
   tmp = Tempfile.new(["db", ".json"], File.dirname(DB_PATH))

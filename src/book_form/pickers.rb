@@ -68,11 +68,11 @@ def pick_multi(field_name, candidates, format_value: ->(v) { v.to_s }, allow_oth
   values
 end
 
-def pick_publisher(pairs, current: nil)
+def pick_publisher(pairs, db, current: nil)
   source_publishers = collect_field(pairs) { |r| r["publisher"] }
   source_values = source_publishers.map { |c| c[:value] }.uniq
 
-  publishers = load_publishers
+  publishers = load_publishers(db)
   combined = (publishers + source_values + [current].compact).uniq.sort_by { |p| p.unicode_normalize(:nfkd).downcase }
 
   items = combined.map do |pub|
@@ -101,14 +101,14 @@ def pick_publisher(pairs, current: nil)
 
   if idx < combined.size
     selected = combined[idx]
-    add_publisher(selected) unless publishers.include?(selected)
+    add_publisher(db, selected) unless publishers.include?(selected)
     selected
   elsif idx == combined.size
     ""
   else
     name = prompt("  Enter publisher name")
     return "" if name.empty?
-    add_publisher(name)
+    add_publisher(db, name)
     name
   end
 end

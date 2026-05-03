@@ -91,7 +91,7 @@ def add_book(db:, query:, http: DEFAULT_HTTP, picker: CLIPicker.new, save: true,
     { "type" => type, "value" => val }
   end
 
-  publisher = picker.publisher(pairs)
+  publisher = picker.publisher(pairs, db)
 
   saga_candidates = collect_sagas(pairs)
   saga = picker.single("Saga",

@@ -310,4 +310,32 @@ class PublisherHelpersTest < Test::Unit::TestCase
     assert_nil sanitize_publisher(nil)
     assert_equal "", sanitize_publisher("")
   end
+
+  def test_load_publishers_uses_db_when_given
+    db = { "publishers" => ["Zebra Press", "Alpha Books"] }
+    assert_equal ["Alpha Books", "Zebra Press"], load_publishers(db)
+  end
+
+  def test_load_publishers_returns_empty_when_db_has_none
+    assert_equal [], load_publishers({ "publishers" => [] })
+    assert_equal [], load_publishers({})
+  end
+
+  def test_add_publisher_appends_to_db
+    db = { "authors" => [], "books" => [], "publishers" => ["Existing"] }
+    add_publisher(db, "Newcomer")
+    assert_equal ["Existing", "Newcomer"], db["publishers"]
+  end
+
+  def test_add_publisher_is_case_insensitive_no_op_for_duplicates
+    db = { "authors" => [], "books" => [], "publishers" => ["Minotauro"] }
+    add_publisher(db, "minotauro")
+    assert_equal ["Minotauro"], db["publishers"]
+  end
+
+  def test_add_publisher_initializes_missing_key
+    db = { "authors" => [], "books" => [] }
+    add_publisher(db, "FirstOne")
+    assert_equal ["FirstOne"], db["publishers"]
+  end
 end

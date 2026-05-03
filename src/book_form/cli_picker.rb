@@ -14,8 +14,8 @@ class CLIPicker
     pick_multi(field, candidates, current: current, format_value: format_value, allow_other: allow_other)
   end
 
-  def publisher(pairs, current: nil)
-    pick_publisher(pairs, current: current)
+  def publisher(pairs, db, current: nil)
+    pick_publisher(pairs, db, current: current)
   end
 
   def required_score

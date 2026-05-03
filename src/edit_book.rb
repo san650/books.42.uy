@@ -106,7 +106,7 @@ def edit_book(db:, book:, http: DEFAULT_HTTP, picker: CLIPicker.new, save: true,
     { "type" => type, "value" => val }
   end
 
-  book["publisher"] = picker.publisher(pairs, current: book["publisher"])
+  book["publisher"] = picker.publisher(pairs, db, current: book["publisher"])
 
   saga_candidates = collect_sagas(pairs)
   picked_saga = picker.single("Saga",

@@ -16,7 +16,7 @@ class ScriptedPicker
     fetch(field)
   end
 
-  def publisher(_pairs, **_opts)
+  def publisher(_pairs, _db = nil, **_opts)
     fetch("Publisher")
   end
 
