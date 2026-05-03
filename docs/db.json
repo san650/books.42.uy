@@ -2433,6 +2433,32 @@
       },
       "score": 9,
       "review": ""
+    },
+    {
+      "id": 80,
+      "title": "El retorno del Rey",
+      "subtitle": "El Señor de los Anillos",
+      "original_title": "The Return of the King",
+      "first_publishing_date": "1955",
+      "author_ids": [
+        54
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/80-el-retorno-del-rey.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": {
+        "name": "El Señor de los Anillos",
+        "order": 3
+      },
+      "score": 9,
+      "review": ""
     }
   ],
   "publishers": [
