@@ -2158,6 +2158,32 @@
       "saga": null,
       "score": 10,
       "review": ""
+    },
+    {
+      "id": 69,
+      "title": "Yo, Claudio",
+      "subtitle": "",
+      "original_title": "I, Claudius",
+      "first_publishing_date": "1934",
+      "author_ids": [
+        18
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/69-yo_-claudio.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": {
+        "name": "Claudius",
+        "order": 1
+      },
+      "score": 10,
+      "review": ""
     }
   ],
   "publishers": [
