@@ -2351,6 +2351,29 @@
       },
       "score": 7,
       "review": ""
+    },
+    {
+      "id": 77,
+      "title": "La pistola de rayos",
+      "subtitle": "",
+      "original_title": "The Zap Gun",
+      "first_publishing_date": "1967",
+      "author_ids": [
+        17
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/77-la-pistola-de-rayos.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": null,
+      "score": 6,
+      "review": ""
     }
   ],
   "publishers": [
