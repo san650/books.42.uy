@@ -1470,7 +1470,7 @@
       "title": "Guía para la salud y el entrenamiento masculinos",
       "subtitle": "",
       "original_title": "Walt Whitman's Guide to Manly Health & Training",
-      "first_publishing_date": "2018",
+      "first_publishing_date": "2016",
       "author_ids": [
         36
       ],
@@ -1481,7 +1481,10 @@
         }
       ],
       "covers": [
-
+        {
+          "file": "covers/46-guia-para-la-salud-y-el-entrenamiento-masculinos.jpg",
+          "default": true
+        }
       ],
       "publisher": "Nørdica Libros",
       "saga": null,
