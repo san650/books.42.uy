@@ -388,6 +388,13 @@
       "aliases": [
 
       ]
+    },
+    {
+      "id": 56,
+      "name": "Tomás More",
+      "aliases": [
+
+      ]
     }
   ],
   "books": [
@@ -2557,6 +2564,29 @@
       "publisher": "Minotauro",
       "saga": null,
       "score": 7,
+      "review": ""
+    },
+    {
+      "id": 85,
+      "title": "Utopía",
+      "subtitle": "",
+      "original_title": "Utopia",
+      "first_publishing_date": "1516",
+      "author_ids": [
+        56
+      ],
+      "identifiers": [
+
+      ],
+      "covers": [
+        {
+          "file": "covers/85-utopia.jpg",
+          "default": true
+        }
+      ],
+      "publisher": "",
+      "saga": null,
+      "score": 8,
       "review": ""
     }
   ],
